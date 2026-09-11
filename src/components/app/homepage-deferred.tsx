@@ -65,7 +65,7 @@ export default function HomepageDeferred() {
             .slice(0, 3);
     }, [featuredArticles]);
 
-    const proRegisterLink = user ? "/pro/register" : `/login?callbackUrl=${encodeURIComponent('/pro/register')}`;
+    const proRegisterLink = "/pro/register";
 
     const getArticleImage = (article: any) => {
         const id = (article.id || '').toLowerCase();
@@ -230,7 +230,7 @@ export default function HomepageDeferred() {
                                 <Link href={proRegisterLink}>🔘 Créer la fiche de mon établissement</Link>
                             </Button>
                             <Button asChild variant="outline" size="lg" className="border-brand text-brand hover:bg-brand/5 font-black uppercase text-xs md:text-sm px-8 py-7 rounded-full shadow-xl transition-all hover:-translate-y-1 tracking-widest w-full sm:w-auto">
-                                <Link href="/pro/revendiquer">🔘 Modifier une fiche existante</Link>
+                                <Link href="/pro/revendiquer">🔘 Revendiquer ma fiche</Link>
                             </Button>
                         </div>
                     </div>

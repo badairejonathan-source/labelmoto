@@ -79,10 +79,18 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
     
-    // --- DEMANDES DE MODIFICATION DE FICHE (revendication pro) ---
+    // --- REVENDICATIONS & MODIFICATIONS PRO ---
+    // Les demandes sont créées côté serveur après vérification du token Firebase.
+    // Aucun professionnel ne peut modifier directement une fiche publique.
     match /modification_requests/{id} {
-      allow create: if isSignedIn();
+      allow create: if isAdmin();
       allow read, update, delete: if isAdmin();
+    }
+
+    // --- HISTORIQUE DES FICHES PROFESSIONNELLES ---
+    // Journal d'audit interne visible et modifiable uniquement par Label Moto.
+    match /listing_history/{id} {
+      allow read, write: if isAdmin();
     }
 
     match /pending_comments/{id} {
@@ -95,6 +103,20 @@ service cloud.firestore {
       allow read, delete: if isAdmin();
     }
     
+    // --- STATISTIQUES ADMIN ---
+    // Les écritures sont effectuées uniquement côté serveur
+    // via Firebase Admin SDK (/api/track-stat).
+
+    match /monthly_reports/{monthId} {
+      allow read: if isAdmin();
+      allow create, update: if isAdmin();
+      allow delete: if false;
+    }
+
+    match /pro_stats_monthly/{monthId}/pros/{proId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
     match /migration_runs/{id} {
       allow read, write: if isAdmin();
     }

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Script from 'next/script';
 import { pickRelatedModels } from '@/lib/related-models-pool';
+import { getMotorcycleProductImage, isMotorcycleProductImage } from '@/data/motorcycle-product-images';
 import MotorcycleSheetV2View from '@/components/app/motorcycle-sheet-v2-view';
 import { getMotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
 import { 
@@ -34,8 +35,8 @@ import {
   Send
 } from 'lucide-react';
 
-import Header from '@/components/app/header';
 import LabelMotoLogo from '@/components/app/logo';
+import UnifiedSiteHeader from '@/components/app/unified-site-header';
 import {
   Table,
   TableBody,
@@ -96,7 +97,16 @@ const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string 
   return defaultValue;
 };
 
-export default function FicheClient({ modelId }: { modelId: string }) {
+
+export default function FicheClient({
+  modelId,
+  embedded = false,
+  onModelSelect,
+}: {
+  modelId: string;
+  embedded?: boolean;
+  onModelSelect?: (modelId: string) => void;
+}) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
@@ -137,13 +147,21 @@ export default function FicheClient({ modelId }: { modelId: string }) {
     const activeVariant = variants[selectedVariantIndex] || {};
     const sg = fiche.service_guide || {};
     const cp = { ...(ts.cycle_parts || {}), ...(activeVariant.cycle_parts || {}) };
+    const productImageUrl = getMotorcycleProductImage({
+      modelId,
+      brand: fiche.brand,
+      model: fiche.model,
+      displayTitle: fiche.display_title,
+      slug: fiche.slug,
+      variantLabel: activeVariant.label || activeVariant.name || activeVariant.title,
+    });
     return {
       modelName: fiche.display_title || fiche.model || modelId.replace(/-/g, ' ').toUpperCase(),
       brand: fiche.brand || (modelId.split('-')[0] || '').toUpperCase(),
       year: fiche.year_range || "2020+",
       category: fiche.category || "Moto",
       introduction: sg.intro || fiche.intro || "",
-      imageUrl: fiche.imageUrl || "/images/motard-entretien-page.webp",
+      imageUrl: productImageUrl || fiche.imageUrl || "/images/motard-entretien-page.webp",
       hasVariants: variants.length > 1,
       variants: variants,
       engine: {
@@ -269,26 +287,36 @@ export default function FicheClient({ modelId }: { modelId: string }) {
   };
 
   if (isLoading || !displayData) return (
-    <div className="min-h-screen bg-background">
-        <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
-        <main className="container mx-auto px-4 py-8"><div className="max-w-5xl mx-auto space-y-8 pt-28"><Skeleton className="h-4 w-40" /><Skeleton className="h-12 w-full rounded-full" /><Skeleton className="aspect-video w-full rounded-[2.5rem]" /></div></main>
+    <div className={embedded ? "bg-background" : "min-h-screen bg-background"}>
+        {!embedded && <UnifiedSiteHeader />}
+        <main className="container mx-auto px-4 py-8"><div className="max-w-5xl mx-auto space-y-8 pt-4"><Skeleton className="h-4 w-40" /><Skeleton className="h-12 w-full rounded-full" /><Skeleton className="aspect-video w-full rounded-[2.5rem]" /></div></main>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} />
-      {breadcrumbLd && <Script id="breadcrumb-fiche-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />}
+    <div className={embedded ? "bg-background" : "min-h-screen bg-background"}>
+      {!embedded && <UnifiedSiteHeader />}
+      {!embedded && breadcrumbLd && <Script id="breadcrumb-fiche-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />}
       
-      <main className="pt-5 md:pt-6 lg:pt-8 container mx-auto px-4 pb-8 relative z-10">
+      <main
+        className={
+          embedded
+            ? "w-full pb-8 relative z-10"
+            : "pt-5 md:pt-6 lg:pt-8 container mx-auto px-4 pb-8 relative z-10"
+        }
+      >
         <div className="max-w-5xl mx-auto">
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-6">
+          <nav
+            className={`flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-6 ${
+              embedded ? 'hidden' : ''
+            }`}
+          >
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> ACCUEIL</Link>
             <ChevronRight className="h-2 w-2 shrink-0" /><Link href="/entretien" className="hover:text-brand shrink-0">ENTRETIEN</Link>
             <ChevronRight className="h-2 w-2 shrink-0" /><span className="text-foreground truncate font-black">{displayData.modelName}</span>
           </nav>
           
-          <div className="mb-8">
+          <div className={embedded ? "hidden" : "mb-8"}>
             <Button asChild variant="outline" className="border-brand text-brand rounded-full hover:bg-brand/10 h-10 px-6 font-black uppercase text-[9px] transition-all shadow-sm">
                 <Link href={returnUrl} className="flex items-center gap-2"><ArrowLeft className="h-3.5 w-3.5" /> {returnLabel}</Link>
             </Button>
@@ -303,26 +331,53 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                 selectedVariantIndex={selectedVariantIndex}
                 onSelectVariant={setSelectedVariantIndex}
                 relatedModels={relatedModels}
+                onModelSelect={onModelSelect}
                 reviews={reviews}
                 reviewsLoading={reviewsLoading}
                 onLeaveReview={handleLeaveReviewClick}
               />
             ) : (
               <>
-            <div className="relative w-full rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-black aspect-video flex flex-col justify-between">
-                <div className="absolute inset-0 z-0"><Image src={displayData.imageUrl} alt={displayData.modelName} fill className="object-cover opacity-75" priority /></div>
-                <div className="relative z-10 w-full">
-                    <div className="flex flex-col gap-2 p-5 md:p-8">
-                        <div className="text-white">
-                            <span className="inline-block bg-brand text-white px-4 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.1em] mb-4 shadow-lg">FICHE TECHNIQUE OFFICIELLE</span>
-                            <h1 className="text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85] mb-2">{displayData.modelName}</h1>
-                            <p className="text-xl md:text-2xl font-black text-brand italic">Millésime {displayData.year}</p>
-                        </div>
-                        <div className="w-32 md:w-48 drop-shadow-2xl brightness-0 invert opacity-40 hidden md:block"><LabelMotoLogo noBubble /></div>
-                    </div>
-                    
-                </div>
-            </div>
+            <section className="w-full">
+  <div className="mb-3 md:mb-5">
+    <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.18em] text-brand">
+      {displayData.brand || 'Moto'}
+    </p>
+
+    <h1 className="mt-1 text-3xl md:text-5xl font-black tracking-tight text-foreground leading-none">
+      {
+        displayData.brand &&
+        displayData.modelName &&
+        displayData.modelName
+          .toLowerCase()
+          .startsWith(
+            String(
+              displayData.brand
+            ).toLowerCase()
+          )
+          ? displayData.modelName
+              .slice(
+                String(
+                  displayData.brand
+                ).length
+              )
+              .trim()
+          : displayData.modelName
+      }
+    </h1>
+  </div>
+
+  <div className="relative w-full h-[250px] sm:h-[300px] md:h-[360px] lg:h-[410px]">
+    <Image
+      src={displayData.imageUrl}
+      alt={displayData.modelName || 'Moto'}
+      fill
+      priority
+      sizes="(max-width: 768px) 100vw, 900px"
+      className="object-contain"
+    />
+  </div>
+</section>
 
             {displayData.hasVariants && (
                 <div className="bg-muted/30 p-4 md:p-6 rounded-2xl border-2 border-muted flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
@@ -476,7 +531,20 @@ export default function FicheClient({ modelId }: { modelId: string }) {
                       ))}</div></div>
                 )}
                 <section className="pt-12 space-y-8"><h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2"><Bike className="h-8 w-8 text-brand" /> MODÈLES ÉQUIVALENTS</h3><div className="grid grid-cols-1 sm:grid-cols-2 gap-4">{relatedModels.map((m) => (
-                        <Link key={m.id} href={`/fiches/${m.id}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${m.id}`, `/fiches/${modelId}`); }} className="group flex items-center justify-between p-6 bg-card rounded-2xl border-2 border-muted hover:border-brand hover:shadow-xl transition-all"><div className="flex flex-col"><span className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{m.name}</span><span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{m.cc} cm³</span></div><div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-all shadow-sm"><ChevronRight className="h-5 w-5" /></div></Link>
+                        <Link key={m.id} href={onModelSelect ? '#' : `/fiches/${m.id}`} onClick={(event) => {
+  if (onModelSelect) {
+    event.preventDefault();
+    onModelSelect(m.id);
+    return;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.setItem(
+      `labelmoto:fiche-return:${m.id}`,
+      `/fiches/${modelId}`
+    );
+  }
+}} className="group flex items-center justify-between p-6 bg-card rounded-2xl border-2 border-muted hover:border-brand hover:shadow-xl transition-all"><div className="flex flex-col"><span className="text-lg font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors">{m.name}</span><span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest">{m.cc} cm³</span></div><div className="h-10 w-10 rounded-full bg-brand/10 flex items-center justify-center text-brand group-hover:bg-brand group-hover:text-white transition-all shadow-sm"><ChevronRight className="h-5 w-5" /></div></Link>
                 ))}</div></section>
                 <div className="mt-20 pt-10 border-t-4 border-dashed border-muted relative flex flex-col md:flex-row items-center gap-8 bg-muted/10 p-10 rounded-[3rem]"><div className="shrink-0"><ShieldCheck className="h-16 w-16 text-brand" /></div><div className="flex-1"><h3 className="text-2xl font-black uppercase mb-4 text-foreground tracking-tighter">L'AVIS DE L'EXPERT</h3><p className="text-lg text-foreground/80 font-black leading-relaxed italic">"{displayData.conclusion}"</p><div className="flex justify-end items-center mt-8"><p className="text-lg font-black text-foreground italic relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={100} height={100} className="opacity-40 -rotate-12 pointer-events-none -ml-8" loading="lazy"/></div></div></div>
 

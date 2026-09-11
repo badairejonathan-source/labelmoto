@@ -1,8 +1,19 @@
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 import { getAdminFirestore } from '@/lib/firebase-admin';
-import { redirect } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  ArrowLeft,
+  Camera,
+  CheckCircle2,
+  ExternalLink,
+  Globe,
+  Instagram,
+  Mail,
+  MapPin,
+  Phone,
+  Video,
+} from 'lucide-react';
 
 function sanitize(data: any): any {
   if (!data) return null;
@@ -11,144 +22,891 @@ function sanitize(data: any): any {
 
 async function getCreator(idOrSlug: string) {
   const db = getAdminFirestore();
+
   try {
-    const idDoc = await db.collection('creators').doc(idOrSlug).get();
-    if (idDoc.exists) return sanitize({ id: idDoc.id, ...idDoc.data() });
-    const snap = await db.collection('creators').where('slug', '==', idOrSlug).limit(1).get();
-    if (!snap.empty) return sanitize({ id: snap.docs[0].id, ...snap.docs[0].data() });
-  } catch (e) { console.error(e); }
+    const idDoc =
+      await db
+        .collection('creators')
+        .doc(idOrSlug)
+        .get();
+
+    if (idDoc.exists) {
+      return sanitize({
+        id: idDoc.id,
+        ...idDoc.data(),
+      });
+    }
+
+    const snap =
+      await db
+        .collection('creators')
+        .where('slug', '==', idOrSlug)
+        .limit(1)
+        .get();
+
+    if (!snap.empty) {
+      return sanitize({
+        id: snap.docs[0].id,
+        ...snap.docs[0].data(),
+      });
+    }
+  }
+  catch (error) {
+    console.error(
+      '[CREATOR] lecture impossible',
+      error
+    );
+  }
+
   return null;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  const creator = await getCreator(id);
-  if (!creator) return { title: "Créateur non trouvé | Label Moto" };
+function text(
+  ...values: unknown[]
+): string {
+  for (const value of values) {
+    const candidate =
+      String(value ?? '').trim();
+
+    if (
+      candidate &&
+      candidate.toLowerCase() !== 'null' &&
+      candidate.toLowerCase() !== 'undefined'
+    ) {
+      return candidate;
+    }
+  }
+
+  return '';
+}
+
+function cleanExternalUrl(
+  value: unknown
+): string {
+  const raw =
+    text(value);
+
+  if (
+    !raw ||
+    raw === '#' ||
+    raw === '-'
+  ) {
+    return '';
+  }
+
+  if (
+    /^https?:\/\//i.test(raw)
+  ) {
+    return raw;
+  }
+
+  if (
+    /^[a-z0-9.-]+\.[a-z]{2,}(\/.*)?$/i.test(raw)
+  ) {
+    return `https://${raw}`;
+  }
+
+  return '';
+}
+
+function instagramUrl(
+  creator: any
+): string {
+  const direct =
+    cleanExternalUrl(
+      creator.instagramUrl
+    );
+
+  if (direct) {
+    return direct;
+  }
+
+  const handle =
+    text(
+      creator.instagram,
+      creator.instagramHandle
+    )
+      .replace(/^@/, '')
+      .replace(/^\/+|\/+$/g, '');
+
+  if (!handle) {
+    return '';
+  }
+
+  if (
+    !/^[a-z0-9._]+$/i.test(handle)
+  ) {
+    return '';
+  }
+
+  return `https://www.instagram.com/${handle}/`;
+}
+
+function instagramLabel(
+  url: string
+): string {
+  if (!url) {
+    return '';
+  }
+
+  try {
+    const parsed =
+      new URL(url);
+
+    const handle =
+      parsed.pathname
+        .split('/')
+        .filter(Boolean)[0];
+
+    return handle
+      ? `@${handle}`
+      : 'Instagram';
+  }
+  catch {
+    return 'Instagram';
+  }
+}
+
+function extractBaseLocation(
+  creator: any
+): string {
+  const explicit =
+    text(
+      creator.city,
+      creator.ville,
+      creator.publicLocationLabel
+    );
+
+  if (explicit) {
+    return explicit;
+  }
+
+  const address =
+    text(creator.address);
+
+  if (!address) {
+    return '';
+  }
+
+  const postalMatch =
+    address.match(
+      /\b\d{5}\s+([^,]+)/i
+    );
+
+  if (
+    postalMatch?.[1]
+  ) {
+    return postalMatch[1].trim();
+  }
+
+  const parts =
+    address
+      .split(',')
+      .map((part: string) =>
+        part.trim()
+      )
+      .filter(Boolean)
+      .filter(
+        (part: string) =>
+          !/^france$/i.test(part)
+      );
+
+  if (parts.length === 1) {
+    return parts[0];
+  }
+
+  return (
+    parts[parts.length - 1] ||
+    ''
+  );
+}
+
+function explicitSpecialties(
+  creator: any
+): string[] {
+  const source =
+    creator.specialties ??
+    creator.specialites ??
+    creator.specialite ??
+    creator.activities;
+
+  if (Array.isArray(source)) {
+    return source
+      .map(item =>
+        text(item)
+      )
+      .filter(Boolean);
+  }
+
+  const raw =
+    text(source);
+
+  if (!raw) {
+    return [];
+  }
+
+  return raw
+    .split(/[,;|]/)
+    .map(item =>
+      item.trim()
+    )
+    .filter(Boolean);
+}
+
+function inferCreatorType(
+  creator: any
+): string {
+  const explicit =
+    text(
+      creator.creatorType,
+      creator.activite
+    );
+
+  if (explicit) {
+    return explicit;
+  }
+
+  const corpus =
+    text(
+      creator.category,
+      creator.info,
+      creator.description,
+      creator.bio
+    ).toLowerCase();
+
+  const hasPhoto =
+    /photo|photograph/.test(corpus);
+
+  const hasVideo =
+    /vid[ée]o|videograph|film/.test(corpus);
+
+  const hasEvent =
+    /event|événement|evenement/.test(
+      corpus
+    );
+
+  let profession =
+    'Créateur moto';
+
+  if (
+    hasPhoto &&
+    hasVideo
+  ) {
+    profession =
+      'Photographe & vidéaste moto';
+  }
+  else if (hasPhoto) {
+    profession =
+      'Photographe moto';
+  }
+  else if (hasVideo) {
+    profession =
+      'Vidéaste moto';
+  }
+  else if (
+    /cr[ée]ateur de contenu|content|influence|r[ée]seaux sociaux/.test(
+      corpus
+    )
+  ) {
+    profession =
+      'Créateur de contenu moto';
+  }
+
+  if (
+    hasEvent &&
+    !/événementiel/i.test(
+      profession
+    )
+  ) {
+    profession +=
+      ' • Événementiel';
+  }
+
+  return profession;
+}
+
+function inferredSpecialties(
+  creator: any
+): string[] {
+  const explicit =
+    explicitSpecialties(
+      creator
+    );
+
+  if (explicit.length > 0) {
+    return Array.from(
+      new Set(explicit)
+    ).slice(0, 8);
+  }
+
+  const corpus =
+    text(
+      creator.category,
+      creator.info,
+      creator.description,
+      creator.bio
+    ).toLowerCase();
+
+  const result: string[] = [];
+
+  if (
+    /photo|photograph/.test(corpus)
+  ) {
+    result.push('Photographie');
+  }
+
+  if (
+    /vid[ée]o|videograph|film/.test(corpus)
+  ) {
+    result.push('Vidéo');
+  }
+
+  if (
+    /reel|instagram|r[ée]seaux sociaux|social media/.test(
+      corpus
+    )
+  ) {
+    result.push(
+      'Contenu réseaux sociaux'
+    );
+  }
+
+  if (
+    /[ée]v[ée]nement|event/.test(corpus)
+  ) {
+    result.push('Événementiel');
+  }
+
+  if (
+    /shooting|shoot/.test(corpus)
+  ) {
+    result.push('Shooting');
+  }
+
+  if (
+    /drone|a[ée]rien/.test(corpus)
+  ) {
+    result.push('Drone');
+  }
+
+  return Array.from(
+    new Set(result)
+  ).slice(0, 8);
+}
+
+function creatorImage(
+  creator: any
+): string {
+  return text(
+    creator.photoUrl,
+    creator.imageUrl,
+    creator.imgUrl,
+    creator.img_url,
+    creator.image_url
+  );
+}
+
+function initials(
+  name: string
+): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part =>
+      part[0]?.toUpperCase() || ''
+    )
+    .join('');
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } =
+    await params;
+
+  const creator =
+    await getCreator(id);
+
+  if (!creator) {
+    return {
+      title:
+        'Créateur non trouvé | LabelMoto',
+    };
+  }
+
+  const name =
+    text(
+      creator.displayName,
+      creator.title,
+      creator.name
+    ) ||
+    'Créateur moto';
+
+  const activity =
+    inferCreatorType(
+      creator
+    );
+
+  const description =
+    text(
+      creator.description,
+      creator.info,
+      creator.bio
+    );
+
   return {
-    title: `${creator.displayName} - ${creator.activite} | Label Moto`,
-    description: creator.description || `${creator.displayName}, ${creator.activite} spécialisé moto sur Label Moto.`,
+    title:
+      `${name} - ${activity} | LabelMoto`,
+
+    description:
+      description ||
+      `Découvrez ${name}, ${activity.toLowerCase()} référencé sur LabelMoto.`,
   };
 }
 
-export default async function CreatorPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const creator = await getCreator(id);
+export default async function CreatorPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } =
+    await params;
+
+  const creator =
+    await getCreator(id);
 
   if (!creator) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <h1 className="text-2xl font-black uppercase">Créateur non trouvé</h1>
-        <Link href="/map" className="text-brand underline">Retour à la carte</Link>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-5 bg-[#f4f1ec] px-6 text-center">
+        <h1 className="text-3xl font-black uppercase tracking-tight">
+          Créateur non trouvé
+        </h1>
+
+        <Link
+          href="/map"
+          className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-xs font-black uppercase tracking-widest text-white transition hover:bg-brand"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour à la carte
+        </Link>
       </div>
     );
   }
 
+  const name =
+    text(
+      creator.displayName,
+      creator.title,
+      creator.name
+    ) ||
+    'Créateur LabelMoto';
+
+  const activity =
+    inferCreatorType(
+      creator
+    );
+
+  const bio =
+    text(
+      creator.description,
+      creator.info,
+      creator.bio
+    );
+
+  const baseLocation =
+    extractBaseLocation(
+      creator
+    );
+
+  const serviceArea =
+    text(
+      creator.serviceArea,
+      creator.zone,
+      creator.zoneIntervention,
+      creator.interventionArea
+    );
+
+  const specialties =
+    inferredSpecialties(
+      creator
+    );
+
+  const instagram =
+    instagramUrl(
+      creator
+    );
+
+  const instagramName =
+    instagramLabel(
+      instagram
+    );
+
+  const website =
+    cleanExternalUrl(
+      creator.website
+    );
+
+  const facebook =
+    cleanExternalUrl(
+      creator.facebookUrl
+    );
+
+  const email =
+    text(
+      creator.email
+    );
+
+  const phone =
+    text(
+      creator.phoneNumber
+    );
+
+  const image =
+    creatorImage(
+      creator
+    );
+
+  const isVerified =
+    creator.verificationStatus ===
+      'verified' ||
+    creator.verified === true ||
+    creator.isVerified === true;
+
+  const hasPublicLocation =
+    creator.hasPublicLocation ===
+      true;
+
+  const publicAddress =
+    hasPublicLocation
+      ? text(creator.address)
+      : '';
+
   return (
-    <div className="min-h-screen bg-[#F5F0EB]">
-      {/* Header */}
-      <header className="bg-white border-b p-4 sticky top-0 z-50">
-        <div className="container mx-auto flex items-center justify-between">
-          <Link href="/">
-            <Image src="/images/logo-moto.webp" alt="Label Moto" width={120} height={32} />
+    <div className="min-h-screen bg-[#f4f1ec]">
+      <header className="sticky top-0 z-50 border-b border-black/5 bg-white/95 backdrop-blur">
+        <div className="container mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+          <Link
+            href="/"
+            className="shrink-0"
+          >
+            <Image
+              src="/images/logo-moto.webp"
+              alt="LabelMoto"
+              width={120}
+              height={32}
+              priority
+            />
           </Link>
-          <Link href="/map" className="text-sm font-black uppercase tracking-widest text-muted-foreground hover:text-brand transition-colors">
-            ← Retour à la carte
+
+          <Link
+            href="/map"
+            className="inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground transition hover:text-brand sm:text-xs"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">
+              Retour à la carte
+            </span>
+            <span className="sm:hidden">
+              Carte
+            </span>
           </Link>
         </div>
       </header>
 
-      <main className="container mx-auto p-4 sm:p-8 max-w-2xl">
-        {/* Carte créateur */}
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-stone-200 mt-8">
-          {/* Header carte */}
-          <div className="bg-[#1a1a1a] p-6 flex items-center gap-5">
-            {creator.photoUrl ? (
-              <img src={creator.photoUrl} alt={creator.displayName} className="w-20 h-20 rounded-full object-cover border-4 border-brand" />
-            ) : (
-              <div className="w-20 h-20 rounded-full bg-brand/20 flex items-center justify-center border-4 border-brand">
-                <span className="text-3xl font-black text-brand">{creator.displayName?.[0]?.toUpperCase()}</span>
-              </div>
-            )}
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-black text-white uppercase tracking-tight">{creator.displayName}</h1>
-                <span className="bg-brand rounded-full p-1">
-                  <svg className="w-3 h-3 text-white fill-white" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <main className="container mx-auto max-w-6xl px-4 py-8 sm:py-12">
+        <section className="relative overflow-hidden rounded-[2rem] border border-brand/15 bg-[#fff1e5] shadow-[0_18px_50px_rgba(111,66,35,0.10)] sm:rounded-[2.5rem]">
+          <div className="absolute right-[-80px] top-[-100px] h-64 w-64 rounded-full bg-brand/10 blur-3xl" />
+
+          <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[auto_1fr] lg:items-center lg:gap-10">
+            <div className="mx-auto lg:mx-0">
+              {image ? (
+                <img
+                  src={image}
+                  alt={name}
+                  className="h-32 w-32 rounded-[2rem] border-4 border-brand bg-white object-cover shadow-xl sm:h-40 sm:w-40"
+                />
+              ) : (
+                <div className="flex h-32 w-32 items-center justify-center rounded-[2rem] border-4 border-brand bg-white/75 text-4xl font-black text-foreground shadow-xl sm:h-40 sm:w-40 sm:text-5xl">
+                  {initials(name)}
+                </div>
+              )}
+            </div>
+
+            <div className="min-w-0 text-center lg:text-left">
+              <div className="mb-4 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                <span className="rounded-full border border-brand/15 bg-white/65 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-foreground/60 shadow-sm">
+                  Profil créateur
                 </span>
+
+                {isVerified && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-brand px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] text-white">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Vérifié
+                  </span>
+                )}
               </div>
-              <p className="text-brand font-black uppercase tracking-widest text-sm">{creator.activite}</p>
+
+              <h1 className="break-words text-3xl font-black uppercase leading-[0.95] tracking-[-0.02em] text-foreground sm:text-5xl lg:text-6xl">
+                {name}
+              </h1>
+
+              <p className="mt-4 text-sm font-black uppercase tracking-[0.16em] text-brand sm:text-base">
+                {activity}
+              </p>
+
+              {baseLocation && (
+                <div className="mt-4 flex items-center justify-center gap-2 text-sm font-bold text-foreground/60 lg:justify-start">
+                  <MapPin className="h-4 w-4 text-brand" />
+                  Basé à {baseLocation}
+                </div>
+              )}
+
+              <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
+                {instagram && (
+                  <a
+                    href={instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-12 items-center gap-2 rounded-full bg-brand px-6 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-brand/20 transition hover:-translate-y-0.5 hover:opacity-90"
+                  >
+                    <Instagram className="h-4 w-4" />
+                    Instagram
+                  </a>
+                )}
+
+                {website && (
+                  <a
+                    href={website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-12 items-center gap-2 rounded-full border border-brand/15 bg-white/75 px-6 py-3 text-xs font-black uppercase tracking-widest text-foreground shadow-sm transition hover:border-brand/35 hover:bg-white"
+                  >
+                    <Globe className="h-4 w-4" />
+                    Portfolio
+                    <ExternalLink className="h-3.5 w-3.5 opacity-60" />
+                  </a>
+                )}
+
+                {email && (
+                  <a
+                    href={`mailto:${email}`}
+                    className="inline-flex min-h-12 items-center gap-2 rounded-full border border-brand/15 bg-white/40 px-6 py-3 text-xs font-black uppercase tracking-widest text-foreground transition hover:border-brand hover:bg-white hover:text-brand"
+                  >
+                    <Mail className="h-4 w-4" />
+                    Contacter
+                  </a>
+                )}
+              </div>
             </div>
           </div>
+        </section>
 
-          {/* Description */}
-          {creator.description && (
-            <div className="px-6 py-4 border-b border-stone-100">
-              <p className="text-stone-600 text-sm leading-relaxed">{creator.description}</p>
-            </div>
-          )}
+        <div className="mt-8 grid gap-6 lg:grid-cols-[1.6fr_0.8fr]">
+          <div className="space-y-6">
+            {bio && (
+              <section className="rounded-[2rem] border border-black/5 bg-white p-6 shadow-sm sm:p-8">
+                <div className="mb-5 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                    <Camera className="h-5 w-5" />
+                  </div>
 
-          {/* Infos */}
-          <div className="p-6 space-y-4">
-            <div className="flex items-center gap-4 py-3 border-b border-stone-100">
-              <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Activité</p>
-                <p className="font-bold text-stone-800">{creator.activite}</p>
-              </div>
-            </div>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                      Le profil
+                    </p>
 
-            {creator.instagram && (
-              <div className="flex items-center gap-4 py-3 border-b border-stone-100">
-                <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-                  <svg className="w-4 h-4 text-brand" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    <h2 className="text-xl font-black uppercase tracking-tight">
+                      À propos
+                    </h2>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Instagram</p>
-                  <a href={`https://instagram.com/${creator.instagram.replace('@','')}`} target="_blank" rel="noreferrer" className="font-bold text-brand hover:underline">{creator.instagram}</a>
-                </div>
-              </div>
+
+                <p className="whitespace-pre-line text-[15px] font-medium leading-7 text-foreground/75">
+                  {bio}
+                </p>
+              </section>
             )}
 
-            <div className="flex items-center gap-4 py-3 border-b border-stone-100">
-              <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Ville / Zone</p>
-                <p className="font-bold text-stone-800">{creator.ville}</p>
-              </div>
-            </div>
+            {specialties.length > 0 && (
+              <section className="rounded-[2rem] border border-black/5 bg-white p-6 shadow-sm sm:p-8">
+                <div className="mb-5 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                    <Video className="h-5 w-5" />
+                  </div>
 
-            {creator.specialite && (
-              <div className="flex items-center gap-4 py-3 border-b border-stone-100">
-                <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-                  <svg className="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" /></svg>
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                      Savoir-faire
+                    </p>
+
+                    <h2 className="text-xl font-black uppercase tracking-tight">
+                      Spécialités
+                    </h2>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Spécialité</p>
-                  <p className="font-bold text-stone-800">{creator.specialite}</p>
+
+                <div className="flex flex-wrap gap-2">
+                  {specialties.map(
+                    specialty => (
+                      <span
+                        key={specialty}
+                        className="rounded-full border border-brand/15 bg-brand/5 px-4 py-2 text-[10px] font-black uppercase tracking-wider text-foreground"
+                      >
+                        {specialty}
+                      </span>
+                    )
+                  )}
                 </div>
-              </div>
+              </section>
             )}
 
-            <div className="flex items-center gap-4 py-3">
-              <div className="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400">Contact</p>
-                <a href={`mailto:${creator.email}`} className="font-bold text-stone-800 hover:text-brand transition-colors">{creator.email}</a>
-              </div>
-            </div>
+            {!bio &&
+              specialties.length === 0 && (
+                <section className="rounded-[2rem] border border-dashed border-black/10 bg-white/60 p-8 text-center">
+                  <p className="text-sm font-bold text-muted-foreground">
+                    Ce créateur n’a pas encore ajouté de présentation détaillée.
+                  </p>
+                </section>
+              )}
           </div>
 
-          {/* Footer carte */}
-          <div className="bg-[#1a1a1a] px-6 py-4 flex items-center justify-between">
-            <Image src="/images/logo-moto.webp" alt="Label Moto" width={100} height={26} />
-            <span className="text-[10px] text-white/50 font-bold uppercase tracking-widest">Créateur vérifié</span>
-          </div>
+          <aside className="space-y-6">
+            {(baseLocation ||
+              instagram ||
+              website ||
+              facebook ||
+              email ||
+              phone) && (
+              <section className="rounded-[2rem] border border-black/5 bg-white p-6 shadow-sm">
+                <p className="mb-5 text-[9px] font-black uppercase tracking-[0.22em] text-muted-foreground">
+                  Liens & contact
+                </p>
+
+                <div className="space-y-2">
+                  {baseLocation && (
+                    <div className="flex items-center gap-3 rounded-2xl border border-black/5 p-4">
+                      <MapPin className="h-5 w-5 shrink-0 text-brand" />
+
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                          Localisation
+                        </p>
+
+                        <p className="truncate text-sm font-black">
+                          {baseLocation}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {instagram && (
+                    <a
+                      href={instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-2xl border border-black/5 p-4 transition hover:border-brand/30 hover:bg-brand/5"
+                    >
+                      <Instagram className="h-5 w-5 shrink-0 text-brand" />
+
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                          Instagram
+                        </p>
+
+                        <p className="truncate text-sm font-black">
+                          {instagramName}
+                        </p>
+                      </div>
+                    </a>
+                  )}
+
+                  {website && (
+                    <a
+                      href={website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-2xl border border-black/5 p-4 transition hover:border-brand/30 hover:bg-brand/5"
+                    >
+                      <Globe className="h-5 w-5 shrink-0 text-brand" />
+
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                          Portfolio / site
+                        </p>
+
+                        <p className="truncate text-sm font-black">
+                          Visiter le site
+                        </p>
+                      </div>
+                    </a>
+                  )}
+
+                  {facebook && (
+                    <a
+                      href={facebook}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 rounded-2xl border border-black/5 p-4 transition hover:border-brand/30 hover:bg-brand/5"
+                    >
+                      <Globe className="h-5 w-5 shrink-0 text-brand" />
+
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                          Facebook
+                        </p>
+
+                        <p className="truncate text-sm font-black">
+                          Voir le profil
+                        </p>
+                      </div>
+                    </a>
+                  )}
+
+                  {email && (
+                    <a
+                      href={`mailto:${email}`}
+                      className="flex items-center gap-3 rounded-2xl border border-black/5 p-4 transition hover:border-brand/30 hover:bg-brand/5"
+                    >
+                      <Mail className="h-5 w-5 shrink-0 text-brand" />
+
+                      <div className="min-w-0">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                          Email
+                        </p>
+
+                        <p className="truncate text-sm font-black">
+                          {email}
+                        </p>
+                      </div>
+                    </a>
+                  )}
+
+                  {phone && (
+                    <a
+                      href={`tel:${phone}`}
+                      className="flex items-center gap-3 rounded-2xl border border-black/5 p-4 transition hover:border-brand/30 hover:bg-brand/5"
+                    >
+                      <Phone className="h-5 w-5 shrink-0 text-brand" />
+
+                      <div>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                          Téléphone
+                        </p>
+
+                        <p className="text-sm font-black">
+                          {phone}
+                        </p>
+                      </div>
+                    </a>
+                  )}
+                </div>
+              </section>
+            )}
+
+          </aside>
         </div>
       </main>
     </div>

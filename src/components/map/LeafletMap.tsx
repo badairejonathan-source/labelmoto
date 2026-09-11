@@ -422,13 +422,13 @@ const LeafletMap: React.FC<LeafletMapProps> = forwardRef(({ onUpdateFilters, onM
 
       geojsonLayerRef.current = L.geoJSON(geojsonDataRef.current, {
         style: (feature) => {
-          const count = departementsData?.[feature?.properties?.code] || 0;
+          const count = departementsData?.[feature?.properties?.code]?.total || 0;
           return { fillColor: getColor(count), weight: 1, color: 'white', fillOpacity: 0.7 };
         },
         onEachFeature: (feature, layer) => {
           const codeDep = feature.properties?.code;
           const nomDepartement = feature.properties?.nom;
-          const count = departementsData?.[codeDep] || 0;
+          const count = departementsData?.[codeDep]?.total || 0;
           const centroid = (layer as L.Polygon).getBounds().getCenter();
           if (count > 0) {
             const labelMarker = L.marker(centroid, {

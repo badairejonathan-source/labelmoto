@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Map, Wrench, BookOpen, Home } from 'lucide-react';
@@ -15,6 +16,25 @@ const navItems = [
 export default function MobileBottomNav() {
   const pathname = usePathname();
 
+  /*
+   * Le composant global ne doit pas produire de DOM
+   * avant la fin de l'hydratation.
+   *
+   * Cela évite qu'une fiche affichée dans l'iframe
+   * /entretien soit modifiée/masquée avant que React
+   * ait terminé de comparer le HTML serveur et client.
+   */
+  const [mounted, setMounted] =
+    useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';
     return pathname.startsWith(href);
@@ -22,6 +42,7 @@ export default function MobileBottomNav() {
 
   return (
     <nav
+      data-mobile-bottom-nav
       className="fixed bottom-0 left-0 right-0 z-[900] md:hidden bg-white border-t border-muted/20 shadow-[0_-4px_24px_rgba(0,0,0,0.08)]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >

@@ -17,6 +17,7 @@ export default function HeroSearch() {
 
     return (
         <Header
+            searchOnly={true}
             searchTerm={searchTerm}
             onSearchTermChange={setSearchTerm}
             onSearch={handleSearch}

@@ -23,4 +23,4 @@ export {
 } from './non-blocking-updates';
 
 export { errorEmitter } from './error-emitter';
-export { FirestorePermissionError } from './errors';
+export { FirestorePermissionError, type SecurityRuleContext } from './errors';

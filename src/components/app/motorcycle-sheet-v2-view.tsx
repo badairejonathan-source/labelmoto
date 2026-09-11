@@ -20,6 +20,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { isMotorcycleProductImage } from '@/data/motorcycle-product-images';
+
+import MotorcycleSheetV2TabbedUniversal from '@/components/app/motorcycle-sheet-v2-tabbed-universal';
 
 import type {
   MotorcycleKnownIssueV2,
@@ -28,6 +31,7 @@ import type {
 
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { RELATED_MODELS_POOL } from '@/lib/related-models-pool';
 
 const ORANGE = '#e95b0c';
 
@@ -40,6 +44,7 @@ interface MotorcycleSheetV2ViewProps {
   onSelectVariant: (index: number) => void;
 
   relatedModels: any[];
+  onModelSelect?: (modelId: string) => void;
 
   reviews: any[] | null | undefined;
   reviewsLoading: boolean;
@@ -138,6 +143,7 @@ export default function MotorcycleSheetV2View({
   selectedVariantIndex,
   onSelectVariant,
   relatedModels,
+  onModelSelect,
   reviews,
   reviewsLoading,
   onLeaveReview,
@@ -194,13 +200,36 @@ export default function MotorcycleSheetV2View({
   const faq = displayData.faq || [];
 
   const equivalents =
-    v2.equivalents_v2 && v2.equivalents_v2.length > 0
-      ? v2.equivalents_v2
-      : relatedModels.map((m: any) => ({
-          id: m.id,
-          name: m.name,
-          reason: m.cc ? `${m.cc} cm³` : undefined,
-        }));
+    (() => {
+    const normalizeEquivalentName = (value: unknown) =>
+      String(value ?? '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '');
+
+    const rawEquivalents =
+      v2.equivalents_v2?.length
+        ? v2.equivalents_v2
+        : relatedModels.map((model: any) => ({
+            id: model.id,
+            name: model.name,
+            reason: model.cc ? `${model.cc} cm³` : undefined,
+          }));
+
+    return rawEquivalents.map((model: any) => {
+      if (model?.id) return model;
+
+      const targetName = normalizeEquivalentName(model?.name);
+      if (!targetName) return model;
+
+      const matched = RELATED_MODELS_POOL.find(
+        (candidate) => normalizeEquivalentName(candidate.name) === targetName
+      );
+
+      return matched ? { ...model, id: matched.id } : model;
+    });
+  })();
 
   // ==========================================================
   // PROTOTYPE TABS — CFMOTO 800MT UNIQUEMENT
@@ -298,37 +327,66 @@ export default function MotorcycleSheetV2View({
           ]
         : [];
 
+  if (!is800mtTabbedPrototype) {
+    return (
+      <MotorcycleSheetV2TabbedUniversal
+        modelId={modelId}
+        displayData={displayData}
+        v2={v2}
+        selectedVariantIndex={selectedVariantIndex}
+        onSelectVariant={onSelectVariant}
+        relatedModels={relatedModels}
+        onModelSelect={onModelSelect}
+        reviews={reviews}
+        reviewsLoading={reviewsLoading}
+        onLeaveReview={onLeaveReview}
+      />
+    );
+  }
+
   return (
     <>
       {/* HERO */}
-      <section className="overflow-hidden rounded-[28px] bg-zinc-950 shadow-xl">
-        <div className="relative h-[280px] md:h-[370px]">
-          <Image
-            src={displayData.imageUrl}
-            alt={displayData.modelName || displayData.model || 'Moto'}
-            fill
-            priority
-            className="object-cover brightness-[1.38] saturate-[1.08] contrast-[1.02]"
-            sizes="(max-width: 1200px) 100vw, 1200px"
-          />
+      <section className="w-full">
+  <div className="mb-3 md:mb-5">
+    <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.18em] text-brand">
+      {displayData.brand || 'Moto'}
+    </p>
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
+    <h1 className="mt-1 text-3xl md:text-5xl font-black tracking-tight text-foreground leading-none">
+      {
+        displayData.brand &&
+        displayData.modelName &&
+        displayData.modelName
+          .toLowerCase()
+          .startsWith(
+            String(
+              displayData.brand
+            ).toLowerCase()
+          )
+          ? displayData.modelName
+              .slice(
+                String(
+                  displayData.brand
+                ).length
+              )
+              .trim()
+          : displayData.modelName
+      }
+    </h1>
+  </div>
 
-          <div className="absolute inset-x-0 bottom-0 p-6 md:p-9">
-
-            <h1 className="max-w-3xl text-[32px] font-black leading-[0.98] tracking-[-0.04em] text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.65)] md:text-5xl">
-              {displayData.modelName}
-            </h1>
-
-            <p
-              className="mt-3 text-sm font-black italic md:text-lg"
-              style={{ color: '#ff7a22' }}
-            >
-              Millésime {displayData.year}
-            </p>
-          </div>
-        </div>
-      </section>
+  <div className="relative w-full h-[250px] sm:h-[300px] md:h-[360px] lg:h-[410px]">
+    <Image
+      src={displayData.imageUrl}
+      alt={displayData.modelName || 'Moto'}
+      fill
+      priority
+      sizes="(max-width: 768px) 100vw, 900px"
+      className="object-contain"
+    />
+  </div>
+</section>
 
       {/* CHIFFRES CLES */}
       {is800mtTabbedPrototype ? (
@@ -1296,7 +1354,20 @@ export default function MotorcycleSheetV2View({
                 return (
                   <Link
                     key={model.id}
-                    href={`/fiches/${model.id}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${model.id}`, `/fiches/${modelId}`); }}
+                    href={onModelSelect ? '#' : `/fiches/${model.id}`} onClick={(event) => {
+  if (onModelSelect) {
+    event.preventDefault();
+    onModelSelect(model.id);
+    return;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.setItem(
+      `labelmoto:fiche-return:${model.id}`,
+      `/fiches/${modelId}`
+    );
+  }
+}}
                     className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-orange-300 hover:shadow-md"
                   >
                     {content}
@@ -2276,7 +2347,20 @@ export default function MotorcycleSheetV2View({
                 return (
                   <Link
                     key={model.id}
-                    href={`/fiches/${model.id}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${model.id}`, `/fiches/${modelId}`); }}
+                    href={onModelSelect ? '#' : `/fiches/${model.id}`} onClick={(event) => {
+  if (onModelSelect) {
+    event.preventDefault();
+    onModelSelect(model.id);
+    return;
+  }
+
+  if (typeof window !== 'undefined') {
+    window.sessionStorage.setItem(
+      `labelmoto:fiche-return:${model.id}`,
+      `/fiches/${modelId}`
+    );
+  }
+}}
                     className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition hover:border-orange-300 hover:shadow-md"
                   >
                     {content}

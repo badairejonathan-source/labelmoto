@@ -39,8 +39,8 @@ export default function AdminProspection() {
   const [filter, setFilter] = useState<string>('all');
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const toggleSelect = (id) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const copyEmails = (list) => { const emails = list.filter(l => selected.has(l.id) && l.email).map(l => l.email).join("; "); if (!emails) { alert("Aucun email."); return; } navigator.clipboard.writeText(emails).then(() => alert(selected.size + " email(s) copies - colle dans BCC Outlook !")); };
+  const toggleSelect = (id: string) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const copyEmails = (list: Lead[]) => { const emails = list.filter(l => selected.has(l.id) && l.email).map(l => l.email).join("; "); if (!emails) { alert("Aucun email."); return; } navigator.clipboard.writeText(emails).then(() => alert(selected.size + " email(s) copies - colle dans BCC Outlook !")); };
   const [notesValue, setNotesValue] = useState('');
   const [saving, setSaving] = useState<string | null>(null);
 

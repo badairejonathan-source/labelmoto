@@ -43,9 +43,9 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'user' | 'pro' | 'admin'>('all');
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState(new Set());
-  const toggleSelect = (id) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
-  const copyEmails = (list) => { const emails = list.filter(u => selected.has(u.id) && u.email).map(u => u.email).join('; '); if (!emails) { alert('Aucun email.'); return; } navigator.clipboard.writeText(emails).then(() => alert(selected.size + ' email(s) copies !')); };
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const toggleSelect = (id: string) => setSelected(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const copyEmails = (list: UserAccount[]) => { const emails = list.filter(u => selected.has(u.id) && u.email).map(u => u.email).join('; '); if (!emails) { alert('Aucun email.'); return; } navigator.clipboard.writeText(emails).then(() => alert(selected.size + ' email(s) copies !')); };
 
   const load = async () => {
     if (!firestore) return;
@@ -155,8 +155,8 @@ export default function AdminUsers() {
               {/* Statut email */}
               <div className="shrink-0 flex items-center gap-1">
                 {user.emailVerifiedSync
-                  ? <CheckCircle className="h-4 w-4 text-green-500" title="Email vérifié" />
-                  : <XCircle className="h-4 w-4 text-red-400" title="Email non vérifié" />
+                  ? <span title="Email vérifié"><CheckCircle className="h-4 w-4 text-green-500" /></span>
+                  : <span title="Email non vérifié"><XCircle className="h-4 w-4 text-red-400" /></span>
                 }
               </div>
 

@@ -21,6 +21,7 @@ import UserMenu from '@/components/app/user-menu';
 import EntretienRoadBackdrop from '@/components/app/entretien-road-backdrop';
 import { useUser } from '@/firebase/client';
 import Footer from '@/components/app/footer';
+import FicheClient from '@/components/app/fiche-client';
 
 type SheetModel = {
   id: string;
@@ -213,7 +214,161 @@ export default function EntretienDesktopWorkspace({
       });
     };
 
-  const closeSheet =
+  const openSheetById = (targetModelId: string) => {
+    for (const group of catalog) {
+      const targetModel = group.models.find(
+        model => model.id === targetModelId
+      );
+
+      if (targetModel) {
+        openSheet(group.name, targetModel);
+        return;
+      }
+    }
+
+    console.warn(
+      '[entretien] modele equivalent introuvable dans le catalogue:',
+      targetModelId
+    );
+  };
+
+    const openEmbeddedSheetById =
+    (targetModelId: string) => {
+      for (const group of catalog) {
+        const targetModel =
+          group.models.find(
+            (model) =>
+              model.id === targetModelId
+          );
+
+        if (targetModel) {
+          openSheet(
+            group.name,
+            targetModel
+          );
+
+          return true;
+        }
+      }
+
+      /*
+       * Une fiche equivalente peut exister
+       * sans etre affichee dans le catalogue
+       * de gauche.
+       *
+       * Dans ce cas on conserve /entretien
+       * et on remplace directement FicheClient
+       * dans la colonne droite.
+       */
+      const fallbackLabel =
+        targetModelId
+          .replace(
+            /-\d{4}(?:-plus)?$/i,
+            ''
+          )
+          .split('-')
+          .filter(Boolean)
+          .map((part) => {
+            if (
+              part.length <= 3 ||
+              /\d/.test(part)
+            ) {
+              return part.toUpperCase();
+            }
+
+            return (
+              part.charAt(0).toUpperCase() +
+              part.slice(1)
+            );
+          })
+          .join(' ');
+
+      setSelectedSheet({
+        id: targetModelId,
+        label:
+          fallbackLabel ||
+          targetModelId,
+        brand:
+          fallbackLabel
+            .split(' ')[0] ||
+          'Moto',
+      });
+
+      return true;
+    };
+
+  /*
+   * LABELMOTO_HOME_DIRECT_SHEET_20260911
+   *
+   * La home envoie :
+   * /entretien?fiche=<motorcycle_sheet_id>
+   *
+   * Au premier affichage de /entretien,
+   * on réutilise le mécanisme embarqué existant
+   * pour ouvrir directement la fiche à droite.
+   */
+  useEffect(() => {
+    const targetModelId =
+      new URLSearchParams(
+        window.location.search
+      )
+        .get('fiche')
+        ?.trim();
+
+    if (!targetModelId) {
+      return;
+    }
+
+    openEmbeddedSheetById(
+      targetModelId
+    );
+  }, []);
+
+
+  const handleEmbeddedFicheClick =
+    (event: any) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const anchor = target.closest('a[href]');
+      if (!(anchor instanceof HTMLAnchorElement)) return;
+
+      const url = new URL(anchor.href, window.location.href);
+      if (url.origin !== window.location.origin) return;
+
+      const match = url.pathname.match(/^\/fiches\/([^/]+)\/?$/);
+      if (!match) return;
+
+      const targetModelId = decodeURIComponent(match[1]);
+      if (!targetModelId) return;
+
+      if (targetModelId === selectedSheet?.id) {
+        event.preventDefault();
+        event.stopPropagation();
+        return;
+      }
+
+      const opened = openEmbeddedSheetById(targetModelId);
+
+      if (!opened) {
+        // Fallback volontaire : le lien normal reste actif.
+        return;
+      }
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      requestAnimationFrame(() => {
+        document
+          .querySelector('[data-labelmoto-sheet-panel="true"]')
+          ?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+      });
+    };
+
+const closeSheet =
     () => {
       resizeObserverRef.current
         ?.disconnect();
@@ -293,6 +448,16 @@ export default function EntretienDesktopWorkspace({
           min-height: 0 !important;
           background: transparent !important;
           overflow: hidden !important;
+        }
+
+        /*
+         * IMPORTANT :
+         * la vraie fiche utilise min-h-screen.
+         * Dans une iframe auto-dimensionnée cela crée une boucle :
+         * hauteur iframe -> min-height fiche -> hauteur iframe.
+         */
+        .min-h-screen {
+          min-height: 0 !important;
         }
 
         header,
@@ -490,25 +655,53 @@ export default function EntretienDesktopWorkspace({
           'top left';
       }
 
+      /*
+       * On mesure le conteneur React réel.
+       *
+       * Ne surtout pas utiliser documentElement.scrollHeight :
+       * celui-ci peut suivre directement la hauteur du viewport
+       * de l'iframe et créer une boucle de croissance.
+       */
+      const contentRoot =
+        doc.body.firstElementChild as
+          HTMLElement | null;
+
+      const measuredRoot =
+        contentRoot ??
+        doc.body;
+
       const syncHeight =
         () => {
           const fullHeight =
             Math.max(
-              doc.documentElement
-                .scrollHeight ||
+              measuredRoot.scrollHeight ||
                 0,
-              doc.body
-                .scrollHeight ||
+              measuredRoot.offsetHeight ||
                 0
             );
 
-          setFrameHeight(
+          const nextHeight =
             Math.max(
               800,
-              fullHeight -
-                cropTop +
-                32
-            )
+              Math.ceil(
+                fullHeight -
+                  cropTop +
+                  8
+              )
+            );
+
+          /*
+           * Évite également les mises à jour React inutiles
+           * pour une variation de mesure de 1 px.
+           */
+          setFrameHeight(
+            current =>
+              Math.abs(
+                current -
+                  nextHeight
+              ) <= 1
+                ? current
+                : nextHeight
           );
         };
 
@@ -519,12 +712,12 @@ export default function EntretienDesktopWorkspace({
           syncHeight
         );
 
+      /*
+       * Observer le contenu réel, pas html/body dont la taille
+       * peut être influencée par la hauteur de l'iframe.
+       */
       observer.observe(
-        doc.documentElement
-      );
-
-      observer.observe(
-        doc.body
+        measuredRoot
       );
 
       resizeObserverRef.current =
@@ -548,10 +741,11 @@ export default function EntretienDesktopWorkspace({
         inset-0
         z-[1900]
         hidden
-        overflow-hidden
+        overflow-x-hidden
         bg-[#fbfcfc]
         lg:block
-      "
+          min-h-screen
+        "
     >
       {/* ==================================================
           COURBE
@@ -565,7 +759,7 @@ export default function EntretienDesktopWorkspace({
           inset-0
           z-0
           overflow-hidden
-          opacity-[0.22]
+          opacity-[0.34]
         "
       >
         <EntretienRoadBackdrop />
@@ -653,7 +847,7 @@ export default function EntretienDesktopWorkspace({
                 text-brand
               "
             >
-              Entretien
+              Entretien / fiches techniques
             </a>
 
             <a
@@ -671,20 +865,6 @@ export default function EntretienDesktopWorkspace({
               Guides &amp; conseils
             </a>
 
-            <a
-              href="/"
-              className="
-                flex
-                h-full
-                items-center
-                border-b-[3px]
-                border-transparent
-                transition-colors
-                hover:text-brand
-              "
-            >
-              Fiches moto
-            </a>
           </nav>
 
           <div
@@ -699,23 +879,40 @@ export default function EntretienDesktopWorkspace({
         </div>
       </header>
 
-      {/* ==================================================
+            <div
+        className="
+          relative
+          z-20
+          ml-6
+          mr-8
+          pt-[104px]
+          grid
+          grid-cols-[394px_minmax(0,1fr)]
+          items-start
+          gap-6
+        "
+      >
+{/* ==================================================
           COLONNE GAUCHE
       =================================================== */}
 
       <aside
         className="
-          absolute
-          bottom-0
-          left-6
-          top-[104px]
+
+
+
+
           z-30
           flex
           w-[394px]
           flex-col
           overflow-hidden
-          bg-[#fbfcfc]
+          bg-transparent
           pr-5
+          sticky
+          top-[104px]
+          h-[calc(100vh-128px)]
+          self-start
         "
       >
         <div
@@ -1042,17 +1239,18 @@ export default function EntretienDesktopWorkspace({
 
       <main
         className="
-          absolute
-          bottom-0
-          left-[442px]
-          right-8
-          top-[104px]
+
+
+
+
+
           z-20
-          overflow-y-auto
-          overscroll-contain
+
+
           bg-transparent
           pb-16
-          [scrollbar-width:thin]
+          min-w-0
+          w-full
         "
       >
         {selectedSheet ? (
@@ -1103,55 +1301,16 @@ export default function EntretienDesktopWorkspace({
 
               Fermer
             </button>
-
-            <iframe
-              key={
-                selectedSheet.id
-              }
-              src={`/fiches/${encodeURIComponent(
-                selectedSheet.id
-              )}?embed=entretien`}
-              title={`Fiche ${selectedSheet.label}`}
-              onLoad={
-                event =>
-                  handleSheetLoad(
-                    event.currentTarget
-                  )
-              }
-              scrolling="no"
-              style={{
-                height:
-                  `${frameHeight}px`,
-
-                opacity:
-                  frameReady
-                    ? 1
-                    : 0,
-              }}
-              className="
-                block
-                w-full
-                border-0
-                bg-transparent
-                transition-opacity
-                duration-150
-              "
-            />
-
-            {!frameReady && (
-              <div
-                className="
-                  flex
-                  min-h-[400px]
-                  items-center
-                  justify-center
-                  text-[12px]
-                  text-muted-foreground
-                "
-              >
-                Chargement de la fiche…
-              </div>
-            )}
+            <div
+              data-labelmoto-sheet-panel="true"
+              onClickCapture={handleEmbeddedFicheClick}
+            >
+              <FicheClient
+  modelId={selectedSheet.id}
+  embedded
+  onModelSelect={openSheetById}
+/>
+            </div>
           </div>
         ) : (
           <div
@@ -1240,21 +1399,23 @@ export default function EntretienDesktopWorkspace({
         )}
 
 
-          {/* ===============================================
-              FOOTER DESKTOP
-          ================================================ */}
+                  </main>
+      </div>
 
-          <div
-            className="
-              mt-20
-              border-t
-              border-black/[0.06]
-              bg-white
-            "
-          >
-            <Footer />
-          </div>
-        </main>
+{/* ===============================================
+          FOOTER DESKTOP
+      ================================================ */}
+
+      <div
+        className="
+          mt-20
+          border-t
+          border-black/[0.06]
+          bg-white
+        "
+      >
+        <Footer />
+      </div>
     </div>
   );
 }

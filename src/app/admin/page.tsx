@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useFirebase, useMemoFirebase, useCollection } from '@/firebase/client';
 import { 
-  collection, query, getDocs, doc, orderBy, where, 
+  collection, query, getDocs, getDocsFromServer, doc, orderBy, where,
   limit 
 } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { useToast } from '@/hooks/use-toast';
 import { 
   Loader2, CheckCircle, ArrowLeft, 
-  Store, Search, ChevronRight, X, ExternalLink, 
-  Trash2, Zap, Globe, Phone, MapPin, Info, Save, History,
+  Store, Search, ChevronRight, X, ExternalLink, Pencil,
+  Trash2, Zap, Globe, Phone, MapPin, Instagram, Eye, Info, Save, History,
   Database, AlertTriangle, FileSearch, ClipboardCheck, Terminal, Copy
+} from 'lucide-react';
+import {
+  LayoutDashboard as AdminDashboardIcon,
+  ClipboardList as AdminRequestsIcon,
+  Store as AdminProfessionalsIcon,
+  BarChart3 as AdminStatsIcon,
+  Target as AdminProspectIcon,
+  Settings as AdminToolsIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 import LabelMotoLogo from '@/components/app/logo';
@@ -22,12 +30,9 @@ import { fr } from 'date-fns/locale';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/client';
-import AdminProspection from '@/components/app/admin-prospection';
-import AdminStats from '@/components/app/admin-stats';
-import AdminUsers from '@/components/app/admin-users';
-import AdminImageRequests from '@/components/app/admin-image-requests';
-import { updateDoc } from 'firebase/firestore';
+import { addDoc, updateDoc, getDoc, getCountFromServer, getAggregateFromServer, sum, writeBatch } from 'firebase/firestore';
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -38,9 +43,50 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { errorEmitter } from '@/firebase/client';
 import { FirestorePermissionError } from '@/firebase/client';
-import ListingsManager from '@/components/app/listings-manager';
-import AddListing from '@/components/app/add-listing';
-import ModificationRequests from '@/components/app/modification-requests';
+import { loadPublicSeoPros } from '@/lib/public-seo-pros';
+
+function AdminModuleLoader() {
+  return (
+    <div className="flex min-h-[220px] items-center justify-center text-xs font-black uppercase tracking-widest text-muted-foreground">
+      Chargement du module...
+    </div>
+  );
+}
+
+const AdminProspection = dynamic(
+  () => import('@/components/app/admin-prospection'),
+  { ssr: false, loading: AdminModuleLoader }
+);
+
+const AdminStats = dynamic(
+  () => import('@/components/app/admin-stats'),
+  { ssr: false, loading: AdminModuleLoader }
+);
+
+const AdminUsers = dynamic(
+  () => import('@/components/app/admin-users'),
+  { ssr: false, loading: AdminModuleLoader }
+);
+
+const AdminImageRequests = dynamic(
+  () => import('@/components/app/admin-image-requests'),
+  { ssr: false, loading: AdminModuleLoader }
+);
+
+const ListingsManager = dynamic(
+  () => import('@/components/app/listings-manager'),
+  { ssr: false, loading: AdminModuleLoader }
+);
+
+const AddListing = dynamic(
+  () => import('@/components/app/add-listing'),
+  { ssr: false, loading: AdminModuleLoader }
+);
+
+const ModificationRequests = dynamic(
+  () => import('@/components/app/modification-requests'),
+  { ssr: false, loading: AdminModuleLoader }
+);
 
 interface Submission {
   id: string;
@@ -76,7 +122,241 @@ interface MigrationStats {
   toMigrate: any[];
 }
 
+function buildAdminDraftSnapshot(submission: Submission) {
+  // Keep audit snapshots flat: the original submittedData stays immutable on the
+  // submission document, while adminDraft contains only the working version.
+  const {
+    id: _id,
+    submittedData: _submittedData,
+    adminDraft: _previousAdminDraft,
+    publishedData: _publishedData,
+    ...draft
+  } = submission;
+
+  return draft;
+}
+
 const ADMIN_REALTIME_LIMIT = 100;
+const ADMIN_PRO_COLLECTIONS = [
+  'concessions',
+  'associations',
+  'relais',
+  'creators',
+] as const;
+
+function normalizeDuplicateText(value: unknown): string {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+function normalizeDuplicatePhone(value: unknown): string {
+  const digits = String(value || '').replace(/\D+/g, '');
+  if (digits.startsWith('33') && digits.length === 11) return `0${digits.slice(2)}`;
+  return digits;
+}
+
+function duplicateTokens(value: unknown): string[] {
+  return normalizeDuplicateText(value)
+    .split(' ')
+    .filter(token => token.length >= 2 && token !== 'france');
+}
+
+const ADDRESS_NOISE_TOKENS = new Set([
+  'rue', 'avenue', 'av', 'boulevard', 'bd', 'route', 'chemin', 'impasse',
+  'place', 'allee', 'quai', 'cours', 'passage', 'lotissement', 'lot',
+  'de', 'du', 'des', 'la', 'le', 'les', 'sur', 'sous', 'aux', 'au', 'en',
+]);
+
+function addressDuplicateTokens(value: unknown): string[] {
+  return duplicateTokens(value).filter(
+    token => !ADDRESS_NOISE_TOKENS.has(token) && !/^\d+$/.test(token)
+  );
+}
+
+function levenshteinDistance(left: string, right: string): number {
+  if (left === right) return 0;
+  if (!left) return right.length;
+  if (!right) return left.length;
+
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+  const current = new Array<number>(right.length + 1);
+
+  for (let i = 1; i <= left.length; i += 1) {
+    current[0] = i;
+    for (let j = 1; j <= right.length; j += 1) {
+      const substitutionCost = left[i - 1] === right[j - 1] ? 0 : 1;
+      current[j] = Math.min(
+        current[j - 1] + 1,
+        previous[j] + 1,
+        previous[j - 1] + substitutionCost
+      );
+    }
+    for (let j = 0; j <= right.length; j += 1) previous[j] = current[j];
+  }
+
+  return previous[right.length];
+}
+
+function fuzzyTokenArraySimilarity(a: string[], b: string[]): number {
+  if (a.length === 0 || b.length === 0) return 0;
+
+  const used = new Set<number>();
+  let matches = 0;
+
+  for (const token of a) {
+    let bestIndex = -1;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (let index = 0; index < b.length; index += 1) {
+      if (used.has(index)) continue;
+      const candidate = b[index];
+
+      if (candidate === token) {
+        bestIndex = index;
+        bestDistance = 0;
+        break;
+      }
+
+      const longest = Math.max(token.length, candidate.length);
+      if (longest < 4) continue;
+
+      const distance = levenshteinDistance(token, candidate);
+      const allowedDistance = longest >= 8 ? 2 : 1;
+      if (distance <= allowedDistance && distance < bestDistance) {
+        bestIndex = index;
+        bestDistance = distance;
+      }
+    }
+
+    if (bestIndex >= 0) {
+      used.add(bestIndex);
+      matches += 1;
+    }
+  }
+
+  return matches / Math.max(a.length, b.length);
+}
+
+function fuzzyTokenSimilarity(left: unknown, right: unknown): number {
+  return fuzzyTokenArraySimilarity(duplicateTokens(left), duplicateTokens(right));
+}
+
+function fuzzyAddressSimilarity(left: unknown, right: unknown): number {
+  return fuzzyTokenArraySimilarity(addressDuplicateTokens(left), addressDuplicateTokens(right));
+}
+
+function extractPostalCode(value: unknown): string {
+  return String(value || '').match(/\b\d{5}\b/)?.[0] || '';
+}
+
+function extractStreetNumber(value: unknown): string {
+  const normalized = normalizeDuplicateText(value);
+  const postal = extractPostalCode(value);
+  return normalized
+    .split(' ')
+    .find(token => /^\d{1,4}$/.test(token) && token !== postal) || '';
+}
+
+function scoreDuplicateCandidate(submission: Submission, candidate: any) {
+  let score = 0;
+  const reasons: string[] = [];
+
+  const submissionOwner = String(submission.requestedByUid || '').trim();
+  const candidateOwner = String(candidate.ownerUid || '').trim();
+  const sameOwner = !!submissionOwner && !!candidateOwner && submissionOwner === candidateOwner;
+  if (sameOwner) {
+    score += 10;
+    reasons.push('Même compte pro');
+  }
+
+  const submissionPhone = normalizeDuplicatePhone(submission.phone);
+  const candidatePhone = normalizeDuplicatePhone(candidate.phoneNumber || candidate.phone);
+  const samePhone = submissionPhone.length >= 8 && candidatePhone.length >= 8 && submissionPhone === candidatePhone;
+  if (samePhone) {
+    score += 100;
+    reasons.push('Même téléphone');
+  }
+
+  const submissionEmail = String(submission.email || '').trim().toLowerCase();
+  const candidateEmail = String(candidate.email || '').trim().toLowerCase();
+  const sameEmail = !!submissionEmail && !!candidateEmail && submissionEmail === candidateEmail;
+  if (sameEmail) {
+    score += 15;
+    reasons.push('Même e-mail');
+  }
+
+  const submissionAddressRaw = submission.addressRaw || '';
+  const candidateAddressRaw = candidate.address || candidate.addressRaw || candidate.addr || '';
+  const submissionAddress = normalizeDuplicateText(submissionAddressRaw);
+  const candidateAddress = normalizeDuplicateText(candidateAddressRaw);
+  const addressSimilarity = fuzzyAddressSimilarity(submissionAddress, candidateAddress);
+
+  const submissionPostal = extractPostalCode(submissionAddressRaw);
+  const candidatePostal = extractPostalCode(candidateAddressRaw);
+  const samePostal = !!submissionPostal && !!candidatePostal && submissionPostal === candidatePostal;
+
+  const submissionStreetNumber = extractStreetNumber(submissionAddressRaw);
+  const candidateStreetNumber = extractStreetNumber(candidateAddressRaw);
+  const sameStreetNumber = !!submissionStreetNumber && !!candidateStreetNumber && submissionStreetNumber === candidateStreetNumber;
+
+  const exactAddress = !!submissionAddress && !!candidateAddress && submissionAddress === candidateAddress;
+  const stronglyMatchingAddress = exactAddress || (
+    samePostal &&
+    sameStreetNumber &&
+    addressSimilarity >= 0.68
+  ) || (
+    samePostal &&
+    addressSimilarity >= 0.84
+  );
+  const closeAddress = !stronglyMatchingAddress && addressSimilarity >= 0.72 && (samePostal || sameStreetNumber);
+
+  if (stronglyMatchingAddress) {
+    score += exactAddress ? 105 : 90;
+    reasons.push('Même adresse');
+  } else if (closeAddress) {
+    score += 55;
+    reasons.push('Adresse proche');
+  }
+
+  if (samePostal) score += 5;
+
+  const submissionName = normalizeDuplicateText(submission.businessName || submission.displayName);
+  const candidateName = normalizeDuplicateText(candidate.title || candidate.businessName || candidate.displayName);
+  const nameSimilarity = fuzzyTokenSimilarity(submissionName, candidateName);
+  const sameName = !!submissionName && !!candidateName && submissionName === candidateName;
+  const closeName = !sameName && nameSimilarity >= 0.74;
+
+  if (sameName) {
+    score += 70;
+    reasons.push('Même nom');
+  } else if (closeName) {
+    score += 45;
+    reasons.push('Nom proche');
+  }
+
+  // E-mail et compte propriétaire sont utiles pour enrichir le diagnostic,
+  // mais ne suffisent jamais seuls à qualifier deux établissements de doublons.
+  const strongDuplicateSignal = samePhone || stronglyMatchingAddress;
+  const localNameSignal = (sameName || closeName) && (samePostal || closeAddress || addressSimilarity >= 0.58);
+  const multiBusinessSignal = closeAddress && (sameName || closeName || samePhone);
+  const eligible = strongDuplicateSignal || localNameSignal || multiBusinessSignal;
+
+  const confidence = strongDuplicateSignal || (sameName && stronglyMatchingAddress)
+    ? 'very_likely'
+    : 'likely';
+
+  return {
+    score,
+    reasons,
+    eligible,
+    confidence,
+  };
+}
 
 export default function AdminPage() {
   const { firestore, user, profile, isUserLoading } = useFirebase();
@@ -94,27 +374,108 @@ export default function AdminPage() {
 
   const isAdmin = profile?.role === 'admin';
 
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [listingEditTarget, setListingEditTarget] = useState<{ collection: string; id: string } | null>(null);
+
+  const [dashboardCounts, setDashboardCounts] = useState<{
+    submissions: number;
+    comments: number;
+    modifs: number;
+    fiches: number;
+    tel: number;
+    web: number;
+    instagram: number;
+    itineraire: number;
+    vues: number;
+    interactions: number;
+    mapGap: number;
+  } | null>(null);
+
   const submissionsQuery = useMemoFirebase(() => {
-    if (!firestore || !isAdmin) return null;
-    return query(collection(firestore, 'listing_submissions'), orderBy('createdAt', 'desc'), limit(ADMIN_REALTIME_LIMIT));
-  }, [firestore, isAdmin]);
+    if (!firestore || !isAdmin || (activeTab !== 'submissions' && activeTab !== 'history')) return null;
+
+    const submissionsRef = collection(firestore, 'listing_submissions');
+    const statuses = activeTab === 'submissions'
+      ? ['pending', 'in_review', 'approved']
+      : ['published', 'rejected'];
+
+    return query(
+      submissionsRef,
+      where('status', 'in', statuses),
+      limit(ADMIN_REALTIME_LIMIT)
+    );
+  }, [firestore, isAdmin, activeTab]);
 
   const { data: submissions, isLoading: isLoadingSubmissions } = useCollection<Submission>(submissionsQuery);
+  const [serverSubmissions, setServerSubmissions] = useState<Submission[]>([]);
+
+  useEffect(() => {
+    if (!firestore || !isAdmin || (activeTab !== 'submissions' && activeTab !== 'history')) {
+      setServerSubmissions([]);
+      return;
+    }
+
+    let cancelled = false;
+    const statuses = activeTab === 'submissions'
+      ? ['pending', 'in_review', 'approved']
+      : ['published', 'rejected'];
+
+    // Lecture explicite depuis le serveur en plus du listener temps reel.
+    // Cela evite qu'une demande creee via Firebase Admin SDK reste invisible
+    // a cause d'un cache local Firestore ancien dans le navigateur admin.
+    getDocsFromServer(
+      query(
+        collection(firestore, 'listing_submissions'),
+        where('status', 'in', statuses),
+        limit(ADMIN_REALTIME_LIMIT)
+      )
+    )
+      .then((snapshot) => {
+        if (cancelled) return;
+        setServerSubmissions(
+          snapshot.docs.map((snapshotDoc) => ({
+            ...(snapshotDoc.data() as Submission),
+            id: snapshotDoc.id,
+          }))
+        );
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.warn('[ADMIN] Lecture serveur des demandes impossible:', error);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [firestore, isAdmin, activeTab]);
 
   const commentsQuery = useMemoFirebase(() => {
-    if (!firestore || !isAdmin) return null;
+    if (!firestore || !isAdmin || activeTab !== 'comments') return null;
     return query(collection(firestore, 'pending_comments'), orderBy('date', 'desc'), limit(ADMIN_REALTIME_LIMIT));
-  }, [firestore, isAdmin]);
+  }, [firestore, isAdmin, activeTab]);
 
   const { data: pendingComments } = useCollection(commentsQuery);
 
   const handleApproveComment = async (c: any) => {
     if (!firestore) return;
-    const targetPath = c.targetType === 'motorcycle_sheet'
-      ? ['motorcycle_sheets', c.dealershipId, 'comments']
-      : ['concessions', c.dealershipId, 'comments'];
+    const targetCollectionRef =
+      c.targetType === 'motorcycle_sheet'
+        ? collection(
+            firestore,
+            'motorcycle_sheets',
+            c.dealershipId,
+            'comments'
+          )
+        : collection(
+            firestore,
+            'concessions',
+            c.dealershipId,
+            'comments'
+          );
+
     try {
-      addDocumentNonBlocking(collection(firestore, ...targetPath), {
+      addDocumentNonBlocking(targetCollectionRef, {
         userId: c.userId,
         userName: c.userName,
         rating: c.rating,
@@ -122,6 +483,18 @@ export default function AdminPage() {
         date: c.date,
       });
       deleteDocumentNonBlocking(doc(firestore, 'pending_comments', c.id));
+      addDocumentNonBlocking(collection(firestore, 'listing_history'), {
+        listingKey: `${c.targetType === 'motorcycle_sheet' ? 'motorcycle_sheets' : 'concessions'}/${c.dealershipId}`,
+        targetCollection: c.targetType === 'motorcycle_sheet' ? 'motorcycle_sheets' : 'concessions',
+        targetId: c.dealershipId,
+        eventType: 'review_published',
+        summary: `Avis publié : ${c.rating}/5 par ${c.userName}`,
+        reviewId: c.id,
+        rating: c.rating,
+        actorType: 'admin',
+        actorUid: user?.uid || '',
+        createdAt: new Date(),
+      });
       toast({ title: 'Avis publié', description: `L'avis de ${c.userName} est maintenant visible.` });
     } catch (e) {
       toast({ variant: 'destructive', title: 'Erreur', description: "Impossible de publier l'avis." });
@@ -130,15 +503,203 @@ export default function AdminPage() {
 
   const handleRejectComment = (c: any) => {
     if (!firestore) return;
+    addDocumentNonBlocking(collection(firestore, 'listing_history'), {
+      listingKey: `${c.targetType === 'motorcycle_sheet' ? 'motorcycle_sheets' : 'concessions'}/${c.dealershipId}`,
+      targetCollection: c.targetType === 'motorcycle_sheet' ? 'motorcycle_sheets' : 'concessions',
+      targetId: c.dealershipId,
+      eventType: 'review_rejected',
+      summary: `Avis refusé : ${c.rating}/5 par ${c.userName}`,
+      reviewId: c.id,
+      rating: c.rating,
+      actorType: 'admin',
+      actorUid: user?.uid || '',
+      createdAt: new Date(),
+    });
     deleteDocumentNonBlocking(doc(firestore, 'pending_comments', c.id));
     toast({ title: 'Avis rejeté', description: `L'avis de ${c.userName} a été supprimé.` });
   };
 
   const modifsQuery = useMemoFirebase(() => {
-    if (!firestore || !isAdmin) return null;
+    if (!firestore || !isAdmin || activeTab !== 'modifs') return null;
     return query(collection(firestore, 'modification_requests'), where('status', '==', 'pending'), limit(ADMIN_REALTIME_LIMIT));
-  }, [firestore, isAdmin]);
+  }, [firestore, isAdmin, activeTab]);
   const { data: pendingModifs } = useCollection(modifsQuery);
+  useEffect(() => {
+    if (!firestore || !isAdmin || activeTab !== 'dashboard') return;
+
+    let cancelled = false;
+
+    const loadDashboardCounts = async () => {
+      setDashboardCounts(null);
+
+      try {
+        const [
+          submissionsCount,
+          commentsCount,
+          modifsCount,
+          proAggregates,
+          mapCacheSnapshot,
+        ] = await Promise.all([
+          getCountFromServer(
+            query(
+              collection(firestore, 'listing_submissions'),
+              where('status', 'in', ['pending', 'in_review', 'approved'])
+            )
+          ),
+
+          getCountFromServer(
+            collection(firestore, 'pending_comments')
+          ),
+
+          getCountFromServer(
+            query(
+              collection(firestore, 'modification_requests'),
+              where('status', '==', 'pending')
+            )
+          ),
+
+          Promise.all(
+            ADMIN_PRO_COLLECTIONS.map(async collectionName => {
+              const collectionRef =
+                collection(firestore, collectionName);
+
+              const [
+                countSnapshot,
+                telSnapshot,
+                webSnapshot,
+                instagramSnapshot,
+                itineraireSnapshot,
+                vuesSnapshot,
+              ] = await Promise.all([
+                getCountFromServer(collectionRef),
+
+                getAggregateFromServer(
+                  collectionRef,
+                  {
+                    tel: sum('stats_tel'),
+                  }
+                ),
+
+                getAggregateFromServer(
+                  collectionRef,
+                  {
+                    web: sum('stats_web'),
+                  }
+                ),
+
+                getAggregateFromServer(
+                  collectionRef,
+                  {
+                    instagram: sum('stats_instagram'),
+                  }
+                ),
+
+                getAggregateFromServer(
+                  collectionRef,
+                  {
+                    itineraire: sum('stats_itineraire'),
+                  }
+                ),
+
+                getAggregateFromServer(
+                  collectionRef,
+                  {
+                    vues: sum('stats_vues'),
+                  }
+                ),
+              ]);
+
+              return {
+                fiches: countSnapshot.data().count,
+
+                stats: {
+                  tel: telSnapshot.data().tel,
+                  web: webSnapshot.data().web,
+                  instagram:
+                    instagramSnapshot.data().instagram,
+                  itineraire:
+                    itineraireSnapshot.data().itineraire,
+                  vues: vuesSnapshot.data().vues,
+                },
+              };
+            })
+          ),
+
+          getDoc(
+            doc(firestore, 'cache', 'map_points')
+          ),
+        ]);
+
+        if (cancelled) return;
+
+        const proTotals = {
+          fiches: 0,
+          tel: 0,
+          web: 0,
+          instagram: 0,
+          itineraire: 0,
+          vues: 0,
+        };
+
+        for (const aggregate of proAggregates) {
+          const data = aggregate.stats;
+
+          proTotals.fiches += Number(aggregate.fiches || 0);
+          proTotals.tel += Number(data.tel || 0);
+          proTotals.web += Number(data.web || 0);
+          proTotals.instagram += Number(data.instagram || 0);
+          proTotals.itineraire += Number(data.itineraire || 0);
+          proTotals.vues += Number(data.vues || 0);
+        }
+
+        const interactions =
+          proTotals.tel +
+          proTotals.web +
+          proTotals.instagram +
+          proTotals.itineraire;
+
+        const mapPointsCount =
+          mapCacheSnapshot.exists()
+            ? Number(mapCacheSnapshot.data()?.count || 0)
+            : 0;
+
+        const mapGap =
+          Math.max(
+            0,
+            proTotals.fiches - mapPointsCount
+          );
+
+        setDashboardCounts({
+          submissions: submissionsCount.data().count,
+          comments: commentsCount.data().count,
+          modifs: modifsCount.data().count,
+          fiches: proTotals.fiches,
+          tel: proTotals.tel,
+          web: proTotals.web,
+          instagram: proTotals.instagram,
+          itineraire: proTotals.itineraire,
+          vues: proTotals.vues,
+          interactions,
+          mapGap,
+        });
+      } catch (error) {
+        console.error(
+          'Erreur compteurs dashboard admin:',
+          error
+        );
+
+        if (!cancelled) {
+          setDashboardCounts(null);
+        }
+      }
+    };
+
+    void loadDashboardCounts();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [firestore, isAdmin, activeTab]);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -201,25 +762,128 @@ export default function AdminPage() {
 
   const findDuplicates = async (submission: Submission) => {
     if (!firestore) return;
-    const collections = ['concessions', 'associations', 'relais'];
-    let matches: any[] = [];
-    
+
+    setDuplicates([]);
+
+    const collections = ['concessions', 'associations', 'relais', 'creators'];
+    const matchMap = new Map<string, any>();
+
+    const mergeCandidate = (candidate: any, forcedReasons: string[] = []) => {
+      const colName = String(candidate.col || candidate.collection || candidate.sourceCollection || '');
+      const id = String(candidate.id || '');
+      if (!colName || !id) return;
+
+      const scored = scoreDuplicateCandidate(submission, candidate);
+      if (!scored.eligible) return;
+
+      const reasons = Array.from(new Set([...(candidate.matchReasons || []), ...forcedReasons, ...scored.reasons]));
+      const score = Math.max(Number(candidate.matchScore || 0), scored.score);
+      const key = `${colName}/${id}`;
+      const previous = matchMap.get(key);
+
+      matchMap.set(key, {
+        ...(previous || {}),
+        ...candidate,
+        id,
+        col: colName,
+        matchScore: Math.max(Number(previous?.matchScore || 0), score),
+        matchConfidence:
+          previous?.matchConfidence === 'very_likely' || scored.confidence === 'very_likely'
+            ? 'very_likely'
+            : 'likely',
+        matchReasons: Array.from(new Set([...(previous?.matchReasons || []), ...reasons])),
+      });
+    };
+
+    const directCriteria: Array<{ field: string; value: string; reason: string }> = [];
+
+    if (submission.phone?.trim()) {
+      directCriteria.push({ field: 'phoneNumber', value: submission.phone.trim(), reason: 'Même téléphone' });
+    }
+
+    if (submission.email?.trim()) {
+      directCriteria.push({ field: 'email', value: submission.email.trim().toLowerCase(), reason: 'Même e-mail' });
+    }
+
+    if (submission.addressRaw?.trim()) {
+      directCriteria.push({ field: 'address', value: submission.addressRaw.trim(), reason: 'Même adresse' });
+    }
+
+    if (submission.requestedByUid?.trim()) {
+      directCriteria.push({ field: 'ownerUid', value: submission.requestedByUid.trim(), reason: 'Même compte pro' });
+    }
+
+    // 1) Critères forts sur les documents Firestore réels.
     for (const colName of collections) {
-      if (submission.phone) {
-        const q = query(collection(firestore, colName), where('phoneNumber', '==', submission.phone));
-        const snap = await getDocs(q).catch(err => {
+      for (const criterion of directCriteria) {
+        try {
+          const snap = await getDocs(
+            query(
+              collection(firestore, colName),
+              where(criterion.field, '==', criterion.value),
+              limit(10)
+            )
+          );
+
+          snap.forEach((candidateDoc: any) => {
+            mergeCandidate(
+              { id: candidateDoc.id, ...candidateDoc.data(), col: colName },
+              [criterion.reason]
+            );
+          });
+        } catch (err: any) {
           if (err.code === 'permission-denied') {
-            errorEmitter.emit('permission-error', new FirestorePermissionError({
-              path: colName,
-              operation: 'list'
-            }));
+            console.warn(`Détection doublon non autorisée sur ${colName}.${criterion.field}`);
+          } else {
+            console.warn(`Détection doublon incomplète sur ${colName}.${criterion.field} :`, err);
           }
-          throw err;
-        });
-        if (snap) snap.forEach(d => matches.push({ id: d.id, ...d.data(), col: colName }));
+        }
       }
     }
-    setDuplicates(matches);
+
+    // 2) Index public : permet de détecter les variantes de casse, ponctuation
+    // et noms différents lorsque l'adresse correspond réellement.
+    try {
+      const publicPros = await loadPublicSeoPros();
+      publicPros.forEach(pro => {
+        mergeCandidate({
+          ...pro,
+          col: pro.collection,
+        });
+      });
+    } catch (err) {
+      console.warn('Index public indisponible pour la détection de doublons :', err);
+    }
+
+    // 3) Index live : couvre immédiatement les fiches publiées récemment,
+    // avant la prochaine régénération de seo-pros.json.
+    try {
+      const liveSnap = await getDocs(
+        query(
+          collection(firestore, 'cache'),
+          where('kind', '==', 'map_point_live')
+        )
+      );
+
+      liveSnap.forEach((liveDoc: any) => {
+        const data = liveDoc.data();
+        mergeCandidate({
+          id: String(data.id || ''),
+          col: String(data.sourceCollection || ''),
+          title: String(data.t || ''),
+          address: String(data.addr || ''),
+          category: String(data.c || ''),
+        });
+      });
+    } catch (err) {
+      console.warn('Index live indisponible pour la détection de doublons :', err);
+    }
+
+    const sorted = Array.from(matchMap.values())
+      .sort((a, b) => Number(b.matchScore || 0) - Number(a.matchScore || 0))
+      .slice(0, 12);
+
+    setDuplicates(sorted);
   };
 
   const handleOpenDetail = (sub: Submission) => {
@@ -243,8 +907,11 @@ export default function AdminPage() {
 
   const handleSaveDraft = () => {
     if (!firestore || !editDraft) return;
+
+    const adminDraft = buildAdminDraftSnapshot(editDraft);
     updateDocumentNonBlocking(doc(firestore, 'listing_submissions', editDraft.id), {
-        ...editDraft,
+        ...adminDraft,
+        adminDraft,
         updatedAt: new Date()
     });
     toast({ title: "Modifications enregistrées" });
@@ -252,116 +919,784 @@ export default function AdminPage() {
 
   const handlePublish = async () => {
     if (!firestore || !editDraft) return;
+
     setIsPublishing(true);
-    
+
     try {
       const data = editDraft;
-      // Géocodage via API serveur (URL Google puis adresse Nominatim), fallback coords existantes
-      let coords = extractValidCoordinates(data);
+
+      const geocodeAddress =
+        data.type === 'creator'
+          ? (
+              data.hasPublicLocation
+                ? (
+                    data.publicAddress ||
+                    data.address ||
+                    data.city ||
+                    data.ville ||
+                    ''
+                  )
+                : (
+                    data.city ||
+                    data.ville ||
+                    data.address ||
+                    ''
+                  )
+            )
+          : (
+              data.addressRaw ||
+              ''
+            );
+
+      /*
+       * =====================================================
+       * 1. COORDONNEES OBLIGATOIRES
+       * =====================================================
+       */
+
+      let coords =
+        extractValidCoordinates(
+          data
+        );
+
       if (!coords) {
         try {
-          const geoRes = await fetch('/api/geocode', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ address: data.addressRaw, placeUrl: data.placeUrl, googleMapsUrl: data.googleMapsUrl }),
-          });
-          const geoData = await geoRes.json();
-          if (geoData.success && Number.isFinite(geoData.lat) && Number.isFinite(geoData.lng)) {
-            coords = { lat: geoData.lat, lng: geoData.lng };
-          }
-        } catch (e) { console.warn('Géocodage échoué:', e); }
-      }
-      
-      const generatedSlug = generateDealershipSlug({ title: data.businessName, address: data.addressRaw });
-      const targetDocId = data.publishTargetId || generatedSlug;
-      const isUpdate = !!data.publishTargetId;
+          const geoRes =
+            await fetch(
+              '/api/geocode',
+              {
+                method:
+                  'POST',
 
-      const publicData: any = {
-        title: data.businessName,
-        category: data.categoryRequested,
-        appSection: data.appSectionRequested === 'both' ? 'shopping' : data.appSectionRequested,
-        address: data.addressRaw, 
-        phoneNumber: data.phone,
-        email: data.email,
-        website: data.website || '',
-        facebookUrl: data.facebook || '',
-        instagramUrl: data.instagram || '',
-        imgUrl: data.imageUrl || '',
-        googleMapsUrl: data.googleMapsUrl || '',
-        horaires: data.horaires || {},
-        info: data.description || '',
-        latitude: coords?.lat || null,
-        longitude: coords?.lng || null,
-        geohash: coords ? encodeGeohash(coords.lat, coords.lng, 9) : null,
-        slug: generatedSlug,
-        isClaimed: true,
-        publishedAt: new Date(),
-        submissionId: data.id 
+                headers: {
+                  'Content-Type':
+                    'application/json',
+                },
+
+                body:
+                  JSON.stringify({
+                    address:
+                      geocodeAddress,
+
+                    placeUrl:
+                      data.placeUrl,
+
+                    googleMapsUrl:
+                      data.googleMapsUrl,
+                  }),
+              }
+            );
+
+          const geoData =
+            await geoRes.json();
+
+          if (
+            geoRes.ok &&
+            geoData.success &&
+            Number.isFinite(
+              Number(
+                geoData.lat
+              )
+            ) &&
+            Number.isFinite(
+              Number(
+                geoData.lng
+              )
+            )
+          ) {
+            coords = {
+              lat:
+                Number(
+                  geoData.lat
+                ),
+
+              lng:
+                Number(
+                  geoData.lng
+                ),
+            };
+          }
+        }
+        catch (error) {
+          console.warn(
+            'Géocodage échoué:',
+            error
+          );
+        }
+      }
+
+      if (
+        !coords ||
+        !Number.isFinite(
+          Number(
+            coords.lat
+          )
+        ) ||
+        !Number.isFinite(
+          Number(
+            coords.lng
+          )
+        )
+      ) {
+        throw new Error(
+          "Publication impossible : aucune coordonnée GPS valide n'a pu être déterminée. Vérifie l'adresse ou ajoute une URL Google Maps valide."
+        );
+      }
+
+      const resolvedCoords = {
+        lat:
+          Number(
+            coords.lat
+          ),
+
+        lng:
+          Number(
+            coords.lng
+          ),
       };
 
-      if (!isUpdate) {
-        publicData.rating = "0";
-        publicData.ratingNumber = 0;
-        publicData.reviewCount = 0;
-        publicData.currentStatus = 'OPERATIONAL';
-      }
+      /*
+       * =====================================================
+       * 2. CIBLE DE PUBLICATION
+       * =====================================================
+       */
 
-      let targetCol = data.appSectionRequested === 'association' ? 'associations' : 
-                       (data.appSectionRequested === 'relais' ? 'relais' : 'concessions');
+      const generatedSlug =
+        generateDealershipSlug({
+          title:
+            data.businessName,
 
-      // Cas spécial : créateur
-      if (data.type === 'creator') {
-        targetCol = 'creators';
-        const creatorSlug = (data.slugCandidate || data.displayName || 'creator').toLowerCase().replace(/\s+/g, '-');
-        const creatorDocId = data.publishTargetId || creatorSlug;
-        const creatorData: any = {
-          title: data.displayName || data.businessName,
-          displayName: data.displayName || data.businessName,
-          activite: data.activite || '',
-          specialite: data.specialite || '',
-          ville: data.ville || '',
-          departement: data.departement || '',
-          instagram: data.instagram || '',
-          email: data.email,
-          description: data.description || '',
-          photoUrl: data.photoUrl || '',
-          appSection: 'creator',
-          category: data.activite || 'Créateur moto',
-          slug: creatorSlug,
-          isClaimed: true,
-          publishedAt: new Date(),
-          submissionId: data.id,
+          address:
+            data.addressRaw,
+        });
+
+      const targetDocId =
+        data.publishTargetId ||
+        generatedSlug;
+
+      const isUpdate =
+        Boolean(
+          data.publishTargetId
+        );
+
+      let targetCol =
+        data.publishTargetCollection ||
+        (data.appSectionRequested ===
+        'association'
+          ? 'associations'
+          : data.appSectionRequested ===
+            'relais'
+            ? 'relais'
+            : 'concessions');
+
+      let publishedDocId =
+        targetDocId;
+
+      let publishedData:
+        any;
+
+      /*
+       * =====================================================
+       * 3. DONNEES PUBLIQUES
+       * =====================================================
+       */
+
+      if (
+        data.type ===
+        'creator'
+      ) {
+        targetCol =
+          'creators';
+
+        const creatorSlug =
+          (
+            data.slugCandidate ||
+            data.displayName ||
+            'creator'
+          )
+            .toLowerCase()
+            .replace(
+              /\s+/g,
+              '-'
+            );
+
+        const creatorDocId =
+          data.publishTargetId ||
+          creatorSlug;
+
+        publishedDocId =
+          creatorDocId;
+
+        const creatorType =
+          data.creatorType ||
+          data.activite ||
+          data.category ||
+          'Créateur moto';
+
+        const creatorCity =
+          data.city ||
+          data.ville ||
+          '';
+
+        const creatorSpecialties =
+          Array.isArray(
+            data.specialties
+          )
+            ? data.specialties
+                .map(
+                  (value: any) =>
+                    String(
+                      value
+                    ).trim()
+                )
+                .filter(Boolean)
+            : String(
+                data.specialite ||
+                  ''
+              )
+                .split(',')
+                .map(
+                  (value: string) =>
+                    value.trim()
+                )
+                .filter(Boolean);
+
+        const creatorInstagram =
+          data.instagramUrl ||
+          data.instagram ||
+          '';
+
+        const creatorInfo =
+          data.info ||
+          data.description ||
+          '';
+
+        const creatorPhoto =
+          data.photoUrl ||
+          data.imgUrl ||
+          '';
+
+        const creatorPublicAddress =
+          data.hasPublicLocation
+            ? (
+                data.publicAddress ||
+                data.address ||
+                ''
+              )
+            : '';
+
+        const creatorAddress =
+          creatorPublicAddress ||
+          creatorCity;
+
+        publishedData = {
+          title:
+            data.title ||
+            data.displayName ||
+            data.businessName,
+
+          displayName:
+            data.displayName ||
+            data.title ||
+            data.businessName,
+
+          creatorType,
+
+          activite:
+            creatorType,
+
+          category:
+            creatorType,
+
+          specialties:
+            creatorSpecialties,
+
+          specialite:
+            creatorSpecialties
+              .join(', '),
+
+          city:
+            creatorCity,
+
+          ville:
+            creatorCity,
+
+          publicLocationLabel:
+            data.publicLocationLabel ||
+            creatorCity,
+
+          departement:
+            data.departement ||
+            '',
+
+          serviceArea:
+            data.serviceArea ||
+            '',
+
+          hasPublicLocation:
+            Boolean(
+              data.hasPublicLocation
+            ),
+
+          publicAddress:
+            creatorPublicAddress,
+
+          address:
+            creatorAddress,
+
+          instagram:
+            creatorInstagram,
+
+          instagramUrl:
+            creatorInstagram,
+
+          website:
+            data.website ||
+            '',
+
+          facebookUrl:
+            data.facebookUrl ||
+            data.facebook ||
+            '',
+
+          phoneNumber:
+            data.phoneNumber ||
+            data.phone ||
+            '',
+
+          email:
+            data.email ||
+            '',
+
+          info:
+            creatorInfo,
+
+          description:
+            creatorInfo,
+
+          photoUrl:
+            creatorPhoto,
+
+          imgUrl:
+            creatorPhoto,
+
+          latitude:
+            resolvedCoords.lat,
+
+          longitude:
+            resolvedCoords.lng,
+
+          geohash:
+            encodeGeohash(
+              resolvedCoords.lat,
+              resolvedCoords.lng,
+              9
+            ),
+
+          appSection:
+            'creator',
+
+          slug:
+            creatorSlug,
+
+          isClaimed:
+            Boolean(data.requestedByUid),
+
+          ownerUid:
+            data.requestedByUid || null,
+
+          claimStatus:
+            data.requestedByUid ? 'approved' : 'unclaimed',
+
+          claimedAt:
+            data.requestedByUid ? new Date() : null,
+
+          claimedByEmail:
+            data.requestedByEmail || data.email || '',
+
+          publishedAt:
+            new Date(),
+
+          submissionId:
+            data.id,
         };
-        await setDocumentNonBlocking(doc(firestore, 'creators', creatorDocId), creatorData, { merge: true });
-      } else {
-        await setDocumentNonBlocking(doc(firestore, targetCol, targetDocId), publicData, { merge: true });
       }
-      
-      await updateDoc(doc(firestore, 'listing_submissions', data.id), { 
-        status: 'published', 
-        publishedAt: new Date(),
-        publishedCollection: targetCol,
-        publishedDocId: targetDocId,
-        reviewedBy: user?.uid,
-        reviewedAt: new Date()
+      else {
+        publishedData = {
+          title:
+            data.businessName,
+
+          category:
+            data.categoryRequested,
+
+          appSection:
+            data.appSectionRequested ===
+            'both'
+              ? 'shopping'
+              : data.appSectionRequested,
+
+          address:
+            data.addressRaw,
+
+          phoneNumber:
+            data.phone,
+
+          email:
+            data.email,
+
+          website:
+            data.website ||
+            '',
+
+          facebookUrl:
+            data.facebook ||
+            '',
+
+          instagramUrl:
+            data.instagram ||
+            '',
+
+          imgUrl:
+            data.imageUrl ||
+            '',
+
+          googleMapsUrl:
+            data.googleMapsUrl ||
+            '',
+
+          horaires:
+            data.horaires ||
+            {},
+
+          info:
+            data.description ||
+            '',
+
+          latitude:
+            resolvedCoords.lat,
+
+          longitude:
+            resolvedCoords.lng,
+
+          geohash:
+            encodeGeohash(
+              resolvedCoords.lat,
+              resolvedCoords.lng,
+              9
+            ),
+
+          slug:
+            generatedSlug,
+
+          isClaimed:
+            Boolean(data.requestedByUid),
+
+          ownerUid:
+            data.requestedByUid || null,
+
+          claimStatus:
+            data.requestedByUid ? 'approved' : 'unclaimed',
+
+          claimedAt:
+            data.requestedByUid ? new Date() : null,
+
+          claimedByEmail:
+            data.requestedByEmail || data.email || '',
+
+          publishedAt:
+            new Date(),
+
+          submissionId:
+            data.id,
+        };
+
+        if (!isUpdate) {
+          publishedData.rating =
+            "0";
+
+          publishedData.ratingNumber =
+            0;
+
+          publishedData.reviewCount =
+            0;
+
+          publishedData.currentStatus =
+            'OPERATIONAL';
+        }
+      }
+
+      // Une soumission rattachée à une fiche existante ne doit jamais
+      // écraser sa propriété. La revendication d'une fiche existante passe
+      // exclusivement par le workflow /pro/revendiquer.
+      if (isUpdate) {
+        delete publishedData.isClaimed;
+        delete publishedData.ownerUid;
+        delete publishedData.claimStatus;
+        delete publishedData.claimedAt;
+        delete publishedData.claimedByEmail;
+      }
+
+      /*
+       * =====================================================
+       * 4. INDEX CARTE LIVE
+       * =====================================================
+       */
+
+      const mapPointLive = {
+        kind:
+          'map_point_live',
+
+        sourceCollection:
+          targetCol,
+
+        id:
+          publishedDocId,
+
+        lat:
+          resolvedCoords.lat,
+
+        lng:
+          resolvedCoords.lng,
+
+        t:
+          String(
+            publishedData.title ||
+            publishedDocId
+          ),
+
+        s:
+          String(
+            publishedData.slug ||
+            publishedDocId
+          ),
+
+        a:
+          String(
+            publishedData.appSection ||
+            'shopping'
+          ),
+
+        c:
+          String(
+            publishedData.category ||
+            'concession'
+          ),
+
+        r:
+          publishedData.rating ??
+          null,
+
+        i:
+          publishedData.imgUrl ||
+          publishedData.photoUrl ||
+          null,
+
+        addr:
+          String(
+            publishedData.address ||
+            data.addressRaw ||
+            ''
+          ),
+
+        b:
+          Array.isArray(
+            publishedData.brands
+          )
+            ? publishedData.brands
+            : [],
+
+        updatedAt:
+          new Date(),
+      };
+
+      /*
+       * =====================================================
+       * 5. ECRITURE ATOMIQUE
+       * =====================================================
+       *
+       * Fiche + index carte + soumission.
+       * Aucun état partiel possible.
+       */
+
+      const batch =
+        writeBatch(
+          firestore
+        );
+
+      batch.set(
+        doc(
+          firestore,
+          targetCol,
+          publishedDocId
+        ),
+        publishedData,
+        {
+          merge:
+            true,
+        }
+      );
+
+      batch.set(
+        doc(
+          firestore,
+          'cache',
+          `map-live-${targetCol}-${publishedDocId}`
+        ),
+        mapPointLive,
+        {
+          merge:
+            true,
+        }
+      );
+
+      // Une nouvelle fiche créée par un utilisateur vérifié devient sa fiche
+      // uniquement après cette validation admin.
+      if (!isUpdate && data.requestedByUid) {
+        batch.set(
+          doc(firestore, 'users', data.requestedByUid),
+          {
+            role: 'pro',
+            onboardingComplete: true,
+            updatedAt: new Date(),
+          },
+          { merge: true }
+        );
+
+        batch.set(
+          doc(firestore, 'professionalProfiles', data.requestedByUid),
+          {
+            id: data.requestedByUid,
+            email: data.requestedByEmail || data.email || '',
+            companyName: publishedData.title || '',
+            updatedAt: new Date(),
+          },
+          { merge: true }
+        );
+      }
+
+      batch.update(
+        doc(
+          firestore,
+          'listing_submissions',
+          data.id
+        ),
+        {
+          status:
+            'published',
+
+          publishedAt:
+            new Date(),
+
+          publishedCollection:
+            targetCol,
+
+          publishedDocId:
+            publishedDocId,
+
+          publishedData:
+            publishedData,
+
+          adminDraft:
+            buildAdminDraftSnapshot(data),
+
+          reviewedBy:
+            user?.uid,
+
+          reviewedAt:
+            new Date(),
+
+          updatedAt:
+            new Date(),
+        }
+      );
+
+      const historyEntry = {
+        listingKey: `${targetCol}/${publishedDocId}`,
+        targetCollection: targetCol,
+        targetId: publishedDocId,
+        targetTitle: publishedData.title || data.businessName || data.displayName || publishedDocId,
+        eventType: isUpdate ? 'submission_update_published' : 'listing_created',
+        summary: isUpdate
+          ? 'Soumission corrigée puis publiée par Label Moto'
+          : 'Fiche créée et publiée par Label Moto',
+        submissionId: data.id,
+        requestedByUid: data.requestedByUid || '',
+        actorType: 'admin',
+        actorUid: user?.uid || '',
+        createdAt: new Date(),
+      };
+
+      // Publication is the critical transaction. Audit logging must never make
+      // the publication fail if listing_history is temporarily unavailable.
+      await batch.commit();
+
+      try {
+        await addDoc(collection(firestore, 'listing_history'), historyEntry);
+      } catch (historyError) {
+        console.warn('[LabelMoto] Fiche publiée, historique non enregistré :', historyError);
+      }
+
+      toast({
+        title:
+          isUpdate
+            ? "Fiche mise à jour !"
+            : "Nouvelle fiche publiée !",
+
+        description:
+          `Cible : ${targetCol}/${publishedDocId}`
       });
-      
-      toast({ 
-        title: isUpdate ? "Fiche mise à jour !" : "Nouvelle fiche publiée !", 
-        description: `Cible : ${targetCol}/${targetDocId}` 
+
+      setIsDetailOpen(
+        false
+      );
+    }
+    catch (e: any) {
+      toast({
+        variant:
+          "destructive",
+
+        title:
+          "Erreur de publication",
+
+        description:
+          e?.message ||
+          "La publication a échoué."
       });
-      setIsDetailOpen(false);
-    } catch (e: any) {
-      toast({ variant: "destructive", title: "Erreur de publication", description: e.message });
-    } finally {
-      setIsPublishing(false);
+    }
+    finally {
+      setIsPublishing(
+        false
+      );
     }
   };
 
   const handleLinkToDuplicate = (dup: any) => {
     if (!editDraft) return;
-    setEditDraft({ ...editDraft, publishTargetId: dup.id });
-    toast({ title: "Lien établi", description: `La publication mettra à jour la fiche ${dup.id}` });
+
+    const alreadyLinked =
+      editDraft.publishTargetId === dup.id &&
+      (!editDraft.publishTargetCollection || editDraft.publishTargetCollection === dup.col);
+
+    if (alreadyLinked) {
+      setEditDraft({
+        ...editDraft,
+        publishTargetId: undefined,
+        publishTargetCollection: undefined,
+      });
+      toast({ title: 'Lien retiré', description: 'La demande créera de nouveau une fiche distincte.' });
+      return;
+    }
+
+    setEditDraft({
+      ...editDraft,
+      publishTargetId: dup.id,
+      publishTargetCollection: dup.col,
+    });
+
+    toast({
+      title: 'Fiche existante sélectionnée',
+      description: `La validation mettra à jour ${dup.title || dup.id} au lieu de créer un doublon.`,
+    });
   };
 
   const handleDelete = () => {
@@ -397,10 +1732,121 @@ export default function AdminPage() {
     );
   }
 
-  const pendingSubs = (submissions || []).filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved');
-  const processedSubs = (submissions || []).filter(s => s.status === 'published' || s.status === 'rejected');
-  const pendingCommentsCount = (pendingComments || []).length;
-  const pendingModifsCount = (pendingModifs || []).length;
+  if (listingEditTarget) {
+    return (
+      <div className="min-h-screen bg-muted/20">
+        <header className="bg-background border-b shadow-sm sticky top-0 z-50">
+          <div className="container mx-auto p-4 flex items-center justify-between">
+            <div className="w-40 md:w-60"><LabelMotoLogo noBubble /></div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-full"
+              onClick={() => setListingEditTarget(null)}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" /> Retour aux archives
+            </Button>
+          </div>
+        </header>
+
+        <main className="container mx-auto p-4 sm:p-8">
+          <div className="max-w-3xl mx-auto">
+            <ListingsManager
+              editorOnly
+              initialEditTarget={listingEditTarget}
+              onEditorClose={() => setListingEditTarget(null)}
+            />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  const submissionCreatedAtMs = (submission: Submission) => {
+    const createdAt = submission.createdAt as any;
+    if (!createdAt) return 0;
+    if (typeof createdAt.toMillis === 'function') return createdAt.toMillis();
+    if (typeof createdAt.toDate === 'function') return createdAt.toDate().getTime();
+    if (typeof createdAt.seconds === 'number') return createdAt.seconds * 1000;
+    const parsed = new Date(createdAt).getTime();
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+
+  const submissionsById = new Map<string, Submission>();
+  for (const submission of serverSubmissions) {
+    submissionsById.set(submission.id, submission);
+  }
+  for (const submission of submissions || []) {
+    submissionsById.set(submission.id, submission);
+  }
+  const visibleSubmissions = Array.from(submissionsById.values());
+
+  const pendingSubs = visibleSubmissions
+    .filter(s => s.status === 'pending' || s.status === 'in_review' || s.status === 'approved')
+    .sort((a, b) => submissionCreatedAtMs(b) - submissionCreatedAtMs(a));
+
+  const processedSubs = visibleSubmissions
+    .filter(s => s.status === 'published' || s.status === 'rejected')
+    .sort((a, b) => submissionCreatedAtMs(b) - submissionCreatedAtMs(a));
+
+  const dashboardSubmissionsCount = dashboardCounts?.submissions ?? 0;
+  const dashboardCommentsCount = dashboardCounts?.comments ?? 0;
+  const dashboardModifsCount = dashboardCounts?.modifs ?? 0;
+
+  const pendingCommentsCount =
+    activeTab === 'comments'
+      ? (pendingComments || []).length
+      : dashboardCommentsCount;
+
+  const pendingModifsCount =
+    activeTab === 'modifs'
+      ? (pendingModifs || []).length
+      : dashboardModifsCount;
+
+  const totalToProcess =
+    dashboardSubmissionsCount +
+    dashboardCommentsCount +
+    dashboardModifsCount;
+
+  const dashboardInteractionsCount =
+    dashboardCounts?.interactions ?? 0;
+
+  const dashboardFichesCount =
+    dashboardCounts?.fiches ?? 0;
+
+  const dashboardMapGapCount =
+    dashboardCounts?.mapGap ?? 0;
+
+  const dashboardTelCount =
+    dashboardCounts?.tel ?? 0;
+
+  const dashboardWebCount =
+    dashboardCounts?.web ?? 0;
+
+  const dashboardInstagramCount =
+    dashboardCounts?.instagram ?? 0;
+
+  const dashboardItineraireCount =
+    dashboardCounts?.itineraire ?? 0;
+  const dashboardVuesCount =
+    dashboardCounts?.vues ?? 0;
+  const isRequestsSection = [
+    'submissions',
+    'history',
+    'modifs',
+    'comments',
+  ].includes(activeTab);
+
+  const isProfessionalsSection = [
+    'listings',
+    'add',
+  ].includes(activeTab);
+
+  const isToolsSection = [
+    'images',
+    'users',
+  ].includes(activeTab);
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -414,50 +1860,411 @@ export default function AdminPage() {
       </header>
 
       <main className="container mx-auto p-4 md:p-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
-          <Card className="bg-brand text-white border-none shadow-lg rounded-3xl">
-            <CardHeader className="pb-2">
-              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Pros en attente</CardDescription>
-              <CardTitle className="text-4xl font-black">{pendingSubs.length}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="shadow-lg rounded-3xl bg-white border-none">
-            <CardHeader className="pb-2">
-              <CardDescription className="font-black uppercase text-[10px] tracking-widest text-muted-foreground">Avis modération</CardDescription>
-              <CardTitle className="text-4xl font-black text-foreground">{pendingCommentsCount}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="shadow-lg bg-indigo-600 text-white border-none rounded-3xl">
-            <CardHeader className="pb-2">
-              <CardDescription className="text-white/70 font-black uppercase text-[10px] tracking-widest">Traités total</CardDescription>
-              <CardTitle className="text-4xl font-black">{processedSubs.length}</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card className="shadow-lg bg-white border-2 border-dashed border-orange-200 rounded-3xl">
-            <CardHeader className="pb-2">
-              <CardDescription className="font-black uppercase text-[10px] tracking-widest text-orange-600">Santé Données</CardDescription>
-              <CardTitle className="text-2xl font-black flex items-center gap-2 text-foreground">
-                <Database className="h-5 w-5 text-orange-400" /> 100%
-              </CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="submissions" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="mb-8">
-            <TabsList className="grid grid-cols-5 gap-2 p-2 bg-muted/60 rounded-2xl shadow-inner h-auto">
-              <TabsTrigger value="submissions" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📋</span>Demandes</TabsTrigger>
-              <TabsTrigger value="history" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">🗂️</span>Archives</TabsTrigger>
-              <TabsTrigger value="listings" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📁</span>Fiches</TabsTrigger>
-              <TabsTrigger value="add" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">➕</span>Ajouter</TabsTrigger>
-              <TabsTrigger value="modifs" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px] relative"><span className="text-lg">✏️</span>Modifs{pendingModifsCount > 0 && <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-orange-500 text-white text-[8px] font-black flex items-center justify-center">{pendingModifsCount}</span>}</TabsTrigger>
-              <TabsTrigger value="comments" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">💬</span>Avis</TabsTrigger>
-              <TabsTrigger value="prospection" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📊</span>Prospect</TabsTrigger>
-              <TabsTrigger value="stats" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">📈</span>Stats</TabsTrigger>
-              <TabsTrigger value="images" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">🖼️</span>Images</TabsTrigger>
-              <TabsTrigger value="users" className="rounded-xl font-black uppercase text-[9px] tracking-widest py-3 flex flex-col items-center gap-1 min-h-[58px]"><span className="text-lg">👥</span>Comptes</TabsTrigger>
-            </TabsList>
+            <div className="space-y-3 mb-8">
+
+  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2 p-2 bg-muted/60 rounded-2xl shadow-inner">
+
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => setActiveTab('dashboard')}
+      className={cn(
+        "h-16 rounded-xl flex flex-col items-center justify-center gap-1 font-black uppercase text-[9px] tracking-widest",
+        activeTab === 'dashboard' &&
+          "bg-white shadow-sm text-foreground"
+      )}
+    >
+      <AdminDashboardIcon className="h-5 w-5" />
+      Dashboard
+    </Button>
+
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => setActiveTab('submissions')}
+      className={cn(
+        "h-16 rounded-xl flex flex-col items-center justify-center gap-1 font-black uppercase text-[9px] tracking-widest",
+        isRequestsSection &&
+          "bg-white shadow-sm text-foreground"
+      )}
+    >
+      <AdminRequestsIcon className="h-5 w-5" />
+      Demandes
+    </Button>
+
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => setActiveTab('listings')}
+      className={cn(
+        "h-16 rounded-xl flex flex-col items-center justify-center gap-1 font-black uppercase text-[9px] tracking-widest",
+        isProfessionalsSection &&
+          "bg-white shadow-sm text-foreground"
+      )}
+    >
+      <AdminProfessionalsIcon className="h-5 w-5" />
+      Professionnels
+    </Button>
+
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => setActiveTab('stats')}
+      className={cn(
+        "h-16 rounded-xl flex flex-col items-center justify-center gap-1 font-black uppercase text-[9px] tracking-widest",
+        activeTab === 'stats' &&
+          "bg-white shadow-sm text-foreground"
+      )}
+    >
+      <AdminStatsIcon className="h-5 w-5" />
+      Statistiques
+    </Button>
+
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => setActiveTab('prospection')}
+      className={cn(
+        "h-16 rounded-xl flex flex-col items-center justify-center gap-1 font-black uppercase text-[9px] tracking-widest",
+        activeTab === 'prospection' &&
+          "bg-white shadow-sm text-foreground"
+      )}
+    >
+      <AdminProspectIcon className="h-5 w-5" />
+      Prospection
+    </Button>
+
+    <Button
+      type="button"
+      variant="ghost"
+      onClick={() => setActiveTab('images')}
+      className={cn(
+        "h-16 rounded-xl flex flex-col items-center justify-center gap-1 font-black uppercase text-[9px] tracking-widest",
+        isToolsSection &&
+          "bg-white shadow-sm text-foreground"
+      )}
+    >
+      <AdminToolsIcon className="h-5 w-5" />
+      Outils
+    </Button>
+
+  </div>
+
+  {isRequestsSection && (
+    <div className="flex flex-wrap items-center gap-2 px-1">
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'submissions' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('submissions')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Demandes
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'history' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('history')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Archives
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'modifs' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('modifs')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Revendications & modifs
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'comments' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('comments')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Avis
+      </Button>
+    </div>
+  )}
+
+  {isProfessionalsSection && (
+    <div className="flex flex-wrap items-center gap-2 px-1">
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'listings' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('listings')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Fiches
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'add' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('add')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Ajouter
+      </Button>
+    </div>
+  )}
+
+  {isToolsSection && (
+    <div className="flex flex-wrap items-center gap-2 px-1">
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'images' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('images')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Images
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'users' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('users')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Comptes
+      </Button>
+    </div>
+  )}
+
+</div>
           </div>
+          <TabsContent value="dashboard" className="mt-0">
+            <div className="space-y-8">
+
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground mb-2">
+                  Vue d'ensemble
+                </p>
+
+                <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight">
+                  Tableau de bord
+                </h1>
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+
+                <Card className="bg-brand text-white border-none shadow-lg rounded-3xl">
+                  <CardHeader className="pb-3">
+                    <CardDescription className="text-white/70 font-black uppercase text-[9px] tracking-widest">
+                      À traiter
+                    </CardDescription>
+
+                    <CardTitle className="text-4xl font-black">
+                      {dashboardCounts ? totalToProcess : '—'}
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+
+                <Card className="bg-white border-none shadow-lg rounded-3xl">
+                  <CardHeader className="pb-3">
+                    <CardDescription className="font-black uppercase text-[9px] tracking-widest text-muted-foreground">
+                      Interactions
+                    </CardDescription>
+
+                    <CardTitle className="text-4xl font-black">
+                      {dashboardCounts ? dashboardInteractionsCount : '—'}
+                    </CardTitle>
+
+                    <p className="text-[9px] font-bold text-muted-foreground">
+                      Cumul historique
+                    </p>
+                  </CardHeader>
+                </Card>
+
+                <Card className="bg-white border-none shadow-lg rounded-3xl">
+                  <CardHeader className="pb-3">
+                    <CardDescription className="font-black uppercase text-[9px] tracking-widest text-muted-foreground">
+                      Fiches pros
+                    </CardDescription>
+
+                    <CardTitle className="text-4xl font-black">
+                      {dashboardCounts ? dashboardFichesCount : '—'}
+                    </CardTitle>
+                  </CardHeader>
+                </Card>
+
+                <Card className="bg-white border-2 border-dashed border-orange-200 shadow-lg rounded-3xl">
+                  <CardHeader className="pb-3">
+                    <CardDescription className="font-black uppercase text-[9px] tracking-widest text-orange-600">
+                      Écart carte
+                    </CardDescription>
+
+                    <CardTitle className="text-4xl font-black flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5 text-orange-500" />
+                      {dashboardCounts ? dashboardMapGapCount : '—'}
+                    </CardTitle>
+
+                    <p className="text-[9px] font-bold text-muted-foreground">
+                      Fiches absentes du cache ou IDs dupliqués
+                    </p>
+                  </CardHeader>
+                </Card>
+
+              </div>
+
+              <Card className="rounded-3xl border-none shadow-lg bg-white">
+                <CardHeader>
+                  <CardTitle className="text-lg font-black uppercase tracking-tight">
+                    Interactions professionnelles
+                  </CardTitle>
+
+                  <CardDescription>
+                    Clics cumulés générés vers les professionnels.
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+
+                  <div className="rounded-2xl border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Phone className="h-4 w-4 text-brand" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Téléphone
+                      </span>
+                    </div>
+
+                    <p className="text-3xl font-black">
+                      {dashboardCounts ? dashboardTelCount : '—'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Globe className="h-4 w-4 text-blue-600" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Site web
+                      </span>
+                    </div>
+
+                    <p className="text-3xl font-black">
+                      {dashboardCounts ? dashboardWebCount : '—'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MapPin className="h-4 w-4 text-orange-500" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Itinéraire
+                      </span>
+                    </div>
+
+                    <p className="text-3xl font-black">
+                      {dashboardCounts ? dashboardItineraireCount : '—'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Instagram className="h-4 w-4 text-pink-500" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Instagram
+                      </span>
+                    </div>
+
+                    <p className="text-3xl font-black">
+                      {dashboardCounts ? dashboardInstagramCount : '—'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border bg-muted/20 p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Eye className="h-4 w-4 text-violet-600" />
+                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        Vues de fiche
+                      </span>
+                    </div>
+
+                    <p className="text-3xl font-black">
+                      {dashboardCounts ? dashboardVuesCount : '—'}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-3xl border-none shadow-lg bg-white">
+                <CardHeader>
+                  <CardTitle className="text-lg font-black uppercase tracking-tight">
+                    Priorités
+                  </CardTitle>
+
+                  <CardDescription>
+                    Accès direct aux éléments qui demandent une action.
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab('submissions')}
+                    className="h-16 rounded-2xl justify-between px-5 font-black uppercase text-xs"
+                  >
+                    Demandes
+
+                    <span className="text-brand">
+                      {dashboardCounts ? dashboardSubmissionsCount : '—'}
+                    </span>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab('modifs')}
+                    className="h-16 rounded-2xl justify-between px-5 font-black uppercase text-xs"
+                  >
+                    Revendications & modifs
+
+                    <span className="text-orange-500">
+                      {dashboardCounts ? dashboardModifsCount : '—'}
+                    </span>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab('comments')}
+                    className="h-16 rounded-2xl justify-between px-5 font-black uppercase text-xs"
+                  >
+                    Avis
+
+                    <span>
+                      {dashboardCounts ? dashboardCommentsCount : '—'}
+                    </span>
+                  </Button>
+
+                </CardContent>
+              </Card>
+
+              <div className="flex justify-end">
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveTab('stats')}
+                  className="rounded-full font-black uppercase text-[10px] tracking-widest"
+                >
+                  Ouvrir les statistiques
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+
+            </div>
+          </TabsContent>
           <TabsContent value="submissions">
             {isLoadingSubmissions ? (
                 <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>
@@ -624,8 +2431,26 @@ export default function AdminPage() {
                             <Badge variant="outline" className="text-[8px] font-black uppercase">{sub.publishedCollection || 'Soumission'}</Badge>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-3">
                            <Badge variant={sub.status === 'published' ? 'brand' : 'destructive'} className="text-[9px] uppercase tracking-widest font-black px-4">{sub.status}</Badge>
+                           {sub.status === 'published' && sub.publishedDocId && sub.publishedCollection && (
+                             <Button
+                               type="button"
+                               variant="outline"
+                               size="sm"
+                               className="rounded-full h-9 px-4 font-black uppercase text-[9px] tracking-widest"
+                               onClick={(event) => {
+                                 event.stopPropagation();
+                                 setListingEditTarget({
+                                   collection: String(sub.publishedCollection),
+                                   id: String(sub.publishedDocId),
+                                 });
+                               }}
+                             >
+                               <Pencil className="mr-2 h-3.5 w-3.5" />
+                               Modifier
+                             </Button>
+                           )}
                            <Button
   variant="ghost"
   size="icon"
@@ -798,6 +2623,16 @@ export default function AdminPage() {
                                     <Input value={editDraft.email} onChange={e => setEditDraft({...editDraft, email: e.target.value})} className="font-bold border-2 rounded-xl" />
                                 </div>
                             </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black ml-1">Instagram</Label>
+                                    <Input value={editDraft.instagram || ''} onChange={e => setEditDraft({...editDraft, instagram: e.target.value})} placeholder="https://instagram.com/..." className="font-bold border-2 rounded-xl" />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black ml-1">Facebook</Label>
+                                    <Input value={editDraft.facebook || ''} onChange={e => setEditDraft({...editDraft, facebook: e.target.value})} placeholder="https://facebook.com/..." className="font-bold border-2 rounded-xl" />
+                                </div>
+                            </div>
                         </section>
 
                         <section className="space-y-6">
@@ -858,25 +2693,44 @@ export default function AdminPage() {
                             </CardHeader>
                             <CardContent className="p-4 space-y-4">
                                 {duplicates.length > 0 ? (
-                                    duplicates.map(d => (
-                                        <div key={d.id} className="bg-white p-3 rounded-xl border-2 flex flex-col gap-2 shadow-sm">
-                                            <div className="flex justify-between items-start gap-2">
-                                                <div className="min-w-0">
-                                                    <p className="font-black text-[10px] uppercase truncate text-foreground">{d.title}</p>
-                                                    <p className="text-[8px] text-muted-foreground truncate font-bold">{d.phoneNumber}</p>
+                                    duplicates.map(d => {
+                                        const isLinked = editDraft.publishTargetId === d.id && (!editDraft.publishTargetCollection || editDraft.publishTargetCollection === d.col);
+                                        const isVeryLikely = d.matchConfidence === 'very_likely';
+                                        const confidence = isVeryLikely ? 'Très probable' : 'Probable';
+
+                                        return (
+                                          <div key={`${d.col}/${d.id}`} className="bg-white p-3 rounded-xl border-2 flex flex-col gap-2 shadow-sm">
+                                              <div className="flex justify-between items-start gap-2">
+                                                  <div className="min-w-0">
+                                                      <p className="font-black text-[10px] uppercase truncate text-foreground">{d.title || d.id}</p>
+                                                      {!!d.address && <p className="text-[8px] text-muted-foreground line-clamp-2 font-bold mt-1">{d.address}</p>}
+                                                      {!!d.phoneNumber && <p className="text-[8px] text-muted-foreground truncate font-bold mt-1">{d.phoneNumber}</p>}
+                                                  </div>
+                                                  <div className="flex flex-col items-end gap-1 shrink-0">
+                                                    <Badge className="bg-orange-100 text-orange-700 text-[7px] uppercase border-none font-black">{d.col}</Badge>
+                                                    <span className={cn('text-[7px] font-black uppercase', isVeryLikely ? 'text-red-600' : 'text-amber-600')}>{confidence}</span>
+                                                  </div>
+                                              </div>
+                                              {Array.isArray(d.matchReasons) && d.matchReasons.length > 0 && (
+                                                <div className="flex flex-wrap gap-1">
+                                                  {d.matchReasons.map((reason: string) => (
+                                                    <span key={reason} className="rounded-full bg-orange-50 px-2 py-1 text-[7px] font-black uppercase text-orange-700 border border-orange-100">
+                                                      {reason}
+                                                    </span>
+                                                  ))}
                                                 </div>
-                                                <Badge className="bg-orange-100 text-orange-700 text-[7px] uppercase border-none shrink-0 font-black">{d.col}</Badge>
-                                            </div>
-                                            <Button 
-                                              variant="secondary" 
-                                              size="sm" 
-                                              className={cn("h-7 text-[8px] font-black uppercase rounded-lg border", editDraft.publishTargetId === d.id ? "bg-brand text-white border-brand" : "bg-muted text-muted-foreground")}
-                                              onClick={() => handleLinkToDuplicate(d)}
-                                            >
-                                              {editDraft.publishTargetId === d.id ? "Lien établi ✔" : "Lier pour mise à jour"}
-                                            </Button>
-                                        </div>
-                                    ))
+                                              )}
+                                              <Button
+                                                variant="secondary"
+                                                size="sm"
+                                                className={cn("h-8 text-[8px] font-black uppercase rounded-lg border", isLinked ? "bg-brand text-white border-brand" : "bg-muted text-muted-foreground")}
+                                                onClick={() => handleLinkToDuplicate(d)}
+                                              >
+                                                {isLinked ? "Fiche liée — retirer le lien" : "Utiliser cette fiche existante"}
+                                              </Button>
+                                          </div>
+                                        );
+                                    })
                                 ) : (
                                     <div className="text-center py-6">
                                         <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-50 italic">Aucun doublon trouvé</p>

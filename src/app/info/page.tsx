@@ -277,7 +277,7 @@ function InfoPageComponent() {
                 hover:text-brand
               "
             >
-              Entretien
+              Entretien / fiches techniques
             </Link>
 
             <Link
@@ -294,20 +294,6 @@ function InfoPageComponent() {
               Guides &amp; conseils
             </Link>
 
-            <Link
-              href="/"
-              className="
-                flex
-                h-full
-                items-center
-                border-b-[3px]
-                border-transparent
-                transition-colors
-                hover:text-brand
-              "
-            >
-              Fiches moto
-            </Link>
           </nav>
 
           <div

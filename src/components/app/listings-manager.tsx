@@ -1,15 +1,16 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { doc, updateDoc, deleteDoc, getDoc, getFirestore } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Search, Edit, Trash2, MapPin, MapPinOff, X, Save, RefreshCw } from 'lucide-react';
+import { Loader2, Search, Edit, Trash2, MapPin, MapPinOff, X, Save, RefreshCw, History } from 'lucide-react';
 import ImageUploadRequest from '@/components/app/image-upload-request';
 import { loadPublicSeoPros } from '@/lib/public-seo-pros';
+import ProfessionalListingForm, { ProfessionalAppSection, ProfessionalListingFormValues } from '@/components/app/professional-listing-form';
 
 
 interface ListingItem {
@@ -30,6 +31,8 @@ interface ListingItem {
   lundi: string; mardi: string; mercredi: string; jeudi: string; vendredi: string; samedi: string; dimanche: string;
   brands: string[];
   info: string;
+  appSection: ProfessionalAppSection;
+  imageUrl: string;
 }
 
 async function fetchCacheInfo(firestore: any, setCacheUpdatedAt: any, setCacheCount: any) {
@@ -48,7 +51,32 @@ function normalize(s: string): string {
   return (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-export default function ListingsManager() {
+
+function inferAppSection(collectionName: string, raw?: unknown): ProfessionalAppSection {
+  if (raw === 'shopping' || raw === 'service' || raw === 'both' || raw === 'association' || raw === 'relais' || raw === 'creator') {
+    return raw;
+  }
+  if (collectionName === 'associations') return 'association';
+  if (collectionName === 'relais') return 'relais';
+  if (collectionName === 'creators') return 'creator';
+  return 'shopping';
+}
+
+function allowedSectionsForCollection(collectionName: string): ProfessionalAppSection[] {
+  if (collectionName === 'associations') return ['association'];
+  if (collectionName === 'relais') return ['relais'];
+  if (collectionName === 'creators') return ['creator'];
+  return ['shopping', 'service', 'both'];
+}
+
+interface ListingsManagerProps {
+  initialEditTarget?: { collection: string; id: string } | null;
+  onInitialEditHandled?: () => void;
+  editorOnly?: boolean;
+  onEditorClose?: () => void;
+}
+
+export default function ListingsManager({ initialEditTarget = null, onInitialEditHandled, editorOnly = false, onEditorClose }: ListingsManagerProps) {
   const { firestore, user } = useFirebase();
   const { toast } = useToast();
   const [allListings, setAllListings] = useState<ListingItem[]>([]);
@@ -56,6 +84,10 @@ export default function ListingsManager() {
   const [loaded, setLoaded] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [editing, setEditing] = useState<ListingItem | null>(null);
+  const [editingOriginal, setEditingOriginal] = useState<ListingItem | null>(null);
+  const [listingHistory, setListingHistory] = useState<any[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [historyUnavailable, setHistoryUnavailable] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<ListingItem | null>(null);
@@ -127,33 +159,108 @@ export default function ListingsManager() {
     try {
       const publicPros = await loadPublicSeoPros();
 
-      const all: ListingItem[] = publicPros.map(pro => ({
-        id: pro.id,
-        collection: pro.collection,
-        title: pro.title,
-        address: pro.address,
-        phoneNumber: pro.phoneNumber || '',
-        email: '',
-        website: pro.website || '',
-        category: pro.category,
-        googleMapsUrl: '',
-        placeUrl: '',
-        instagramUrl: '',
-        facebookUrl: '',
-        latitude: pro.latitude,
-        longitude: pro.longitude,
-        lundi: '',
-        mardi: '',
-        mercredi: '',
-        jeudi: '',
-        vendredi: '',
-        samedi: '',
-        dimanche: '',
-        brands: pro.brands,
-        info: '',
-      }));
+      const merged = new Map<string, ListingItem>();
 
-      setAllListings(all);
+      for (const pro of publicPros) {
+        const item: ListingItem = {
+          id: pro.id,
+          collection: pro.collection,
+          title: pro.title,
+          address: pro.address,
+          phoneNumber: pro.phoneNumber || '',
+          email: '',
+          website: pro.website || '',
+          category: pro.category,
+          googleMapsUrl: '',
+          placeUrl: '',
+          instagramUrl: '',
+          facebookUrl: '',
+          latitude: pro.latitude,
+          longitude: pro.longitude,
+          lundi: '',
+          mardi: '',
+          mercredi: '',
+          jeudi: '',
+          vendredi: '',
+          samedi: '',
+          dimanche: '',
+          brands: pro.brands,
+          info: '',
+          appSection: inferAppSection(pro.collection),
+          imageUrl: '',
+        };
+
+        merged.set(`${item.collection}/${item.id}`, item);
+      }
+
+      /*
+       * L'index public seo-pros.json peut avoir jusqu'a une heure de cache.
+       * Pour l'admin, on fusionne donc aussi l'index live ecrit a chaque
+       * publication. Une fiche nouvellement creee devient ainsi searchable
+       * immediatement, sans attendre la regeneration du cache public.
+       */
+      if (firestore) {
+        try {
+          const liveSnap = await getDocs(
+            query(
+              collection(firestore, 'cache'),
+              where('kind', '==', 'map_point_live')
+            )
+          );
+
+          liveSnap.forEach(liveDoc => {
+            const data = liveDoc.data();
+            const sourceCollection = String(data.sourceCollection || '');
+            const id = String(data.id || '');
+
+            if (
+              !id ||
+              !['concessions', 'associations', 'relais', 'creators'].includes(sourceCollection)
+            ) {
+              return;
+            }
+
+            const key = `${sourceCollection}/${id}`;
+            const previous = merged.get(key);
+
+            merged.set(key, {
+              id,
+              collection: sourceCollection,
+              title: String(data.t || previous?.title || id),
+              address: String(data.addr || previous?.address || ''),
+              phoneNumber: previous?.phoneNumber || '',
+              email: previous?.email || '',
+              website: previous?.website || '',
+              category: String(data.c || previous?.category || ''),
+              googleMapsUrl: previous?.googleMapsUrl || '',
+              placeUrl: previous?.placeUrl || '',
+              instagramUrl: previous?.instagramUrl || '',
+              facebookUrl: previous?.facebookUrl || '',
+              latitude: Number.isFinite(Number(data.lat)) ? Number(data.lat) : (previous?.latitude ?? null),
+              longitude: Number.isFinite(Number(data.lng)) ? Number(data.lng) : (previous?.longitude ?? null),
+              lundi: previous?.lundi || '',
+              mardi: previous?.mardi || '',
+              mercredi: previous?.mercredi || '',
+              jeudi: previous?.jeudi || '',
+              vendredi: previous?.vendredi || '',
+              samedi: previous?.samedi || '',
+              dimanche: previous?.dimanche || '',
+              brands: Array.isArray(data.b) ? data.b : (previous?.brands || []),
+              info: previous?.info || '',
+              appSection: inferAppSection(sourceCollection, previous?.appSection),
+              imageUrl: previous?.imageUrl || '',
+            });
+          });
+        } catch (liveError) {
+          console.warn('Index live admin indisponible :', liveError);
+        }
+      }
+
+      setAllListings(
+        Array.from(merged.values()).sort((a, b) =>
+          a.title.localeCompare(b.title, 'fr')
+        )
+      );
       setLoaded(true);
     } catch (e) {
       console.warn(
@@ -166,11 +273,12 @@ export default function ListingsManager() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [firestore]);
 
   useEffect(() => {
+    if (editorOnly && initialEditTarget) return;
     loadListings();
-  }, [loadListings]);
+  }, [loadListings, editorOnly, initialEditTarget]);
 
   const results = useMemo(() => {
     if (searchTerm.trim().length < 2) return [];
@@ -178,7 +286,7 @@ export default function ListingsManager() {
     return allListings.filter(l => normalize(l.title).includes(q) || normalize(l.address).includes(q)).slice(0, 50);
   }, [searchTerm, allListings]);
 
-  const handleEdit = async (listing: ListingItem) => {
+  const handleEdit = useCallback(async (listing: ListingItem) => {
     if (!firestore) return;
 
     setIsLoading(true);
@@ -205,7 +313,7 @@ export default function ListingsManager() {
 
       const data = snapshot.data();
 
-      setEditing({
+      const loadedListing: ListingItem = {
         id: snapshot.id,
         collection: listing.collection,
         title: data.title || snapshot.id,
@@ -226,18 +334,50 @@ export default function ListingsManager() {
           typeof data.longitude === 'number'
             ? data.longitude
             : null,
-        lundi: data.lundi || '',
-        mardi: data.mardi || '',
-        mercredi: data.mercredi || '',
-        jeudi: data.jeudi || '',
-        vendredi: data.vendredi || '',
-        samedi: data.samedi || '',
-        dimanche: data.dimanche || '',
+        lundi: data.horaires?.lundi || data.lundi || '',
+        mardi: data.horaires?.mardi || data.mardi || '',
+        mercredi: data.horaires?.mercredi || data.mercredi || '',
+        jeudi: data.horaires?.jeudi || data.jeudi || '',
+        vendredi: data.horaires?.vendredi || data.vendredi || '',
+        samedi: data.horaires?.samedi || data.samedi || '',
+        dimanche: data.horaires?.dimanche || data.dimanche || '',
         brands: Array.isArray(data.brands)
           ? data.brands
           : [],
         info: data.info || '',
-      });
+        appSection: inferAppSection(listing.collection, data.appSection),
+        imageUrl: data.imageUrl || data.imgUrl || data.photoUrl || '',
+      };
+
+      setEditing(loadedListing);
+      setEditingOriginal({ ...loadedListing, brands: [...loadedListing.brands] });
+
+      setIsLoadingHistory(true);
+      setHistoryUnavailable(false);
+      try {
+        const historySnap = await getDocs(
+          query(
+            collection(firestore, 'listing_history'),
+            where('listingKey', '==', `${listing.collection}/${listing.id}`)
+          )
+        );
+        const history = historySnap.docs
+          .map(item => ({ id: item.id, ...item.data() }))
+          .sort((a: any, b: any) => {
+            const aMs = typeof a.createdAt?.toMillis === 'function' ? a.createdAt.toMillis() : (a.createdAt?.seconds || 0) * 1000;
+            const bMs = typeof b.createdAt?.toMillis === 'function' ? b.createdAt.toMillis() : (b.createdAt?.seconds || 0) * 1000;
+            return bMs - aMs;
+          });
+        setListingHistory(history);
+      } catch (historyError) {
+        // L'historique est secondaire : une règle Firestore non déployée ne doit
+        // jamais empêcher l'admin d'ouvrir ou de modifier la fiche.
+        console.warn('[LabelMoto] Historique indisponible :', historyError);
+        setListingHistory([]);
+        setHistoryUnavailable(true);
+      } finally {
+        setIsLoadingHistory(false);
+      }
 
       setIsImporting(false);
       setImportUrl('');
@@ -253,7 +393,50 @@ export default function ListingsManager() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [firestore, toast]);
+
+  useEffect(() => {
+    if (!firestore || !initialEditTarget) return;
+    if (!editorOnly && !loaded) return;
+
+    const existing = allListings.find(
+      item =>
+        item.collection === initialEditTarget.collection &&
+        item.id === initialEditTarget.id
+    );
+
+    const target: ListingItem = existing || {
+      id: initialEditTarget.id,
+      collection: initialEditTarget.collection,
+      title: initialEditTarget.id,
+      address: '',
+      phoneNumber: '',
+      email: '',
+      website: '',
+      category: '',
+      googleMapsUrl: '',
+      placeUrl: '',
+      instagramUrl: '',
+      facebookUrl: '',
+      latitude: null,
+      longitude: null,
+      lundi: '',
+      mardi: '',
+      mercredi: '',
+      jeudi: '',
+      vendredi: '',
+      samedi: '',
+      dimanche: '',
+      brands: [],
+      info: '',
+      appSection: inferAppSection(initialEditTarget.collection),
+      imageUrl: '',
+    };
+
+    void handleEdit(target).finally(() => {
+      onInitialEditHandled?.();
+    });
+  }, [loaded, firestore, initialEditTarget, allListings, handleEdit, onInitialEditHandled, editorOnly]);
 
   const handleImportFromGoogleMaps = async () => {
     if (!importUrl.trim() || !editing) return;
@@ -292,35 +475,157 @@ export default function ListingsManager() {
     }
     setImportLoading(false);
   };
-  const handleSave = async () => {
+  const handleSave = async (formValues: ProfessionalListingFormValues) => {
     if (!firestore || !editing) return;
     setIsSaving(true);
+
+    const nextListing: ListingItem = {
+      ...editing,
+      title: formValues.name,
+      appSection: formValues.appSection,
+      category: formValues.category,
+      address: formValues.address,
+      phoneNumber: formValues.phone,
+      email: formValues.email,
+      website: formValues.website,
+      facebookUrl: formValues.facebook,
+      instagramUrl: formValues.instagram,
+      info: formValues.description,
+      googleMapsUrl: formValues.googleMapsUrl,
+      latitude: formValues.latitude,
+      longitude: formValues.longitude,
+      imageUrl: formValues.imageUrl || editing.imageUrl,
+      lundi: formValues.horaires.lundi,
+      mardi: formValues.horaires.mardi,
+      mercredi: formValues.horaires.mercredi,
+      jeudi: formValues.horaires.jeudi,
+      vendredi: formValues.horaires.vendredi,
+      samedi: formValues.horaires.samedi,
+      dimanche: formValues.horaires.dimanche,
+    };
+
     try {
-      await updateDoc(doc(firestore, editing.collection, editing.id), {
-        title: editing.title,
-        address: editing.address,
-        phoneNumber: editing.phoneNumber,
-        email: editing.email,
-        website: editing.website,
-        category: editing.category,
-        googleMapsUrl: editing.googleMapsUrl,
-        instagramUrl: editing.instagramUrl,
-        facebookUrl: editing.facebookUrl,
-        lundi: editing.lundi, mardi: editing.mardi, mercredi: editing.mercredi,
-        jeudi: editing.jeudi, vendredi: editing.vendredi, samedi: editing.samedi, dimanche: editing.dimanche,
-        brands: editing.brands,
-        info: editing.info,
-        isMultibrand: editing.brands.length >= 2,
-        ...(editing.latitude !== null ? { latitude: editing.latitude } : {}),
-        ...(editing.longitude !== null ? { longitude: editing.longitude } : {}),
-      });
-      setAllListings(prev => prev.map(l => l.id === editing.id && l.collection === editing.collection ? editing : l));
+      const updates = {
+        title: nextListing.title,
+        appSection: nextListing.appSection,
+        address: nextListing.address,
+        phoneNumber: nextListing.phoneNumber,
+        email: nextListing.email,
+        website: nextListing.website,
+        category: nextListing.category,
+        googleMapsUrl: nextListing.googleMapsUrl,
+        instagramUrl: nextListing.instagramUrl,
+        facebookUrl: nextListing.facebookUrl,
+        imageUrl: nextListing.imageUrl,
+        lundi: nextListing.lundi,
+        mardi: nextListing.mardi,
+        mercredi: nextListing.mercredi,
+        jeudi: nextListing.jeudi,
+        vendredi: nextListing.vendredi,
+        samedi: nextListing.samedi,
+        dimanche: nextListing.dimanche,
+        horaires: {
+          lundi: nextListing.lundi,
+          mardi: nextListing.mardi,
+          mercredi: nextListing.mercredi,
+          jeudi: nextListing.jeudi,
+          vendredi: nextListing.vendredi,
+          samedi: nextListing.samedi,
+          dimanche: nextListing.dimanche,
+        },
+        brands: nextListing.brands,
+        info: nextListing.info,
+        isMultibrand: nextListing.brands.length >= 2,
+        ...(nextListing.latitude !== null ? { latitude: nextListing.latitude } : {}),
+        ...(nextListing.longitude !== null ? { longitude: nextListing.longitude } : {}),
+        updatedAt: serverTimestamp(),
+      };
+
+      const changes: Record<string, { old: any; new: any }> = {};
+      if (editingOriginal) {
+        for (const key of [
+          'title', 'appSection', 'address', 'phoneNumber', 'email', 'website', 'category',
+          'googleMapsUrl', 'instagramUrl', 'facebookUrl', 'imageUrl',
+          'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche', 'info',
+        ] as const) {
+          if (editingOriginal[key] !== nextListing[key]) {
+            changes[key] = { old: editingOriginal[key], new: nextListing[key] };
+          }
+        }
+      }
+
+      // L'écriture de la fiche reste prioritaire. Le cache et l'historique
+      // ne doivent jamais bloquer une correction administrateur.
+      await updateDoc(doc(firestore, nextListing.collection, nextListing.id), updates);
+
+      try {
+        await setDoc(
+          doc(firestore, 'cache', `map-live-${nextListing.collection}-${nextListing.id}`),
+          {
+            kind: 'map_point_live',
+            sourceCollection: nextListing.collection,
+            id: nextListing.id,
+            t: nextListing.title,
+            s: nextListing.id,
+            a: nextListing.collection === 'associations'
+              ? 'association'
+              : nextListing.collection === 'relais'
+                ? 'relais'
+                : nextListing.collection === 'creators'
+                  ? 'creator'
+                  : nextListing.appSection,
+            c: nextListing.category || '',
+            lat: nextListing.latitude,
+            lng: nextListing.longitude,
+            addr: nextListing.address || '',
+            b: nextListing.brands || [],
+            updatedAt: serverTimestamp(),
+          },
+          { merge: true },
+        );
+      } catch (cacheError) {
+        console.warn('[LabelMoto] Fiche mise à jour, cache live non synchronisé :', cacheError);
+      }
+
+      try {
+        await addDoc(collection(firestore, 'listing_history'), {
+          listingKey: `${nextListing.collection}/${nextListing.id}`,
+          targetCollection: nextListing.collection,
+          targetId: nextListing.id,
+          targetTitle: nextListing.title,
+          eventType: 'admin_direct_update',
+          summary: 'Fiche modifiée directement par Label Moto',
+          changes,
+          actorType: 'admin',
+          actorUid: user?.uid || '',
+          createdAt: serverTimestamp(),
+        });
+      } catch (historyError) {
+        console.warn('[LabelMoto] Fiche mise à jour, historique non enregistré :', historyError);
+      }
+
+      setAllListings(previous => previous.map(item =>
+        item.id === nextListing.id && item.collection === nextListing.collection
+          ? nextListing
+          : item,
+      ));
+
       toast({ title: 'Fiche mise à jour' });
       setEditing(null);
-    } catch (e: any) {
-      toast({ title: 'Erreur', description: e.message, variant: 'destructive' });
+      setEditingOriginal(null);
+      setListingHistory([]);
+      setHistoryUnavailable(false);
+      onEditorClose?.();
+    } catch (error: any) {
+      toast({
+        title: 'Erreur',
+        description: error?.message || 'Impossible d’enregistrer la fiche.',
+        variant: 'destructive',
+      });
+      throw error;
+    } finally {
+      setIsSaving(false);
     }
-    setIsSaving(false);
   };
 
   const handleGeocode = async () => {
@@ -363,7 +668,8 @@ export default function ListingsManager() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className={editorOnly ? "" : "max-w-3xl mx-auto"}>
+      {!editorOnly && (<>
       <div className="relative mb-6">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -416,121 +722,93 @@ export default function ListingsManager() {
           </div>
         ))}
       </div>
+      </>)}
 
       {editing && (
-        <div className="fixed inset-0 bg-black/50 z-[2000] flex items-center justify-center p-4" onClick={() => setEditing(null)}>
-          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[85vh] overflow-y-auto p-6" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-black uppercase text-sm tracking-widest">Modifier la fiche</h3>
-              <button onClick={() => setEditing(null)} className="p-1.5 rounded-full hover:bg-muted"><X className="h-5 w-5" /></button>
-            </div>
-            {/* Bouton import Google Maps */}
-            <div className="mb-4" onClick={e => e.stopPropagation()}>
-              {!isImporting ? (
-                <button onClick={() => setIsImporting(true)} className="w-full flex items-center justify-center gap-2 p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 transition-colors text-[10px] font-black uppercase tracking-widest">
-                  📍 Importer depuis Google Maps
-                </button>
-              ) : (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl space-y-2">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-blue-700">Colle l'URL Google Maps de la fiche</p>
-                  <input
-                    type="url"
-                    value={importUrl}
-                    onChange={e => setImportUrl(e.target.value)}
-                    placeholder="https://maps.google.com/..."
-                    className="w-full text-xs border rounded-lg px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-blue-300"
-                  />
-                  {importError && <p className="text-[10px] text-red-600 font-bold">{importError}</p>}
-                  <div className="flex gap-2">
-                    <button onClick={handleImportFromGoogleMaps} disabled={importLoading} className="flex-1 bg-blue-600 text-white rounded-lg py-1.5 text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 disabled:opacity-50">
-                      {importLoading ? '⏳ Import...' : '✓ Importer'}
-                    </button>
-                    <button onClick={() => { setIsImporting(false); setImportUrl(''); setImportError(''); }} className="px-3 rounded-lg border text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-muted">
-                      Annuler
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-            <div className="space-y-3">
-              <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Nom</Label><Input value={editing.title} onChange={e => setEditing({ ...editing, title: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse</Label><Input value={editing.address} onChange={e => setEditing({ ...editing, address: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              <div className="flex items-center gap-2 p-2 bg-muted/30 rounded-xl">
-                <div className="flex-1 text-xs font-bold">
-                  {editing.latitude !== null ? <span className="text-green-600">📍 {editing.latitude.toFixed(5)}, {editing.longitude?.toFixed(5)}</span> : <span className="text-orange-500">Sans coordonnées</span>}
-                </div>
-                <Button type="button" onClick={handleGeocode} disabled={isGeocoding} variant="outline" className="rounded-xl font-black uppercase text-[9px] tracking-widest h-8">
-                  {isGeocoding ? <Loader2 className="h-3 w-3 animate-spin" /> : <><RefreshCw className="h-3 w-3 mr-1" /> Géocoder</>}
-                </Button>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Téléphone</Label><Input value={editing.phoneNumber} onChange={e => setEditing({ ...editing, phoneNumber: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-                <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Catégorie</Label><Input value={editing.category} onChange={e => setEditing({ ...editing, category: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              </div>
-              <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Email</Label><Input value={editing.email} onChange={e => setEditing({ ...editing, email: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Site web</Label><Input value={editing.website} onChange={e => setEditing({ ...editing, website: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">À propos</Label><Textarea value={editing.info} onChange={e => setEditing({ ...editing, info: e.target.value })} rows={4} placeholder="Description de l'établissement, visible sur la fiche publique et utilisée pour le référencement." className="font-bold rounded-xl border-2 text-sm" /></div>
-              <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">URL Google Maps</Label><Input value={editing.googleMapsUrl} onChange={e => setEditing({ ...editing, googleMapsUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              <div className="border-t pt-3">
-                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1 mb-2 block">Horaires</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Lundi</span><Input value={editing.lundi} onChange={e => setEditing({ ...editing, lundi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
-                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Mardi</span><Input value={editing.mardi} onChange={e => setEditing({ ...editing, mardi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
-                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Mercredi</span><Input value={editing.mercredi} onChange={e => setEditing({ ...editing, mercredi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
-                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Jeudi</span><Input value={editing.jeudi} onChange={e => setEditing({ ...editing, jeudi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
-                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Vendredi</span><Input value={editing.vendredi} onChange={e => setEditing({ ...editing, vendredi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
-                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Samedi</span><Input value={editing.samedi} onChange={e => setEditing({ ...editing, samedi: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
-                  <div className="flex items-center gap-2"><span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground w-20 shrink-0">Dimanche</span><Input value={editing.dimanche} onChange={e => setEditing({ ...editing, dimanche: e.target.value })} placeholder="09:00-12:00, 14:00-18:00" className="font-bold rounded-xl border-2 h-9 text-sm" /></div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Instagram</Label><Input value={editing.instagramUrl} onChange={e => setEditing({ ...editing, instagramUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-                <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Facebook</Label><Input value={editing.facebookUrl} onChange={e => setEditing({ ...editing, facebookUrl: e.target.value })} className="font-bold rounded-xl border-2" /></div>
-              </div>
-            </div>
-            {/* Upload photo admin */}
-            <div className="border-t pt-3 mt-4 space-y-1.5">
-              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground block">📸 Photo de l'établissement</label>
-              <p className="text-[10px] text-muted-foreground">La photo sera validée avant publication.</p>
-              <ImageUploadRequest
-                concessionSlug={editing.id}
-                concessionTitle={editing.title}
-                onSuccess={() => toast({ title: '✅ Photo soumise pour validation' })}
-              />
-            </div>
-            <div className="flex gap-2 mt-6">
-              <Button onClick={handleSave} disabled={isSaving} className="flex-1 rounded-xl font-black uppercase text-xs tracking-widest h-11">
-                {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-4 w-4 mr-2" /> Enregistrer</>}
-              </Button>
-            </div>
-          </div>
+        <div className={editorOnly ? 'max-w-3xl mx-auto pb-10' : 'mt-8'}>
+          <ProfessionalListingForm
+            key={`${editing.collection}/${editing.id}`}
+            adminMode
+            listingId={editing.id}
+            title="Modifier la fiche"
+            description="Même formulaire que pour la création d'une fiche. Les données sont préremplies avec la version actuellement publiée."
+            submitLabel="Enregistrer la fiche"
+            allowedSections={allowedSectionsForCollection(editing.collection)}
+            initialValues={{
+              name: editing.title,
+              appSection: editing.appSection,
+              category: editing.category,
+              address: editing.address,
+              phone: editing.phoneNumber,
+              email: editing.email,
+              website: editing.website,
+              facebook: editing.facebookUrl,
+              instagram: editing.instagramUrl,
+              description: editing.info,
+              horaires: {
+                lundi: editing.lundi,
+                mardi: editing.mardi,
+                mercredi: editing.mercredi,
+                jeudi: editing.jeudi,
+                vendredi: editing.vendredi,
+                samedi: editing.samedi,
+                dimanche: editing.dimanche,
+              },
+              imageUrl: editing.imageUrl,
+              googleMapsUrl: editing.googleMapsUrl,
+              latitude: editing.latitude,
+              longitude: editing.longitude,
+            }}
+            onSubmit={handleSave}
+            onCancel={() => {
+              setEditing(null);
+              setListingHistory([]);
+              setEditingOriginal(null);
+              setHistoryUnavailable(false);
+              onEditorClose?.();
+            }}
+          />
 
-              {/* Sélecteur de marques */}
-              <div className="col-span-2 mt-2">
-                <label className="text-[10px] font-black uppercase tracking-widest mb-2 block text-foreground">Marques représentées</label>
-                <div className="flex flex-wrap gap-1.5 p-3 bg-muted/20 rounded-2xl border max-h-48 overflow-y-auto" onClick={e => e.stopPropagation()}>
-                  {(["Honda","Yamaha","Kawasaki","Suzuki","BMW","Harley-Davidson","Triumph","Ducati","Royal Enfield","KTM","Aprilia","Vespa","Piaggio","Kymco","Indian","CF Moto","Zontes","VOGE","QJ Motor","Kove","Benelli","Mash","Husqvarna","Beta","Sherco","Fantic","Rieju","Moto Guzzi","SYM","Can-Am","Peugeot Motocycles","Moto Axxe","Dafy Moto","Speedway","Doc'Biker","TeamAxe","Cardy"] as string[]).map((brand) => {
-                    const isSel = (editing.brands || []).includes(brand);
-                    return (
-                      <button key={brand} type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const cur = editing.brands || [];
-                          setEditing({ ...editing, brands: isSel ? cur.filter(b => b !== brand) : [...cur, brand] });
-                        }}
-                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full border transition-all ${isSel ? 'bg-brand text-white border-brand' : 'bg-white text-muted-foreground border-border hover:border-brand/30'}`}
-                      >
-                        {isSel && '✓ '}{brand}
-                      </button>
-                    );
-                  })}
-                </div>
-                {(editing.brands || []).length > 0 && (
-                  <p className="text-[9px] text-brand font-black mt-1.5 uppercase tracking-widest">
-                    {editing.brands.length} marque{editing.brands.length > 1 ? 's' : ''} — {editing.brands.join(', ')}
-                  </p>
-                )}
+          <div className="mt-6 rounded-3xl border bg-background p-6 shadow-sm">
+            <div className="flex items-center gap-2 mb-3">
+              <History className="h-4 w-4 text-brand" />
+              <p className="font-black uppercase text-sm">Historique de la fiche</p>
+            </div>
+            {isLoadingHistory ? (
+              <div className="flex justify-center py-4"><Loader2 className="h-4 w-4 animate-spin text-brand" /></div>
+            ) : historyUnavailable ? (
+              <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
+                <strong>Historique temporairement indisponible.</strong> Cela n'empêche pas la modification ou l'enregistrement de la fiche.
               </div>
+            ) : listingHistory.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Aucun événement enregistré pour cette fiche.</p>
+            ) : (
+              <div className="space-y-2">
+                {listingHistory.map(event => {
+                  const date = typeof event.createdAt?.toDate === 'function' ? event.createdAt.toDate() : null;
+                  return (
+                    <div key={event.id} className="rounded-xl bg-muted/30 border p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-xs font-black">{event.summary || event.eventType}</p>
+                        <span className="text-[9px] text-muted-foreground shrink-0">
+                          {date ? date.toLocaleDateString('fr-FR') : '—'}
+                        </span>
+                      </div>
+                      {event.changes && Object.keys(event.changes).length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {Object.entries(event.changes).map(([field, value]: [string, any]) => (
+                            <p key={field} className="text-[9px] text-muted-foreground break-words">
+                              <strong className="text-foreground">{field}</strong> : {String(value?.old ?? '(vide)')} → {String(value?.new ?? '(vide)')}
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       )}
 

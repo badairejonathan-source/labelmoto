@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useFirebase } from '@/firebase/client';
 import { collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
-import { getStorage, ref, deleteObject, copyObject } from 'firebase/storage';
+import { getStorage, ref, deleteObject } from 'firebase/storage';
 import { CheckCircle, X, ImageIcon, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';

@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useMemoFirebase } from '@/firebase/client';
 import { signOut } from 'firebase/auth';
-import { doc, updateDoc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useDoc } from '@/firebase/client';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, LogOut, ArrowLeft, User, Bike, Palette, Save, X, ShieldCheck, MailWarning } from 'lucide-react';
+import { Loader2, LogOut, ArrowLeft, User, Bike, Palette, Save, X, ShieldCheck, MailWarning, Store, Pencil, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -55,6 +55,8 @@ function AccountContent() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [ownedListings, setOwnedListings] = useState<any[]>([]);
+  const [isLoadingOwnedListings, setIsLoadingOwnedListings] = useState(false);
 
   const callbackUrl = searchParams.get('callbackUrl');
 
@@ -67,6 +69,43 @@ function AccountContent() {
 
   const activeDetailProfile = proProfile || stdProfile;
   const isPro = profile?.role === 'pro' || !!proProfile;
+
+  useEffect(() => {
+    if (!firestore || !user || !isPro) {
+      setOwnedListings([]);
+      return;
+    }
+
+    let cancelled = false;
+    const loadOwnedListings = async () => {
+      setIsLoadingOwnedListings(true);
+      try {
+        const collections = ['concessions', 'associations', 'relais', 'creators'];
+        const snapshots = await Promise.all(
+          collections.map(async collectionName => {
+            const snapshot = await getDocs(
+              query(collection(firestore, collectionName), where('ownerUid', '==', user.uid))
+            );
+            return snapshot.docs.map(item => ({
+              id: item.id,
+              collection: collectionName,
+              ...item.data(),
+            }));
+          })
+        );
+
+        if (!cancelled) setOwnedListings(snapshots.flat());
+      } catch (error) {
+        console.warn('Chargement des fiches du professionnel impossible', error);
+        if (!cancelled) setOwnedListings([]);
+      } finally {
+        if (!cancelled) setIsLoadingOwnedListings(false);
+      }
+    };
+
+    loadOwnedListings();
+    return () => { cancelled = true; };
+  }, [firestore, user, isPro]);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -313,6 +352,54 @@ function AccountContent() {
                       </div>
                     </div>
                   </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {!showChoice && isPro && (
+            <Card className="mt-8 border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+              <CardHeader className="border-b bg-muted/20">
+                <CardTitle className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
+                  <Store className="h-5 w-5 text-brand" /> Mes fiches professionnelles
+                </CardTitle>
+                <CardDescription>Les modifications passent toujours par la validation finale de Label Moto avant publication.</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6 space-y-3">
+                {isLoadingOwnedListings ? (
+                  <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-brand" /></div>
+                ) : ownedListings.length === 0 ? (
+                  <div className="rounded-2xl border-2 border-dashed p-6 text-center">
+                    <p className="font-black uppercase text-sm">Aucune fiche rattachée</p>
+                    <p className="text-xs text-muted-foreground mt-2 mb-4">Si votre établissement existe déjà sur Label Moto, vous pouvez le revendiquer.</p>
+                    <Button asChild className="rounded-xl font-black uppercase text-[10px] tracking-widest">
+                      <Link href="/pro/revendiquer">Revendiquer ma fiche</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  ownedListings.map(listing => (
+                    <div key={`${listing.collection}/${listing.id}`} className="rounded-2xl border-2 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-black truncate">{listing.title || listing.displayName || listing.id}</p>
+                          <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none text-[8px] uppercase">Vérifiée</Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate mt-1">{listing.address || listing.city || listing.ville || 'Adresse non renseignée'}</p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <Button asChild variant="outline" size="sm" className="rounded-xl font-black uppercase text-[9px] tracking-widest">
+                          <Link href={`/pro/mes-fiches/${encodeURIComponent(listing.collection)}/${encodeURIComponent(listing.id)}`}>
+                            <Pencil className="h-3.5 w-3.5 mr-1" /> Modifier ma fiche
+                          </Link>
+                        </Button>
+                        <Button asChild variant="ghost" size="sm" className="rounded-xl">
+                          <Link href={listing.collection === 'concessions' ? `/concessions/${listing.id}` : `/${listing.collection}/${listing.id}`}>
+                            <ExternalLink className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  ))
                 )}
               </CardContent>
             </Card>

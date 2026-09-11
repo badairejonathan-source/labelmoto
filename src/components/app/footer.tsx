@@ -52,7 +52,7 @@ const Footer = () => {
 
   if (pathname === '/map') return null;
 
-  const proRegisterLink = "/login?callbackUrl=/pro/register";
+  const proRegisterLink = "/pro/register";
 
   return (
     <footer className="border-t border-border/50 bg-muted/30">

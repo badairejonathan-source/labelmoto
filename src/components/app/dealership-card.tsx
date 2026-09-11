@@ -6,11 +6,11 @@ import { Card } from '@/components/ui/card';
 import { MapPin, Star, Phone, Globe, X, Store, Users, Utensils, ChevronRight } from 'lucide-react';
 import type { Dealership, MapPoint } from '@/lib/types';
 import { cn } from '@/lib/utils';
-import { trackEvent } from '@/lib/analytics';
+import { trackEvent, trackBeacon } from '@/lib/analytics';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useMemoFirebase, useDoc } from '@/firebase/client';
-import { doc, updateDoc, increment } from 'firebase/firestore';
+import { doc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
@@ -36,13 +36,97 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
   const [imgError, setImgError] = useState(false);
   const firestore = useFirestore();
 
+  const professionalCollection =
+    point.appSection === 'association'
+      ? 'associations'
+      : point.appSection === 'relais'
+        ? 'relais'
+        : point.appSection === 'creator'
+          ? 'creators'
+          : 'concessions';
+
   const docRef = useMemoFirebase(() => {
-    if (!isSelected || !firestore) return null;
-    const col = point.appSection === 'association' ? 'associations' : (point.appSection === 'relais' ? 'relais' : 'concessions');
-    return doc(firestore, col, point.id);
-  }, [firestore, point.id, point.appSection, isSelected]);
+    if (!isSelected || !firestore) {
+      return null;
+    }
+
+    return doc(
+      firestore,
+      professionalCollection,
+      point.id
+    );
+  }, [
+    firestore,
+    professionalCollection,
+    point.id,
+    isSelected,
+  ]);
   
   const { data: fullDetails, isLoading: isDetailLoading } = useDoc<Dealership>(docRef);
+
+  const trackCardStat = (
+    field: 'stats_tel' | 'stats_web'
+  ) => {
+    void fetch(
+      '/api/track-stat',
+      {
+        method: 'POST',
+
+        headers: {
+          'Content-Type':
+            'application/json',
+        },
+
+        body:
+          JSON.stringify({
+            collection:
+              professionalCollection,
+
+            id:
+              point.id,
+
+            field,
+
+            title:
+              fullDetails?.title ||
+              point.title ||
+              '',
+
+            departement:
+              (fullDetails as any)?.departement ||
+              '',
+          }),
+
+        keepalive:
+          true,
+      }
+    )
+      .then(response => {
+        if (!response.ok) {
+          console.warn(
+            '[DEALERSHIP-CARD] track-stat refusé',
+            {
+              status:
+                response.status,
+
+              collection:
+                professionalCollection,
+
+              id:
+                point.id,
+
+              field,
+            }
+          );
+        }
+      })
+      .catch(error => {
+        console.warn(
+          '[DEALERSHIP-CARD] track-stat indisponible',
+          error
+        );
+      });
+  };
 
   const isAssociation = point.appSection === 'association';
   const isRelais = point.appSection === 'relais';
@@ -127,12 +211,12 @@ const DealershipCard: React.FC<DealershipCardProps> = ({ point, isSelected = fal
               <div className={cn("flex items-center gap-2 transition-all duration-500", isSelected ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none")}>
                 {fullDetails?.phoneNumber && (
                   <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-brand/10 hover:border-brand" onClick={(e) => e.stopPropagation()}>
-                    <a href={`tel:${fullDetails.phoneNumber}`} onClick={() => { trackBeacon('clic_telephone', { pro: fullDetails.title, source: 'carte', slug: point.slug || point.id }); trackEvent('clic_telephone', { pro: fullDetails.title, source: 'carte' }); fetch('/api/track-stat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ collection: col, id: point.id, field: 'stats_tel' }), keepalive: true }).catch(() => {}); }}><Phone className="h-4 w-4 text-brand" /></a>
+                    <a href={`tel:${fullDetails.phoneNumber}`} onClick={() => { trackBeacon('clic_telephone', { pro: fullDetails.title, source: 'carte', slug: point.slug || point.id }); trackEvent('clic_telephone', { pro: fullDetails.title, source: 'carte' }); trackCardStat('stats_tel'); }}><Phone className="h-4 w-4 text-brand" /></a>
                   </Button>
                 )}
                 {fullDetails?.website && (
                   <Button asChild variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-brand/10 hover:border-brand" onClick={(e) => e.stopPropagation()}>
-                    <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_site_web', { pro: fullDetails.title, source: 'carte', slug: point.slug || point.id }); trackEvent('clic_site_web', { pro: fullDetails.title, source: 'carte' }); fetch('/api/track-stat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ collection: col, id: point.id, field: 'stats_web' }), keepalive: true }).catch(() => {}); }}><Globe className="h-4 w-4 text-brand" /></a>
+                    <a href={fullDetails.website} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_site_web', { pro: fullDetails.title, source: 'carte', slug: point.slug || point.id }); trackEvent('clic_site_web', { pro: fullDetails.title, source: 'carte' }); trackCardStat('stats_web'); }}><Globe className="h-4 w-4 text-brand" /></a>
                   </Button>
                 )}
                 <Button 

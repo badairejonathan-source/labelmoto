@@ -1240,8 +1240,6 @@ function MapPageComponent() {
   const [desktopWhat, setDesktopWhat] = useState('');
   const [desktopWhere, setDesktopWhere] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
-  const initialUrlSearchReplayRef =
-    useRef(false);
   const [
     resolvedProfessionalId,
     setResolvedProfessionalId,
@@ -1694,63 +1692,6 @@ function MapPageComponent() {
 
     setHasAppliedInitialUrl(true);
   }, []);
-
-  // LABELMOTO HOME TO MAP SEARCH REPLAY
-  //
-  // Une recherche provenant d’une autre page doit suivre
-  // exactement le même moteur qu’une recherche lancée
-  // directement depuis /map.
-  useEffect(() => {
-    if (
-      !hasAppliedInitialUrl ||
-      !firestore ||
-      initialUrlSearchReplayRef.current
-    ) {
-      return;
-    }
-
-    const params =
-      new URLSearchParams(
-        window.location.search
-      );
-
-    const initialSearch =
-      (
-        params.get('search') ||
-        ''
-      ).trim();
-
-    initialUrlSearchReplayRef.current =
-      true;
-
-    if (!initialSearch) {
-      return;
-    }
-
-    if (
-      window.innerWidth < 1024
-    ) {
-      setSearchTerm(
-        initialSearch
-      );
-    }
-    else {
-      setDesktopWhat(
-        initialSearch
-      );
-
-      setDesktopWhere(
-        ''
-      );
-    }
-
-    void handleDirectMapSearch(
-      initialSearch
-    );
-  }, [
-    hasAppliedInitialUrl,
-    firestore,
-  ]);
 
   // Synchroniser le ref avec l'état
   useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);
@@ -5439,7 +5380,7 @@ function MapPageComponent() {
         )}
       >
         <Header
-          searchOnly={!isViewportReady || !isMobile}
+          searchOnly={true}
           searchTerm={searchTerm}
           onSearchTermChange={(val: string) => {
             if (val !== searchTerm) {

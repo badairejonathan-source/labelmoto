@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import Header from '@/components/app/header';
+import React, { useState, useEffect, useRef } from 'react';
+import UnifiedSiteHeader from '@/components/app/unified-site-header';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { MapPin, Phone, Globe, Clock, Home, ChevronRight, Star, MessageSquare, User, Loader2, Send, Instagram } from 'lucide-react';
@@ -38,6 +38,7 @@ type ReviewFormValues = z.infer<typeof reviewSchema>;
 
 export default function DealershipDetailClient({ pro, hasCityPage = false }: DealershipDetailClientProps) {
   const { user, isUserLoading } = useUser();
+  const viewTrackedRef = useRef<string | null>(null);
   const firestore = useFirestore();
   const [descExpanded, setDescExpanded] = useState(false);
   const [nearby, setNearby] = useState<Array<{id:string;title:string;slug?:string;category?:string;address?:string}>>([]);
@@ -64,13 +65,25 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
   const ADMIN_EMAILS = ['badjoe950@hotmail.com', 'badaire.jonathan@gmail.com'];
   const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email);
   const trackStat = (field: string) => {
-    if (isAdmin) return; // Ne pas tracker les clics admin
+    if (isAdmin) return;
     if (!pro.id) return;
-    const colName = getProCollection();
-    fetch('/api/track-stat', {
+
+    const colName =
+      getProCollection();
+
+    void fetch('/api/track-stat', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ collection: colName, id: pro.id, field }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        collection: colName,
+        id: pro.id,
+        field,
+        title: pro.title || '',
+        departement:
+          (pro as any).departement || '',
+      }),
       keepalive: true,
     }).catch(() => {});
   };
@@ -87,6 +100,58 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
   
   const activeProfile = proProfile || stdProfile;
 
+  useEffect(() => {
+    if (
+      isUserLoading ||
+      isAdmin ||
+      !pro.id
+    ) {
+      return;
+    }
+
+    const colName =
+      getProCollection();
+
+    const storageKey =
+      `labelmoto:profile-view:${colName}:${pro.id}`;
+
+    if (viewTrackedRef.current === storageKey) {
+      return;
+    }
+
+    try {
+      if (sessionStorage.getItem(storageKey)) {
+        viewTrackedRef.current = storageKey;
+        return;
+      }
+
+      sessionStorage.setItem(
+        storageKey,
+        '1'
+      );
+    } catch {
+      // Le ref React protège toujours contre un double comptage
+      // pendant le cycle de vie courant.
+    }
+
+    viewTrackedRef.current = storageKey;
+
+    trackStat('stats_vues');
+
+    trackEvent(
+      'vue_fiche_pro',
+      {
+        pro: pro.title,
+        source: 'fiche',
+      }
+    );
+  }, [
+    isUserLoading,
+    isAdmin,
+    pro.id,
+    pro.appSection,
+    pro.title,
+  ]);
   const reviewsRef = useMemoFirebase(() => {
     if (!firestore || !pro.id) return null;
     return query(collection(firestore, 'concessions', pro.id, 'comments'), orderBy('date', 'desc'));
@@ -151,9 +216,9 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
 
   return (
     <div className="min-h-screen bg-background">
-      <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />
+      <UnifiedSiteHeader />
 
-      <main className="container mx-auto px-4 py-8 pt-24 md:pt-32 max-w-5xl">
+      <main className="container mx-auto max-w-5xl px-4 pb-8 pt-5 md:pt-6 lg:pt-8">
         {/* Breadcrumb : Accueil → Ville → Fiche */}
         {(() => {
           // Extraire la ville depuis l'adresse (après le code postal)
@@ -210,7 +275,7 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
                   <MapPin className="h-6 w-6 text-brand shrink-0" />
                   <div>
                     <p className="font-black text-lg uppercase tracking-tight">{pro.address}</p>
-                    <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_itineraire', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_itineraire', { pro: pro.title, source: 'fiche' }); }}>Calculer l'itinéraire</a></Button>
+                    <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_itineraire', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_itineraire', { pro: pro.title, source: 'fiche' }); trackStat('stats_itineraire'); }}>Calculer l'itinéraire</a></Button>
                   </div>
                 </div>
               </div>

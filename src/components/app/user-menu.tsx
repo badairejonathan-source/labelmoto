@@ -110,7 +110,7 @@ export default function UserMenu() {
             <DropdownMenuItem onClick={() => router.push('/login')} className="cursor-pointer font-bold">
               Se connecter
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push('/login?callbackUrl=/pro/register')} className="cursor-pointer">
+            <DropdownMenuItem onClick={() => router.push('/pro/register')} className="cursor-pointer">
               Inscrire mon etablissement
             </DropdownMenuItem>
           </>

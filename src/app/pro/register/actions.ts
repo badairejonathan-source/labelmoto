@@ -21,7 +21,6 @@ const submissionSchema = z.object({
   hp_field: z.string().max(0, "Spam détecté").optional(),
   horaires: z.string().optional(),
   imageUrl: z.string().url().optional().or(z.literal('')),
-  googleMapsUrl: z.string().url().optional().or(z.literal('')),
 });
 
 export async function submitProAction(formData: FormData) {
@@ -130,9 +129,6 @@ export async function submitProAction(formData: FormData) {
 
     imageUrl:
       getFormString('imageUrl'),
-
-    googleMapsUrl:
-      getFormString('googleMapsUrl'),
   };
 
   console.log('[SUBMIT-PRO] rawData reçu:', JSON.stringify(rawData));
@@ -174,7 +170,24 @@ export async function submitProAction(formData: FormData) {
       notesAdmin: '',
       horaires: validated.data.horaires ? JSON.parse(validated.data.horaires) : {},
       imageUrl: validated.data.imageUrl || '',
-      googleMapsUrl: validated.data.googleMapsUrl || '',
+      googleMapsUrl: '',
+      requestedByUid: decodedToken.uid,
+      requestedByEmail: verifiedEmail,
+      sourceEmailVerified: true,
+      submittedData: {
+        businessName: validated.data.businessName,
+        categoryRequested: validated.data.categoryRequested,
+        appSectionRequested: validated.data.appSectionRequested,
+        addressRaw: validated.data.addressRaw,
+        phone: validated.data.phone,
+        email: verifiedEmail,
+        website: validated.data.website || '',
+        facebook: validated.data.facebook || '',
+        instagram: validated.data.instagram || '',
+        description: validated.data.description || '',
+        horaires: validated.data.horaires ? JSON.parse(validated.data.horaires) : {},
+        imageUrl: validated.data.imageUrl || '',
+      },
       isClaimedRequested: true
     });
 

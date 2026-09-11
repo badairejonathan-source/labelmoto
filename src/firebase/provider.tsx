@@ -20,6 +20,18 @@ const ADMIN_EMAILS = [
   "badjoe950@hotmail.com"
 ];
 
+const AUTH_ROUTE_PREFIXES = [
+  '/account',
+  '/admin',
+  '/login',
+  '/pro/register',
+  '/pro/revendiquer',
+  '/pro/mes-fiches',
+  '/creators/register',
+  '/verify-email',
+  '/auth/action',
+];
+
 interface UserAuthState {
   user: User | null;
   profile: any | null;
@@ -43,6 +55,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
   firebaseApp,
 }) => {
   const pathname = usePathname();
+  const routeRequiresAuth = AUTH_ROUTE_PREFIXES.some(route => pathname?.startsWith(route));
   const [isAuthActive, setIsAuthActive] = useState(false);
   const [firestore, setFirestore] = useState<Firestore | null>(null);
   const [auth, setAuth] = useState<Auth | null>(null);
@@ -64,16 +77,20 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
     const authInstance = getAuthInstance();
     if (!authInstance) return;
 
+    // Dès qu'une route ou un composant demande l'authentification,
+    // on passe immédiatement en état de chargement. Cela évite
+    // qu'une page protégée interprète le premier rendu comme
+    // "utilisateur déconnecté" avant que Firebase ait restauré la session.
+    setUserAuthState(prev => ({ ...prev, isUserLoading: true }));
     setAuth(authInstance);
     setIsAuthActive(true);
   };
 
   useEffect(() => {
-    const privateRoutes = ['/account', '/admin', '/login', '/pro/register', '/verify-email', '/auth/action'];
-    if (privateRoutes.some(route => pathname?.startsWith(route))) {
+    if (routeRequiresAuth) {
       activateAuth();
     }
-  }, [pathname]);
+  }, [pathname, routeRequiresAuth]);
 
   useEffect(() => {
     if (!isAuthActive || !firestore || !auth) return;
@@ -190,9 +207,12 @@ export const FirebaseProvider: React.FC<{ children: ReactNode; firebaseApp: Fire
     firestore,
     auth,
     ...userAuthState,
+    // Sur une route protégée, le tout premier rendu doit attendre
+    // l'initialisation Firebase avant de décider qu'il n'y a pas d'utilisateur.
+    isUserLoading: userAuthState.isUserLoading || (routeRequiresAuth && !isAuthActive),
     isAuthActive,
     activateAuth,
-  }), [firebaseApp, firestore, auth, userAuthState, isAuthActive]);
+  }), [firebaseApp, firestore, auth, userAuthState, isAuthActive, routeRequiresAuth]);
 
   return (
     <FirebaseContext.Provider value={contextValue}>

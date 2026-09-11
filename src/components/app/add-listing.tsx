@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, getDoc, serverTimestamp, writeBatch } from 'firebase/firestore';
 import { useFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,7 +41,7 @@ function extractPostalCode(address: string): string {
 }
 
 export default function AddListing() {
-  const { firestore } = useFirebase();
+  const { firestore, user } = useFirebase();
   const { toast } = useToast();
 
   const [form, setForm] = useState({
@@ -167,7 +167,83 @@ export default function AddListing() {
         createdViaAdmin: true,
       };
 
-      await setDoc(doc(firestore, form.collectionName, slug), fiche);
+      const batch =
+        writeBatch(firestore);
+
+      batch.set(
+        doc(
+          firestore,
+          form.collectionName,
+          slug
+        ),
+        fiche
+      );
+
+      batch.set(
+        doc(
+          firestore,
+          'cache',
+          `map-live-${form.collectionName}-${slug}`
+        ),
+        {
+          kind:
+            'map_point_live',
+
+          sourceCollection:
+            form.collectionName,
+
+          id:
+            slug,
+
+          lat:
+            coords.lat,
+
+          lng:
+            coords.lng,
+
+          t:
+            fiche.title,
+
+          s:
+            slug,
+
+          a:
+            fiche.appSection,
+
+          c:
+            fiche.category,
+
+          r:
+            0,
+
+          i:
+            fiche.imgUrl || null,
+
+          addr:
+            fiche.address,
+
+          b:
+            [],
+
+          updatedAt:
+            new Date(),
+        }
+      );
+
+      batch.set(doc(collection(firestore, 'listing_history')), {
+        listingKey: `${form.collectionName}/${slug}`,
+        targetCollection: form.collectionName,
+        targetId: slug,
+        targetTitle: fiche.title,
+        eventType: 'listing_created_admin',
+        summary: 'Fiche créée directement par Label Moto',
+        actorType: 'admin',
+        actorUid: user?.uid || '',
+        createdAt: serverTimestamp(),
+      });
+
+      await batch.commit();
+
       setCreatedSlug(slug);
       toast({ title: 'Fiche créée !', description: `${form.collectionName}/${slug}` });
     } catch (e: any) {

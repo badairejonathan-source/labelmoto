@@ -8,6 +8,7 @@ import { Search, User as UserIcon, Menu, MapPin, Store, X, Bike, Wrench, Users, 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import LabelMotoLogo from './logo';
+import UnifiedSiteHeader from './unified-site-header';
 const UserMenuLazy = dynamic(() => import('@/components/app/user-menu'), { 
   ssr: false,
   loading: () => <div className="h-10 w-[132px] sm:h-11 sm:w-[150px] rounded-full bg-white/50" />
@@ -17,11 +18,86 @@ import locationsData from '@/data/locations.json';
 import brandLogos from '@/data/brand-logos';
 import { cn } from '@/lib/utils';
 import { loadPublicMapPoints } from '@/lib/public-map-points';
+import { initializeFirebaseClient } from '@/firebase/config-client';
+import {
+  collection,
+  getDocs,
+  getFirestore,
+  query,
+  where,
+} from 'firebase/firestore';
 
 const brandsList = Object.keys(brandLogos);
 
 function normalizeStr(str: string): string {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, '').trim();
+}
+
+function normalizeProfessionalStr(
+  str: string
+): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(
+      /[\u0300-\u036f]/g,
+      ''
+    )
+    .replace(
+      /&/g,
+      ' et '
+    )
+    .replace(
+      /[^a-z0-9\s]/g,
+      ' '
+    )
+    .replace(
+      /\s+/g,
+      ' '
+    )
+    .trim();
+}
+
+function professionalSimilarityScore(
+  query: string,
+  target: string
+): number {
+  const q =
+    normalizeProfessionalStr(
+      query
+    );
+
+  const t =
+    normalizeProfessionalStr(
+      target
+    );
+
+  if (t === q) return 100;
+  if (t.startsWith(q)) return 90;
+  if (t.includes(q)) return 70;
+
+  const tokens =
+    q.split(/\s+/);
+
+  const matched =
+    tokens.filter(
+      token =>
+        token.length > 1 &&
+        t.includes(token)
+    );
+
+  if (
+    matched.length ===
+    tokens.length
+  ) {
+    return 60;
+  }
+
+  if (matched.length > 0) {
+    return 40;
+  }
+
+  return 0;
 }
 
 function similarityScore(query: string, target: string): number {
@@ -89,7 +165,9 @@ function generateBbox(lat: number, lng: number, type: string): [number, number, 
 }
 
 const Header: React.FC<any> = ({
-  searchTerm, onSearchTermChange, onSearch,
+  searchTerm = '',
+  onSearchTermChange = () => {},
+  onSearch = () => {},
   onSuggestionSelect,
   placeholderText = "Recherche par département, ville, marque...",
   searchOnly = false
@@ -121,35 +199,224 @@ const Header: React.FC<any> = ({
   const suggestionsListId = 'labelmoto-search-suggestions';
 
   useEffect(() => {
-    if (!isFocused || allDealers.length > 0) return;
+    if (
+      !isFocused ||
+      allDealers.length > 0
+    ) {
+      return;
+    }
 
     let cancelled = false;
 
-    loadPublicMapPoints()
-      .then(points => {
-        if (cancelled) return;
+    const loadDealers =
+      async () => {
+        try {
+          const staticPoints =
+            await loadPublicMapPoints();
 
-        setAllDealers(
-          points.map(point => ({
-            type: 'dealer',
-            label: point.title || point.id,
-            subLabel: point.address || '',
-            lat: point.latitude,
-            lng: point.longitude,
-            id: point.id,
-            zoom: 15,
-            appSection: point.appSection || 'shopping',
-          }))
-        );
-      })
-      .catch(error => {
-        console.error('[HEADER] Erreur chargement index public :', error);
-      });
+          const staticDealers =
+            staticPoints.map(
+              point => ({
+                type:
+                  'dealer' as const,
+
+                label:
+                  point.title ||
+                  point.id,
+
+                subLabel:
+                  point.address ||
+                  '',
+
+                lat:
+                  point.latitude,
+
+                lng:
+                  point.longitude,
+
+                id:
+                  point.id,
+
+                zoom:
+                  15,
+
+                appSection:
+                  point.appSection ||
+                  'shopping',
+              })
+            );
+
+          let liveDealers:
+            Suggestion[] = [];
+
+          try {
+            const {
+              firebaseApp
+            } =
+              initializeFirebaseClient();
+
+            if (firebaseApp) {
+              const db =
+                getFirestore(
+                  firebaseApp
+                );
+
+              const snapshot =
+                await getDocs(
+                  query(
+                    collection(
+                      db,
+                      'cache'
+                    ),
+                    where(
+                      'kind',
+                      '==',
+                      'map_point_live'
+                    )
+                  )
+                );
+
+              liveDealers =
+                snapshot.docs
+                  .map(document => {
+                    const data =
+                      document.data();
+
+                    const lat =
+                      Number(
+                        data.lat
+                      );
+
+                    const lng =
+                      Number(
+                        data.lng
+                      );
+
+                    return {
+                      type:
+                        'dealer' as const,
+
+                      label:
+                        String(
+                          data.t ||
+                          data.title ||
+                          data.id ||
+                          ''
+                        ),
+
+                      subLabel:
+                        String(
+                          data.addr ||
+                          data.address ||
+                          ''
+                        ),
+
+                      lat,
+                      lng,
+
+                      id:
+                        String(
+                          data.id ||
+                          ''
+                        ),
+
+                      zoom:
+                        15,
+
+                      appSection:
+                        String(
+                          data.a ||
+                          data.appSection ||
+                          'shopping'
+                        ),
+                    };
+                  })
+                  .filter(
+                    dealer =>
+                      Boolean(
+                        dealer.id
+                      ) &&
+                      Boolean(
+                        dealer.label
+                      ) &&
+                      Number.isFinite(
+                        dealer.lat
+                      ) &&
+                      Number.isFinite(
+                        dealer.lng
+                      )
+                  );
+            }
+          }
+          catch (error) {
+            console.warn(
+              '[HEADER] Index live indisponible :',
+              error
+            );
+          }
+
+          const merged =
+            new Map<
+              string,
+              Suggestion
+            >();
+
+          for (
+            const dealer
+            of staticDealers
+          ) {
+            if (dealer.id) {
+              merged.set(
+                dealer.id,
+                dealer
+              );
+            }
+          }
+
+          /*
+           * Le live passe après :
+           * il remplace l'ancien point
+           * portant le même ID.
+           */
+          for (
+            const dealer
+            of liveDealers
+          ) {
+            if (dealer.id) {
+              merged.set(
+                dealer.id,
+                dealer
+              );
+            }
+          }
+
+          if (cancelled) {
+            return;
+          }
+
+          setAllDealers(
+            Array.from(
+              merged.values()
+            )
+          );
+        }
+        catch (error) {
+          console.error(
+            '[HEADER] Erreur chargement index public :',
+            error
+          );
+        }
+      };
+
+    void loadDealers();
 
     return () => {
       cancelled = true;
     };
-  }, [isFocused, allDealers.length]);
+  }, [
+    isFocused,
+    allDealers.length,
+  ]);
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -282,8 +549,18 @@ const Header: React.FC<any> = ({
 
     // 5. Établissements
     allDealers.forEach(d => {
-      const score = similarityScore(normalized, d.label);
-      if (score >= 50) addIfNew({ ...d, score });
+      const score =
+        professionalSimilarityScore(
+          raw,
+          d.label
+        );
+
+      if (score >= 50) {
+        addIfNew({
+          ...d,
+          score,
+        });
+      }
     });
 
     results.sort((a, b) => (b.score || 0) - (a.score || 0));
@@ -828,57 +1105,7 @@ const Header: React.FC<any> = ({
 
   if (searchOnly) return searchInput;
 
-  return (
-    <div
-      className={cn(
-        "w-full flex flex-col",
-        pathname === "/map"
-          ? "gap-3 pt-2 pb-2"
-          : "gap-6 md:gap-8 pt-4 pb-6 bg-brand"
-      )}
-    >
-      <div
-        className={cn(
-          "flex items-center justify-between w-full max-w-7xl mx-auto",
-          pathname === "/map"
-            ? "gap-3 px-4"
-            : "gap-4 px-6 md:px-12 lg:px-20"
-        )}
-      >
-        <div className="shrink-0">
-          <LabelMotoLogo
-            className={cn(
-              "h-auto",
-              pathname === "/map"
-                ? "w-[132px] sm:w-[145px]"
-                : "w-[164px] sm:w-[200px] md:w-[255px]"
-            )}
-          />
-        </div>
-        <div className="flex-1 flex justify-center px-4">
-          <div className="hidden md:block bg-white/95 backdrop-blur-md rounded-[2rem] shadow-xl border-2 border-white px-6 py-2.5 md:px-8 md:py-4 text-center max-w-[200px] md:max-w-sm">
-            <p className="text-[7px] md:text-[11px] font-black uppercase tracking-widest text-foreground leading-tight">TROUVER UNE CONCESSION ?</p>
-            <p className="text-[9px] md:text-sm font-black italic text-brand leading-none">FINI LA GALÈRE.</p>
-          </div>
-        </div>
-        <div className="shrink-0 flex items-center gap-3">
-          <UserMenuLazy />
-        </div>
-      </div>
-      <div
-        className={cn(
-          "w-full max-w-6xl mx-auto relative flex items-center",
-          pathname === "/map"
-            ? "gap-3 px-3"
-            : "gap-8 px-4 md:px-0"
-        )}
-      >
-        {pathname !== "/" && <div className="flex-1">{searchInput}</div>}
-
-      </div>
-
-    </div>
-  );
+  return <UnifiedSiteHeader />;
 };
 
 export default Header;

@@ -211,7 +211,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 1000,
       title: 'Révision de rodage',
-      price_estimate: 'Tarif à confirmer',
+      price_estimate: '≈120–180 €',
       price_type: 'estimate',
 
       operations: [
@@ -236,7 +236,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 5000,
       title: 'Entretien périodique',
-      price_estimate: '≈ 120–210 €',
+      price_estimate: '≈120–210 €',
       price_type: 'estimate',
 
       operations: [
@@ -261,7 +261,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 10000,
       title: 'Entretien renforcé',
-      price_estimate: '≈ 170–290 €',
+      price_estimate: '≈170–290 €',
       price_type: 'estimate',
 
       operations: [
@@ -291,7 +291,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 15000,
       title: 'Entretien périodique',
-      price_estimate: '≈ 120–210 €',
+      price_estimate: '≈120–210 €',
       price_type: 'estimate',
 
       operations: [
@@ -306,7 +306,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 20000,
       title: 'Grande révision',
-      price_estimate: '≈ 250–430 €',
+      price_estimate: '≈250–430 €',
       price_type: 'estimate',
 
       operations: [
@@ -326,7 +326,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 25000,
       title: 'Entretien périodique',
-      price_estimate: '≈ 120–210 €',
+      price_estimate: '≈120–210 €',
       price_type: 'estimate',
 
       operations: [
@@ -341,7 +341,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 30000,
       title: 'Entretien majeur',
-      price_estimate: '≈ 250–430 €',
+      price_estimate: '≈250–430 €',
       price_type: 'estimate',
 
       operations: [
@@ -356,7 +356,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     {
       km: 35000,
       title: 'Entretien périodique',
-      price_estimate: '≈ 120–210 €',
+      price_estimate: '≈120–210 €',
       price_type: 'estimate',
 
       operations: [
@@ -375,7 +375,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
       km: 40000,
       title: 'Contrôle majeur',
       price_estimate:
-        '≈ 250–430 € + réglage soupapes si nécessaire',
+        '≈250–430 € + réglage soupapes si nécessaire',
       price_type: 'estimate',
 
       operations: [
@@ -395,37 +395,42 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
 
 
   budget: {
-    title:
-      "Repères de coût d'entretien",
-
+    title: "Repères de coût d'entretien",
     cards: [
       {
-        label:
-          'Révision périodique 5 000 km',
-        value:
-          '≈ 120–210 €',
-        note:
-          'Estimation LabelMoto / tarifs observés',
+        label: 'Première révision 1 000 km',
+        value: '≈120–180 €',
+        note: 'Estimation déjà présente dans les données LabelMoto V1',
       },
       {
-        label:
-          'Révision 10 000 km',
-        value:
-          '≈ 170–290 €',
-        note:
-          'Estimation LabelMoto',
+        label: 'Révision périodique 5 000 km',
+        value: '≈120–210 €',
+        note: 'Estimation LabelMoto',
       },
       {
-        label:
-          'Grande révision',
-        value:
-          '≈ 250–430 €',
-        note:
-          'Hors opération supplémentaire importante',
+        label: 'Révision 10 000 km',
+        value: '≈170–290 €',
+        note: 'Huile, filtre et consommables selon échéance',
+      },
+      {
+        label: 'Révision 20 000 / 30 000 km',
+        value: '≈250–430 €',
+        note: 'Entretien renforcé selon tableau constructeur',
+      },
+      {
+        label: 'Contrôle majeur 40 000 km',
+        value: '≈250–430 € + réglage soupapes si nécessaire',
+        note: 'Le coût augmente si un réglage des soupapes est nécessaire',
+      },
+      {
+        label: 'Pneus / transmission',
+        value: 'Pneus ≈175–300 € · kit chaîne ≈120–175 €',
+        note: 'Prix pièces observés · montage en supplément',
       },
     ],
+    note:
+      'Fourchettes indicatives et non contractuelles. Le montant réel dépend de l’atelier, des pièces remplacées, de la région et de l’état de la moto.',
   },
-
 
   maintenance_details: [
     {
@@ -680,7 +685,101 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
   ],
 
 
-  consumables_v2: [],
+  consumables_v2: [
+    {
+      part: 'Huile moteur',
+      specification: 'SAE 10W-40 · API SJ+ · JASO MA2',
+      replacement_interval: '5 000 km / 1 an selon plan France',
+      observed_price: '≈30–60 € les 2,5 L',
+      source_type: 'observed',
+      note:
+        'Repère de marché français ; prix variable selon marque et conditionnement.',
+    },
+    {
+      part: 'Filtre huile',
+      specification: 'OEM CFMOTO 0700-070200',
+      replacement_interval: 'Avec la vidange selon plan applicable',
+      observed_price: '≈9–15 €',
+      source_type: 'observed',
+      note:
+        'Référence OEM confirmée dans le catalogue pièces 450SR.',
+    },
+    {
+      part: 'Filtre air',
+      specification: 'OEM CFMOTO 0SQV-112000-1000',
+      replacement_interval:
+        'Contrôle périodique · remplacement selon tableau / état',
+      observed_price: '≈13 € OEM observé en France',
+      source_type: 'observed',
+    },
+    {
+      part: 'Bougies',
+      specification: '2 × TORCH BN8RTI',
+      replacement_interval: 'Selon tableau constructeur',
+      observed_price: '≈35–45 € les 2',
+      source_type: 'observed',
+      note:
+        'Vérifier la référence applicable au millésime / VIN avant achat.',
+    },
+    {
+      part: 'Liquide de refroidissement',
+      specification:
+        'Liquide organique · circuit env. 1,10 L + vase env. 0,09–0,15 L',
+      replacement_interval: '2 ans',
+      observed_price: '≈14–26 € les 2 L',
+      source_type: 'observed',
+    },
+    {
+      part: 'Frein - liquide DOT 4',
+      specification: 'DOT 4',
+      replacement_interval: '2 ans',
+      observed_price: '≈8–15 € le flacon',
+      source_type: 'observed',
+    },
+    {
+      part: 'Frein - purge ABS',
+      specification:
+        'Purge circuit avant + arrière avec ABS',
+      replacement_interval:
+        'Selon échéance liquide / intervention',
+      observed_price: '≈55–90 € en atelier',
+      source_type: 'observed',
+    },
+    {
+      part: 'Frein - plaquettes route',
+      specification:
+        'Brembo / Tecnium ou équivalent compatible 450SR',
+      replacement_interval: 'Selon usure',
+      observed_price:
+        '≈23–42 € le jeu adaptable · ≈139,80 € pack origine observé',
+      source_type: 'observed',
+      note:
+        'Prix pièces observés ; les références diffèrent entre avant et arrière.',
+    },
+    {
+      part: 'Pneus sport / route 17 pouces',
+      specification: '110/70 R17 · 150/60 R17',
+      replacement_interval:
+        'Selon gomme, usage et profondeur restante',
+      observed_price:
+        '≈175–300 € le train · ≈220–350 € monté',
+      source_type: 'observed',
+      note:
+        'Fourchette couvrant des pneus sport et sport-touring homologués.',
+    },
+    {
+      part: 'Chaîne - kit complet',
+      specification:
+        'Kit chaîne 520 · démultiplication origine observée 14/41',
+      replacement_interval:
+        'Selon usure / tension / entretien',
+      observed_price:
+        '≈120–175 € le kit · ≈180–235 € monté',
+      source_type: 'observed',
+      note:
+        'AFAM et DID compatibles 450SR observés sur le marché français.',
+    },
+  ],
 
 
   known_issues_v2: [
@@ -817,9 +916,13 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
     recall_checked:
       true,
 
+    pricing_type:
+      'mixed',
+
+
 
     last_verified:
-      '23/08/2026',
+      '08/09/2026',
 
     sources: [
       {
@@ -938,6 +1041,67 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
         note:
           "Références filtre à huile et filtre à air.",
       },
+      {
+        label:
+          'Only-CFMOTO · pièces entretien 450SR',
+        type:
+          'observed',
+        market:
+          'France',
+        model_year:
+          '08/09/2026',
+        url:
+          'https://only-cfmoto.com/12-sportives-sr-cfmoto-accessoires',
+        note:
+          'Filtre à air OEM 450SR observé à 13,18 € ; prix variable et non contractuel.',
+      },
+
+      {
+        label:
+          '3AS Racing · consommables CFMOTO 450SR',
+        type:
+          'observed',
+        market:
+          'France',
+        model_year:
+          '08/09/2026',
+        url:
+          'https://www.3as-racing.com/parts/moto/cfmoto/450-sr-2025/43407-plaquette-de-frein',
+        note:
+          'Plaquettes compatibles et kit chaîne 520 observés ; tarifs variables.',
+      },
+
+      {
+        label:
+          'Moto And Co · kit chaîne AFAM 450SR',
+        type:
+          'observed',
+        market:
+          'France',
+        model_year:
+          '08/09/2026',
+        url:
+          'https://www.motoandco.fr/kit-chaine/kit-chaine-afam-cf-moto-450sr-et-450nk-18067.html',
+        note:
+          'Kit chaîne 520 AFAM compatible 450SR, configuration origine 14/41.',
+      },
+
+      {
+        label:
+          'Marché France · pneus 110/70 R17 et 150/60 R17',
+        type:
+          'observed',
+        market:
+          'France',
+        model_year:
+          '08/09/2026',
+        url:
+          'https://www.maisondupneu.fr/pneus-moto/bridgestone/s22',
+        note:
+          'Repère de prix pour un train sport homologué dans les dimensions de la 450SR.',
+      },
+
+
 
       {
         label:

@@ -205,44 +205,44 @@ const TECH_SHEETS = [
   {
     brand: 'CFMOTO',
     model: '450MT',
-    href: '/fiches/cfmoto-450mt-2024-plus',
-    image: '/images/entretien-cfmoto-450mt.webp',
+    href: "/entretien?fiche=cfmoto-450mt-2024-plus",
+    image: "/images/motorcycles/cfmoto-450MT.webp",
   },
   {
     brand: 'Honda',
     model: 'XL750 Transalp',
-    href: '/fiches/honda-xl750-transalp-2023-plus',
-    image: '/images/honda-xl750-transalp-2023-plus.webp',
+    href: "/entretien?fiche=honda-xl750-transalp-2023-plus",
+    image: "/images/motorcycles/Honda-XL750-Transalp.webp",
   },
   {
     brand: 'Yamaha',
     model: 'MT-07',
-    href: '/fiches/yamaha-mt-07-2021-plus',
-    image: '/images/yamaha-mt07-2021-plus.webp',
+    href: "/entretien?fiche=yamaha-mt-07-2021-plus",
+    image: "/images/motorcycles/Yamaha-MT07-original-v2.jpg",
   },
   {
     brand: 'VOGE',
     model: 'DS900X',
-    href: '/fiches/voge-ds900x-2025-plus',
-    image: null,
+    href: "/entretien?fiche=voge-ds900x-2025-plus",
+    image: "/images/motorcycles/voge-DS900X(4).webp",
   },
   {
     brand: 'QJ Motor',
     model: 'SRK 800 RR',
-    href: '/fiches/qjmotor-srk800rr-2024-plus',
-    image: '/images/qjmotor-srk800rr-2024-plus.webp',
+    href: "/entretien?fiche=qjmotor-srk800rr-2024-plus",
+    image: "/images/motorcycles/QJmotor-srk800rr.webp",
   },
   {
     brand: 'CFMOTO',
     model: '800MT',
-    href: '/fiches/cfmoto-800mt-sport-explore-2023-plus',
-    image: '/images/entretien-cfmoto-800mt.webp',
+    href: "/entretien?fiche=cfmoto-800mt-sport-explore-2023-plus",
+    image: "/images/motorcycles/cfmoto-800MT-explore.webp",
   },
   {
     brand: 'KOVE',
     model: '800X Pro',
-    href: '/fiches/kove-800x-pro-2024-plus',
-    image: null,
+    href: "/entretien?fiche=kove-800x-pro-2024-plus",
+    image: "/images/motorcycles/kove-800x-pro-v2.webp",
   },
 ];
 
@@ -3097,6 +3097,10 @@ function BottomBarScrollController() {
         return;
       }
 
+      if (!searchZone) {
+        return;
+      }
+
       const searchRect =
         searchZone.getBoundingClientRect();
 
@@ -4163,7 +4167,7 @@ function DesktopProSection() {
               "
             >
               <Link
-                href="/login?callbackUrl=/pro/register"
+                href="/pro/register"
                 className="
                   inline-flex
                   min-h-[54px]
@@ -4183,7 +4187,7 @@ function DesktopProSection() {
                   hover:opacity-90
                 "
               >
-                Créer ma fiche pro
+                Créer ma fiche
 
                 <ArrowRight
                   className="
@@ -4211,7 +4215,7 @@ function DesktopProSection() {
                   hover:text-brand
                 "
               >
-                Modifier ma fiche
+                Revendiquer ma fiche
 
                 <ArrowRight
                   className="
@@ -6140,7 +6144,7 @@ export default function HomepageRoad() {
               "
             >
               <Link
-                href="/login?callbackUrl=/pro/register"
+                href="/pro/register"
                 className="
                   flex
                   min-h-[44px]
@@ -6155,7 +6159,7 @@ export default function HomepageRoad() {
                   text-white
                 "
               >
-                Créer ma fiche pro
+                Créer ma fiche
               </Link>
 
               <Link
@@ -6175,7 +6179,7 @@ export default function HomepageRoad() {
                   text-brand
                 "
               >
-                Modifier ma fiche
+                Revendiquer ma fiche
               </Link>
             </div>
           </div>

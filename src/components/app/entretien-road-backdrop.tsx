@@ -5,7 +5,15 @@
 
 export default function EntretienRoadBackdrop() {
   return (
-    <svg
+    <>
+    <div
+        className="
+          absolute
+          inset-0
+          lg:hidden
+        "
+      >
+        <svg
       aria-hidden="true"
       viewBox="0 0 430 12000"
       preserveAspectRatio="none"
@@ -950,5 +958,77 @@ export default function EntretienRoadBackdrop() {
         strokeLinejoin="round"
       />
 </svg>
+      </div>
+
+      {/* LABELMOTO_DESKTOP_ROAD_V2 */}
+      <svg
+        aria-hidden="true"
+        width="1600"
+        height="30000"
+        viewBox="0 0 1600 30000"
+        preserveAspectRatio="xMidYMin meet"
+        className="
+          absolute
+          left-1/2
+          top-0
+          hidden
+          max-w-none
+          -translate-x-1/2
+          lg:block
+        "
+        style={{
+          width:
+            'clamp(1200px, 100vw, 1600px)',
+          height: 'auto',
+        }}
+      >
+        <path
+          d={[
+            'M 280 80',
+
+            ...Array.from(
+              { length: 35 },
+              (_, index) => {
+                const startY =
+                  80 +
+                  index * 850;
+
+                const endY =
+                  startY +
+                  850;
+
+                if (
+                  index % 2 === 0
+                ) {
+                  return (
+                    'C 520 ' +
+                    (startY + 180) +
+                    ' 1320 ' +
+                    (startY + 520) +
+                    ' 1320 ' +
+                    endY
+                  );
+                }
+
+                return (
+                  'C 1320 ' +
+                  (startY + 330) +
+                  ' 280 ' +
+                  (startY + 670) +
+                  ' 280 ' +
+                  endY
+                );
+              }
+            ),
+          ].join(' ')}
+          fill="none"
+          stroke="#e75b00"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+    </>
   );
 }

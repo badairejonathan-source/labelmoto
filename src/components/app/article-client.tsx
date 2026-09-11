@@ -274,7 +274,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         });
 
         return { dayLabel, filteredSessions };
-    }).filter(day => day.filteredSessions.length > 0);
+    }).filter((day: { dayLabel: string; filteredSessions: any[] }) => day.filteredSessions.length > 0);
 
     return (
       <div key={key} className="my-10">
@@ -643,7 +643,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   };
 
   if (isLoading || !article) return (
-    <div className="min-h-screen bg-background">
+    <div className={showHeader ? "min-h-screen bg-background" : "min-h-screen bg-transparent"}>
         {showHeader && <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />}
         <main className="container mx-auto px-4 py-8">
             <div className="max-w-6xl mx-auto space-y-6 pt-28">
@@ -664,7 +664,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const rootSchedule = article.schedule_card || article.schedule;
 
   return (
-    <div className="min-h-screen relative bg-background">
+    <div className={showHeader ? "min-h-screen relative bg-background" : "min-h-screen relative bg-transparent"}>
       {showHeader && <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />}
       {breadcrumbLd && (
         <Script

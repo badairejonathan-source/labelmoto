@@ -3,7 +3,7 @@
 import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useFirebase } from '@/firebase/client';
+import { useFirebase, useUser } from '@/firebase/client';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -31,9 +31,23 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { auth, firestore } = useFirebase();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
   const callbackUrl = searchParams.get('callbackUrl') || '/';
+
+  // Si Firebase a déjà restauré une session, ne jamais réafficher le formulaire
+  // de connexion. On reprend directement le parcours demandé.
+  useEffect(() => {
+    if (isUserLoading || !user) return;
+
+    if (!user.emailVerified) {
+      router.replace(`/verify-email?email=${encodeURIComponent(user.email || '')}&callbackUrl=${encodeURIComponent(callbackUrl)}`);
+      return;
+    }
+
+    router.replace(callbackUrl);
+  }, [user, isUserLoading, router, callbackUrl]);
 
   // LABELMOTO DIRECT REGISTER TAB
   useEffect(() => {
