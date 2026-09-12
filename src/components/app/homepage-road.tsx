@@ -218,7 +218,7 @@ const TECH_SHEETS = [
     brand: 'Yamaha',
     model: 'MT-07',
     href: "/entretien?fiche=yamaha-mt-07-2021-plus",
-    image: "/images/motorcycles/Yamaha-MT07-original-v2.jpg",
+    image: "/images/motorcycles/Yamaha-MT07.webp",
   },
   {
     brand: 'VOGE',

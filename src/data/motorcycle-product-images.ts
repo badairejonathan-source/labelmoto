@@ -156,7 +156,7 @@ const entries: MotorcycleProductImageEntry[] = [
 
   // YAMAHA
   {
-    imageUrl: "/images/motorcycles/Yamaha-MT03-original-v2.jpg",
+    imageUrl: "/images/motorcycles/Yamaha-MT03.webp",
     exactIds: ['yamaha-mt-03-2020-plus'],
     aliases: ['yamaha mt 03', 'yamaha mt03'],
   },
@@ -230,7 +230,7 @@ const entries: MotorcycleProductImageEntry[] = [
     aliases: ['kove nk 125r', 'kove nk125r', 'kove nk 125 r'],
   },
   {
-    imageUrl: "/images/motorcycles/kove-510x.webp",
+    imageUrl: "/images/motorcycles/kove-510X.webp",
     exactIds: ['kove-510x-2025-plus'],
     aliases: ['kove 510x', 'kove 510 x'],
   },
@@ -390,26 +390,26 @@ const entries: MotorcycleProductImageEntry[] = [
     aliases: ['kawasaki er6n', 'kawasaki er 6n', 'kawasaki er-6n'],
   },
   {
-    imageUrl: "/images/motorcycles/Yamaha-Tracer-7-original-v2.jpg",
+    imageUrl: "/images/motorcycles/Yamaha-Tracer-7.webp",
     exactIds: ['yamaha-tracer-7-2021-plus'],
     aliases: ['yamaha tracer 7', 'yamaha tracer7'],
   },
   {
-    imageUrl: "/images/motorcycles/Yamaha-MT07-original-v2.jpg",
+    imageUrl: "/images/motorcycles/Yamaha-MT07.webp",
     exactIds: ['yamaha-mt-07-2021-plus'],
     aliases: ['yamaha mt 07', 'yamaha mt07'],
   },
   {
-    imageUrl: "/images/motorcycles/Yamaha-MT09-original-v2.jpg",
+    imageUrl: "/images/motorcycles/Yamaha-MT09.webp",
     exactIds: ['yamaha-mt09-2021-plus'],
     aliases: ['yamaha mt 09', 'yamaha mt09'],
   },
   {
-    imageUrl: "/images/motorcycles/Yamaha-XSR700-original-v2.jpg",
+    imageUrl: "/images/motorcycles/Yamaha-XSR700.webp",
     aliases: ['yamaha xsr700', 'yamaha xsr 700'],
   },
   {
-    imageUrl: "/images/motorcycles/Yamaha-Tenere-700-original-v2.jpg",
+    imageUrl: "/images/motorcycles/Yamaha-Tenere-700.webp",
     exactIds: ['yamaha-tenere700-2019-plus'],
     aliases: ['yamaha tenere 700', 'yamaha tenere700', 'yamaha xtz700'],
   },
