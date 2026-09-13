@@ -37,6 +37,9 @@ import {
 
 import LabelMotoLogo from '@/components/app/logo';
 import UserMenu from '@/components/app/user-menu';
+import {
+  resolveMapProfessionSearch,
+} from '@/app/lib/map-search-intent';
 
 type Side =
   | 'left'
@@ -64,13 +67,13 @@ const QUICK_CHOICES: QuickChoice[] = [
   {
     label: 'Concessions',
     value: 'Concession moto',
-    filter: 'shopping',
+    filter: 'concessionnaires-revendeurs',
     icon: Store,
   },
   {
     label: 'Garages',
     value: 'Garage moto',
-    filter: 'service',
+    filter: 'ateliers-mecaniciens',
     icon: Wrench,
   },
   {
@@ -257,41 +260,6 @@ function normalizeSearch(
       ''
     )
     .trim();
-}
-
-function inferFilter(
-  value: string
-) {
-  const normalized =
-    normalizeSearch(value);
-
-  if (
-    normalized.includes('garage') ||
-    normalized.includes('atelier') ||
-    normalized.includes('mecan')
-  ) {
-    return 'service';
-  }
-
-  if (
-    normalized.includes('concession')
-  ) {
-    return 'shopping';
-  }
-
-  if (
-    normalized.includes('association')
-  ) {
-    return 'association';
-  }
-
-  if (
-    normalized.includes('relais')
-  ) {
-    return 'relais';
-  }
-
-  return '';
 }
 
 /*
@@ -2032,9 +2000,14 @@ function HeroSearch() {
       const params =
         new URLSearchParams();
 
+      const professionSearch =
+        resolveMapProfessionSearch(
+          what,
+          selectedFilter
+        );
+
       const filter =
-        selectedFilter ||
-        inferFilter(what);
+        professionSearch.filter;
 
       if (filter) {
         params.set(
@@ -2046,40 +2019,12 @@ function HeroSearch() {
       // ===============================================
       // CHAMP "QUE RECHERCHEZ-VOUS ?"
       //
-      // La catégorie passe dans ?filter=.
-      // On conserve cependant une éventuelle marque.
+      // Le métier est converti en filtre canonique.
+      // Le reliquat (marque / nom utile) reste dans ?search=.
       // ===============================================
 
-      let whatForSearch =
-        what.trim();
-
-      if (filter && whatForSearch) {
-        whatForSearch =
-          whatForSearch
-            .replace(
-              /\b(concessions?|concessionnaires?|garages?|ateliers?|associations?|relais|services?)\b/gi,
-              ' '
-            )
-            .replace(
-              /\s+/g,
-              ' '
-            )
-            .trim();
-
-        const normalizedResidual =
-          normalizeSearch(
-            whatForSearch
-          );
-
-        if (
-          normalizedResidual === 'moto' ||
-          normalizedResidual === 'motos' ||
-          normalizedResidual === 'motard' ||
-          normalizedResidual === 'motards'
-        ) {
-          whatForSearch = '';
-        }
-      }
+      const whatForSearch =
+        professionSearch.query;
 
       // ===============================================
       // CHAMP "OU ?"
@@ -2091,108 +2036,6 @@ function HeroSearch() {
       const normalizedWhere =
         normalizeSearch(
           rawWhere
-        );
-
-      // ===============================================
-      // ARRONDISSEMENTS
-      //
-      // Paris 13
-      // Paris 13e
-      // Paris 13eme
-      // 13e arrondissement Paris
-      //
-      // Lyon 3
-      // Marseille 8
-      // ===============================================
-
-      const cityFirstArrondissement =
-        normalizedWhere.match(
-          /^(paris|lyon|marseille)\s+(\d{1,2})\s*(?:er|e|eme)?(?:\s+arrondissement)?$/
-        );
-
-      const numberFirstArrondissement =
-        normalizedWhere.match(
-          /^(\d{1,2})\s*(?:er|e|eme)?(?:\s+arrondissement)?\s+(?:de\s+)?(paris|lyon|marseille)$/
-        );
-
-      let arrondissementCity:
-        string | null = null;
-
-      let arrondissementNumber:
-        number | null = null;
-
-      if (cityFirstArrondissement) {
-        arrondissementCity =
-          cityFirstArrondissement[1];
-
-        arrondissementNumber =
-          Number(
-            cityFirstArrondissement[2]
-          );
-      }
-      else if (numberFirstArrondissement) {
-        arrondissementCity =
-          numberFirstArrondissement[2];
-
-        arrondissementNumber =
-          Number(
-            numberFirstArrondissement[1]
-          );
-      }
-
-      const arrondissementConfig:
-        Record<
-          string,
-          {
-            max: number;
-            prefix: string;
-          }
-        > = {
-          paris: {
-            max: 20,
-            prefix: '75',
-          },
-          lyon: {
-            max: 9,
-            prefix: '69',
-          },
-          marseille: {
-            max: 16,
-            prefix: '13',
-          },
-        };
-
-      let arrondissementPostalCode:
-        string | null = null;
-
-      if (
-        arrondissementCity &&
-        arrondissementNumber
-      ) {
-        const config =
-          arrondissementConfig[
-            arrondissementCity
-          ];
-
-        if (
-          config &&
-          arrondissementNumber >= 1 &&
-          arrondissementNumber <= config.max
-        ) {
-          arrondissementPostalCode =
-            `${
-              config.prefix
-            }${
-              String(
-                arrondissementNumber
-              ).padStart(3, '0')
-            }`;
-        }
-      }
-
-      const isArrondissement =
-        Boolean(
-          arrondissementPostalCode
         );
 
       // ===============================================
@@ -2216,7 +2059,7 @@ function HeroSearch() {
       // => search=Honda Paris 13
       //
       // Garage + Paris 13
-      // => filter=service&search=Paris 13
+      // => filter=ateliers-mecaniciens&search=Paris 13
       // ===============================================
 
       const combinedSearch = [
@@ -2234,67 +2077,32 @@ function HeroSearch() {
         );
       }
 
-      // ===============================================
-      // DEPARTEMENT SEUL
-      //
-      // 13 = Bouches-du-Rhône
-      // 95 = Val-d'Oise
-      // 971 = Guadeloupe
-      //
-      // Mais Paris 13 n'est PAS un département.
-      // ===============================================
-
-      const departmentPattern =
-        /^(0[1-9]|[1-8]\d|9[0-5]|2A|2B|97[1-46])$/i;
-
-      const isDepartment =
-        !isArrondissement &&
-        departmentPattern.test(
-          whereForSearch
-        );
-
-      // ===============================================
-      // GEOCODAGE
-      //
-      // Pour un arrondissement on envoie le CP exact :
-      //
-      // Paris 13     -> 75013
-      // Lyon 3       -> 69003
-      // Marseille 8  -> 13008
-      // ===============================================
+      const displaySearch = [
+        what.trim(),
+        whereForSearch,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
 
       if (
-        whereForSearch &&
-        !isDepartment
+        displaySearch &&
+        displaySearch !==
+          combinedSearch
       ) {
-        const geocodeQuery =
-          arrondissementPostalCode ||
-          whereForSearch;
-
-        const position =
-          await geocode(
-            geocodeQuery
-          );
-
-        if (position) {
-          params.set(
-            'lat',
-            String(position.lat)
-          );
-
-          params.set(
-            'lng',
-            String(position.lng)
-          );
-
-          params.set(
-            'zoom',
-            isArrondissement
-              ? '13'
-              : '12'
-          );
-        }
+        params.set(
+          'display',
+          displaySearch
+        );
       }
+
+      // LABELMOTO HOME -> MAP
+      //
+      // Ne pas geocoder ici.
+      // La page /map est l'unique moteur de recherche
+      // geographique afin qu'une recherche provenant
+      // de l'accueil suive exactement le meme parcours
+      // qu'une recherche saisie directement sur la carte.
 
       router.push(
         `/map${
@@ -2333,9 +2141,14 @@ function HeroSearch() {
               '13',
           });
 
+        const professionSearch =
+          resolveMapProfessionSearch(
+            what,
+            selectedFilter
+          );
+
         const filter =
-          selectedFilter ||
-          inferFilter(what);
+          professionSearch.filter;
 
         if (filter) {
           params.set(
@@ -2343,10 +2156,25 @@ function HeroSearch() {
             filter
           );
         }
-        else if (what.trim()) {
+
+        if (professionSearch.query) {
           params.set(
             'search',
-            what.trim()
+            professionSearch.query
+          );
+        }
+
+        const displaySearch =
+          what.trim();
+
+        if (
+          displaySearch &&
+          displaySearch !==
+            professionSearch.query
+        ) {
+          params.set(
+            'display',
+            displaySearch
           );
         }
 

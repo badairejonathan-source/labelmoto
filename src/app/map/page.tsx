@@ -29,6 +29,9 @@ import {
   professionalMatchesCategory,
   type ProfessionalCategorySlug,
 } from '@/app/lib/professional-categories';
+import {
+  resolveMapProfessionSearch,
+} from '@/app/lib/map-search-intent';
 
 type MapDirectoryFilterId =
   | ProfessionalCategorySlug
@@ -1076,6 +1079,7 @@ function MapPageComponent() {
 
   const [points, setPoints] = useState<MapPoint[]>([]);
   const [isLoadingPoints, setIsLoadingPoints] = useState(false);
+  const [pointsLoadError, setPointsLoadError] = useState(false);
 
   const loadLiveMapPoints =
     useCallback(
@@ -1240,6 +1244,8 @@ function MapPageComponent() {
   const [desktopWhat, setDesktopWhat] = useState('');
   const [desktopWhere, setDesktopWhere] = useState('');
   const [appliedSearchTerm, setAppliedSearchTerm] = useState('');
+  const initialUrlSearchReplayRef =
+    useRef(false);
   const [
     resolvedProfessionalId,
     setResolvedProfessionalId,
@@ -1632,6 +1638,9 @@ function MapPageComponent() {
     const params = new URLSearchParams(window.location.search);
 
     const initialSearch = params.get('search') || '';
+    const initialDisplaySearch =
+      params.get('display') ||
+      initialSearch;
     const initialFilter = params.get('filter') || '';
     const initialSelectedId = params.get('selectedId');
 
@@ -1640,7 +1649,7 @@ function MapPageComponent() {
     const initialZoom = parseInt(params.get('zoom') || '');
 
     setSearchTerm(
-      initialSearch
+      initialDisplaySearch
     );
 
     setAppliedSearchTerm(
@@ -1693,6 +1702,67 @@ function MapPageComponent() {
     setHasAppliedInitialUrl(true);
   }, []);
 
+  // LABELMOTO HOME TO MAP SEARCH REPLAY
+  useEffect(() => {
+    if (
+      !hasAppliedInitialUrl ||
+      !firestore ||
+      points.length === 0 ||
+      initialUrlSearchReplayRef.current
+    ) {
+      return;
+    }
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const initialSearch =
+      (
+        params.get('search') ||
+        ''
+      ).trim();
+
+    const initialDisplaySearch =
+      (
+        params.get('display') ||
+        initialSearch
+      ).trim();
+
+    initialUrlSearchReplayRef.current =
+      true;
+
+    if (!initialSearch) {
+      return;
+    }
+
+    if (window.innerWidth < 1024) {
+      setSearchTerm(
+        initialDisplaySearch
+      );
+    }
+    else {
+      setDesktopWhat(
+        initialDisplaySearch
+      );
+      setDesktopWhere('');
+    }
+
+    void handleDirectMapSearch(
+      initialSearch,
+      {
+        preserveSelectedArea: true,
+        displayQuery:
+          initialDisplaySearch,
+      }
+    );
+  }, [
+    hasAppliedInitialUrl,
+    firestore,
+    points.length,
+  ]);
+
   // Synchroniser le ref avec l'état
   useEffect(() => { mapZoomRef.current = mapZoom; }, [mapZoom]);
   // Synchronisation légère état -> URL.
@@ -1703,7 +1773,26 @@ function MapPageComponent() {
 
     const params = new URLSearchParams();
 
-    if (appliedSearchTerm) params.set('search', appliedSearchTerm);
+    if (appliedSearchTerm) {
+      params.set(
+        'search',
+        appliedSearchTerm
+      );
+    }
+
+    const visibleSearch =
+      searchTerm.trim();
+
+    if (
+      visibleSearch &&
+      visibleSearch !==
+        appliedSearchTerm
+    ) {
+      params.set(
+        'display',
+        visibleSearch
+      );
+    }
 
     if (activeFilters.length > 0) {
       params.set('filter', activeFilters.join(','));
@@ -2007,17 +2096,20 @@ function MapPageComponent() {
 
     let cancelled = false;
 
+    setPointsLoadError(false);
     setIsLoadingPoints(true);
 
     loadCompleteMapPoints()
       .then(mapped => {
         if (cancelled) return;
         setPoints(mapped as MapPoint[]);
+        setPointsLoadError(false);
         setIsLoadingPoints(false);
       })
       .catch(error => {
         if (cancelled) return;
         console.error('[MAP] Erreur chargement points.json:', error);
+        setPointsLoadError(true);
         setIsLoadingPoints(false);
       });
 
@@ -3711,6 +3803,8 @@ function MapPageComponent() {
     brandCityNearbyPoints ??
     filteredPoints;
 
+
+
   // Ajuste uniquement le zoom pour montrer la périphérie.
   // Le centre reste la ville demandée.
   useEffect(() => {
@@ -4448,7 +4542,11 @@ function MapPageComponent() {
     };
 
   async function handleDirectMapSearch(
-    queryOverride?: string
+    queryOverride?: string,
+    options?: {
+      preserveSelectedArea?: boolean;
+      displayQuery?: string;
+    }
   ) {
         // RESET RESULTAT PROFESSIONNEL PRECEDENT
     setResolvedProfessionalId(
@@ -4483,10 +4581,28 @@ function MapPageComponent() {
     setSearchAreaBounds(
       null
     );
+
+    // Une recherche lancée directement depuis /map doit effacer
+    // l'ancienne limite immédiatement.
+    //
+    // En revanche, le replay de l'URL initiale ne doit pas effacer
+    // une limite que les effets GeoJSON viennent déjà de charger.
+    if (!options?.preserveSelectedArea) {
+      setSelectedAreaFeature(
+        null
+      );
+    }
+
     const rawQuery =
       (
         queryOverride ??
         searchTerm
+      ).trim();
+
+    const displaySearchQuery =
+      (
+        options?.displayQuery ??
+        rawQuery
       ).trim();
 
     if (rawQuery) {
@@ -4719,12 +4835,38 @@ function MapPageComponent() {
       return;
     }
 
+    // =====================================================
+    // INTENTION METIER PARTAGEE ACCUEIL + MAP
+    //
+    // Exemples :
+    // peintre lyon       -> filtre peintres + recherche lyon
+    // location marseille -> filtre location + recherche marseille
+    // garage honda paris -> filtre ateliers + recherche honda paris
+    //
+    // La recherche exacte d'un professionnel reste prioritaire :
+    // elle a déjà été traitée juste au-dessus.
+    // =====================================================
+
+    const professionSearch =
+      resolveMapProfessionSearch(
+        rawQuery
+      );
+
+    const mapQuery =
+      professionSearch.query;
+
+    if (professionSearch.filter) {
+      setActiveFilters([
+        professionSearch.filter,
+      ]);
+    }
+
     setSearchTerm(
-      rawQuery
+      displaySearchQuery
     );
 
     setAppliedSearchTerm(
-      rawQuery
+      mapQuery
     );
 
     setSelectedId(
@@ -4743,13 +4885,14 @@ function MapPageComponent() {
       null
     );
 
-    setSelectedAreaFeature(
-      null
-    );
-
     setSelectionSource(
       'external'
     );
+
+    // Métier seul : le filtre suffit, sans géocodage parasite.
+    if (!mapQuery) {
+      return;
+    }
 
     // ===============================================
     // DEPARTEMENT
@@ -4764,7 +4907,7 @@ function MapPageComponent() {
 
     const departmentCode =
       resolveDepartmentCodeFromQuery(
-        rawQuery
+        mapQuery
       );
 
     if (departmentCode) {
@@ -4783,7 +4926,7 @@ function MapPageComponent() {
 
     if (
       isMunicipalArrondissementQuery(
-        rawQuery
+        mapQuery
       )
     ) {
       return;
@@ -4791,7 +4934,7 @@ function MapPageComponent() {
 
     const normalizedQuery =
       normalizeText(
-        rawQuery
+        mapQuery
       );
 
     const postalCode =
@@ -4930,7 +5073,7 @@ function MapPageComponent() {
 
     const compactQuery =
       compactGeographyValue(
-        rawQuery
+        mapQuery
       );
 
     const detectedBrand =
@@ -4959,12 +5102,12 @@ function MapPageComponent() {
     // ==========================================================
 
     let locationCandidate =
-      rawQuery.trim();
+      mapQuery.trim();
 
     if (detectedBrand) {
       const normalizedRaw =
         normalizeText(
-          rawQuery
+          mapQuery
         );
 
       const normalizedBrand =
@@ -5356,7 +5499,7 @@ function MapPageComponent() {
                 "shadow-[0_8px_26px_rgba(0,0,0,0.18)]",
                 "transition hover:-translate-y-0.5",
                 isMobile
-                  ? "top-[228px]"
+                  ? "top-[176px]"
                   : "top-5"
               )}
             >
@@ -5369,13 +5512,38 @@ function MapPageComponent() {
           )}
       </div>
 
+      {isViewportReady && isMobile && (
+        <div
+          data-mobile-map-header
+          className="pointer-events-none fixed left-3 right-3 top-2 z-[1650] flex h-[48px] items-center justify-between gap-2"
+        >
+          <Link
+            href="/"
+            aria-label="Accueil LabelMoto"
+            className="pointer-events-auto inline-flex h-[48px] shrink-0 items-center rounded-[16px] border border-black/[0.10] bg-white/95 px-3 shadow-[0_4px_14px_rgba(0,0,0,0.14)] backdrop-blur-xl"
+          >
+            <LabelMotoLogo
+              noBubble
+              noLink
+              className="w-[112px] border-none bg-transparent px-0 shadow-none"
+            />
+          </Link>
+
+          <div className="pointer-events-auto flex min-h-[48px] min-w-0 items-center justify-end overflow-visible rounded-[16px] border border-black/[0.10] bg-white/95 px-2 shadow-[0_4px_14px_rgba(0,0,0,0.14)] backdrop-blur-xl">
+            <div className="origin-right">
+              <UserMenu />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         className={cn(
           "absolute z-[1500]",
           !isViewportReady
             ? "left-6 right-6 top-6 lg:left-auto lg:right-6 lg:w-[400px]"
             : isMobile
-              ? "left-6 right-6 top-6"
+              ? "left-4 right-4 top-[60px]"
               : "hidden"
         )}
       >
@@ -5859,7 +6027,7 @@ function MapPageComponent() {
           className={cn(
             "z-[1450]",
             isMobile
-              ? "fixed left-0 right-0 top-[170px] overflow-hidden"
+              ? "fixed left-0 right-0 top-[124px] overflow-hidden"
               : "absolute left-6 top-[310px] w-[620px] overflow-visible"
           )}
         >
@@ -5917,6 +6085,32 @@ function MapPageComponent() {
                     {isLoadingPoints ? "Chargement national..." : `${effectiveFilteredPoints.length} Résultats trouvés`}
                   </span>
                 </div>
+                {pointsLoadError && (
+                  <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                    <p className="text-[12px] font-black text-red-700">
+                      Recherche indisponible
+                    </p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-red-700/80">
+                      Les professionnels n&apos;ont pas pu &ecirc;tre charg&eacute;s. R&eacute;essayez dans quelques instants.
+                    </p>
+                  </div>
+                )}
+
+                {!pointsLoadError &&
+                  !isLoadingPoints &&
+                  points.length > 0 &&
+                  activeFilters.length > 0 &&
+                  effectiveFilteredPoints.length === 0 && (
+                    <div className="rounded-2xl border border-brand/20 bg-brand/5 px-4 py-3">
+                      <p className="text-[12px] font-black text-brand">
+                        Aucun professionnel trouv&eacute; dans cette zone
+                      </p>
+                      <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                        La recherche a bien &eacute;t&eacute; effectu&eacute;e. &Eacute;largissez la zone ou retirez un filtre pour voir davantage de r&eacute;sultats.
+                      </p>
+                    </div>
+                  )}
+
                 {listPoints.map(p => (
                   <div key={p.id} ref={el => { cardRefs.current[p.id] = el; }}>
                     <DealershipCardItem
@@ -6120,7 +6314,33 @@ function MapPageComponent() {
                 <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('collapsed'); }} />
               ) : (
                 <div className="space-y-4">
-                  {listPoints.map(p => (
+                  {pointsLoadError && (
+                  <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
+                    <p className="text-[12px] font-black text-red-700">
+                      Recherche indisponible
+                    </p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-red-700/80">
+                      Les professionnels n&apos;ont pas pu &ecirc;tre charg&eacute;s. R&eacute;essayez dans quelques instants.
+                    </p>
+                  </div>
+                )}
+
+                {!pointsLoadError &&
+                  !isLoadingPoints &&
+                  points.length > 0 &&
+                  activeFilters.length > 0 &&
+                  effectiveFilteredPoints.length === 0 && (
+                    <div className="rounded-2xl border border-brand/20 bg-brand/5 px-4 py-3">
+                      <p className="text-[12px] font-black text-brand">
+                        Aucun professionnel trouv&eacute; dans cette zone
+                      </p>
+                      <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                        La recherche a bien &eacute;t&eacute; effectu&eacute;e. &Eacute;largissez la zone ou retirez un filtre pour voir davantage de r&eacute;sultats.
+                      </p>
+                    </div>
+                  )}
+
+                {listPoints.map(p => (
                     <div key={p.id} ref={el => { cardRefs.current[p.id] = el; }}>
                       <DealershipCardItem
                         className="w-full min-w-0 max-w-full"
