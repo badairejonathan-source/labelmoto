@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronRight, Plus, Minus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,93 @@ interface EntretienCatalogProps {
 
 export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) {
   const [expandedBrands, setExpandedBrands] = useState<string[]>([]);
+
+  const returnStateStorageKey =
+    'labelmoto:entretien:return-state:v1';
+
+  useEffect(() => {
+    try {
+      const rawState =
+        window.sessionStorage.getItem(
+          returnStateStorageKey
+        );
+
+      if (!rawState) {
+        return;
+      }
+
+      /*
+       * Etat de retour à usage unique :
+       * une fois restauré, on ne force plus cet ancien état
+       * lors d'un futur rechargement normal de /entretien.
+       */
+      window.sessionStorage.removeItem(
+        returnStateStorageKey
+      );
+
+      const parsed =
+        JSON.parse(rawState) as {
+          expandedBrands?: unknown;
+          scrollY?: unknown;
+        };
+
+      if (
+        Array.isArray(
+          parsed.expandedBrands
+        )
+      ) {
+        const validBrands =
+          parsed.expandedBrands.filter(
+            (value): value is string =>
+              typeof value === 'string' &&
+              brandsData.some(
+                brand =>
+                  brand.name === value
+              )
+          );
+
+        setExpandedBrands(
+          validBrands
+        );
+      }
+
+      const savedScrollY =
+        Number(parsed.scrollY);
+
+      if (
+        Number.isFinite(savedScrollY) &&
+        savedScrollY >= 0
+      ) {
+        /*
+         * Deux frames permettent d'abord à React de rouvrir
+         * les menus, puis de replacer le viewport sur la
+         * géométrie réellement restaurée.
+         */
+        window.requestAnimationFrame(
+          () => {
+            window.requestAnimationFrame(
+              () => {
+                window.scrollTo(
+                  0,
+                  savedScrollY
+                );
+              }
+            );
+          }
+        );
+      }
+    }
+    catch (error) {
+      console.warn(
+        '[entretien] restauration etat impossible:',
+        error
+      );
+
+      window.sessionStorage.removeItem(
+        returnStateStorageKey
+      );
+    }
+  }, [brandsData]);
 
   const toggleBrand = (brandName: string) => {
     setExpandedBrands(prev =>
@@ -75,6 +162,29 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
                     <Link
                       key={model.id}
                       href={`/fiches/${model.id}`}
+                      onClick={() => {
+                        const returnState = {
+                          expandedBrands,
+                          scrollY: window.scrollY,
+                        };
+
+                        window.sessionStorage.setItem(
+                          returnStateStorageKey,
+                          JSON.stringify(
+                            returnState
+                          )
+                        );
+
+                        /*
+                         * Le bouton "Retour au catalogue"
+                         * de la fiche doit lui aussi revenir
+                         * vers /entretien.
+                         */
+                        window.sessionStorage.setItem(
+                          `labelmoto:fiche-return:${model.id}`,
+                          '/entretien'
+                        );
+                      }}
                       className="flex items-center justify-between p-4 bg-background border rounded-xl hover:border-brand hover:shadow-lg transition-all group"
                     >
                       <span className="font-black text-sm group-hover:text-brand transition-colors">
