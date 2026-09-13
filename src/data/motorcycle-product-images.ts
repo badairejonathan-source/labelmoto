@@ -31,6 +31,46 @@ function normalize(value: unknown): string {
 }
 
 const entries: MotorcycleProductImageEntry[] = [
+  // ORCAL / MASH / KTM — pack images 20260913
+  {
+    imageUrl: '/images/motorcycles/Orcal-Tabor-125.webp',
+    aliases: ['orcal tabor 125', 'orcal tabor125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/Orcal-Astor-3.webp',
+    aliases: ['orcal astor 3', 'orcal astor3'],
+  },
+  {
+    imageUrl: '/images/motorcycles/Orcal-Altimo-125.webp',
+    aliases: ['orcal altimo 125', 'orcal altimo125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/Mash-X-Ride-125.webp',
+    aliases: ['mash x ride 125', 'mash x-ride 125', 'mash xride 125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/Mash-Seventy-125.webp',
+    aliases: ['mash seventy 125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/Mash-British-Seven-125.webp',
+    aliases: ['mash british seven 125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/Mash-Black-Seven-125.webp',
+    aliases: ['mash black seven 125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/KTM-RC125.webp',
+    exactIds: ['ktm-rc125-2022-plus'],
+    aliases: ['ktm rc 125', 'ktm rc125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/KTM-125-Duke.webp',
+    exactIds: ['ktm-125-duke-2024-plus'],
+    aliases: ['ktm 125 duke', 'ktm duke 125'],
+  },
+
   // ZONTES 125
   {
     imageUrl: '/images/motorcycles/125-Scrambler-X.webp',
