@@ -547,13 +547,71 @@ export const BRANDS: BrandData[] = [
     metaDescription: "Trouvez votre concessionnaire Ducati en France parmi 60 adresses vérifiées. Panigale, Monster, Multistrada, Scrambler, Diavel — concessions officielles sur LabelMoto.",
     h1: 'Concessionnaires Ducati en France',
     intro: [
-      "Ducati, icône italienne de la moto sportive et du design, dispose d'un réseau de plus de 60 concessions agréées en France. Des Panigale supersportives aux Scrambler néo-rétro en passant par les Monster et les Multistrada adventure, Ducati incarne l'excellence italienne.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés Ducati en France avec fiches vérifiées, avis et coordonnées directes.",
+      "Ducati est une marque italienne née à Bologne en 1926. Après des débuts dans la radio et l’électronique, l’entreprise se tourne vers le deux-roues après la Seconde Guerre mondiale. Borgo Panigale reste aujourd’hui le cœur historique, industriel et culturel de Ducati. Depuis 2012, la marque appartient au groupe Volkswagen via Audi et célèbre son centenaire en 2026."
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Ducati près de chez moi ?", a: "LabelMoto recense 60 concessions Ducati en France. Utilisez la carte interactive pour trouver l'adresse la plus proche avec les horaires et contacts." },
-      { q: "Quel est le prix d'entretien d'une Ducati ?", a: "L'entretien d'une Ducati est plus élevé que la moyenne : comptez 500 à 900 € pour une révision complète incluant la courroie de distribution. Les courroies doivent être changées tous les 2 ans ou 15 000 km selon les modèles." },
-      { q: "Ducati propose-t-il des motos en permis A2 ?", a: "Oui, le Ducati Scrambler et le Monster 937 sont bridables pour le permis A2. Le Scrambler est particulièrement recommandé pour sa facilité de prise en main." },
+      {
+        "q": "Ducati est-elle une marque italienne ?",
+        "a": "Oui. Ducati est née à Bologne en 1926 et son siège historique reste à Borgo Panigale."
+      },
+      {
+        "q": "À quel groupe appartient Ducati ?",
+        "a": "Ducati appartient au groupe Volkswagen depuis 2012 et est contrôlée par Audi."
+      },
+      {
+        "q": "Toutes les Ducati utilisent-elles une distribution desmodromique ?",
+        "a": "Non. Le Desmo reste emblématique de la marque, mais certaines motorisations récentes utilisent d’autres solutions de distribution."
+      }
+    ],
+    aboutTitle: "À propos de Ducati",
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Italie · Bologne · 1926",
+        "description": "Ducati est fondée à Bologne le 4 juillet 1926."
+      },
+      {
+        "label": "Cœur historique",
+        "value": "Borgo Panigale",
+        "description": "Le site de Bologne concentre siège, production, R&D, musée et culture de marque."
+      },
+      {
+        "label": "Groupe",
+        "value": "Audi · Volkswagen Group",
+        "description": "Ducati rejoint le groupe Volkswagen en 2012 sous le contrôle d’Audi."
+      },
+      {
+        "label": "Jalon",
+        "value": "100 ans · 2026",
+        "description": "Ducati célèbre son centenaire en 2026."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-ducati",
+        "title": "Histoire de Ducati",
+        "content": "Ducati est fondée en 1926 par la famille Ducati à Bologne. L’entreprise fabrique d’abord des composants radio avant de se tourner vers le deux-roues après la Seconde Guerre mondiale. Le Cucciolo contribue à cette reconversion et ouvre la voie à une longue histoire de motos sportives et de compétition."
+      },
+      {
+        "id": "borgo-panigale",
+        "title": "Borgo Panigale, le cœur de Ducati",
+        "content": "Le site de Borgo Panigale, à Bologne, est lié à Ducati depuis les années 1930. Il reste le siège de la marque et un centre majeur de production, de développement, de patrimoine et d’accueil des passionnés avec le musée Ducati."
+      },
+      {
+        "id": "groupe-ducati",
+        "title": "Ducati au sein du groupe Audi-Volkswagen",
+        "content": "Ducati a rejoint le groupe Volkswagen en 2012 via Lamborghini et Audi. La marque conserve son identité italienne, sa direction industrielle propre et son ancrage historique à Bologne."
+      },
+      {
+        "id": "moteurs-ducati",
+        "title": "Desmo, V4 et nouvelles générations de moteurs",
+        "content": "La distribution desmodromique reste l’une des signatures historiques de Ducati, mais elle n’équipe plus toutes les motorisations actuelles. La gamme associe aujourd’hui plusieurs architectures, dont des V2 et V4, avec des choix techniques différents selon les modèles."
+      },
+      {
+        "id": "production-ducati",
+        "title": "Production en Italie et à l’international",
+        "content": "Borgo Panigale demeure le site de référence de Ducati. La marque dispose également d’activités industrielles hors d’Italie pour certains marchés, notamment en Asie. Le lieu d’assemblage peut donc varier selon le modèle et sa destination."
+      }
     ],
   },
   {
@@ -565,13 +623,71 @@ export const BRANDS: BrandData[] = [
     metaDescription: "Trouvez votre concessionnaire Royal Enfield en France parmi 61 adresses vérifiées. Classic 350, Meteor, Himalayan, Hunter 350 — concessions officielles sur LabelMoto.",
     h1: 'Concessionnaires Royal Enfield en France',
     intro: [
-      "Royal Enfield, la plus ancienne marque moto encore en production, connaît une croissance remarquable en France avec plus de 60 concessions agréées. Le Classic 350, le Meteor, le Himalayan et le Hunter 350 séduisent par leur style néo-rétro, leur accessibilité et leur polyvalence.",
-      "LabelMoto recense tous les concessionnaires et ateliers agréés Royal Enfield en France avec fiches vérifiées et coordonnées directes.",
+      "Royal Enfield possède des racines britanniques remontant à 1901, mais son développement moderne est profondément lié à l’Inde. La marque appartient aujourd’hui à Eicher Motors et produit l’essentiel de ses motos dans le Tamil Nadu, autour de Chennai. Son expansion internationale s’appuie également sur des centres techniques et plusieurs unités d’assemblage hors d’Inde."
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Royal Enfield près de chez moi ?", a: "LabelMoto recense 61 concessions Royal Enfield en France. Utilisez la carte interactive pour trouver l'adresse la plus proche." },
-      { q: "Royal Enfield est-elle une marque fiable ?", a: "Les modèles récents (2020+) sont nettement plus fiables que les anciennes générations. Le Classic 350 et le Meteor bénéficient d'une motorisation moderne bien rodée. Les retours utilisateurs en France sont très positifs." },
-      { q: "Royal Enfield propose-t-elle des motos en permis A2 ?", a: "Oui, le Hunter 350 et le Meteor 350 sont homologués A2 de série. Ils constituent deux des meilleures options néo-rétro du marché pour les permis A2." },
+      {
+        "q": "Royal Enfield est-elle britannique ou indienne ?",
+        "a": "La marque est d’origine britannique, mais son activité industrielle moderne, sa maison mère et l’essentiel de sa production sont aujourd’hui en Inde."
+      },
+      {
+        "q": "À quel groupe appartient Royal Enfield ?",
+        "a": "Royal Enfield appartient à Eicher Motors Limited."
+      },
+      {
+        "q": "Où sont fabriquées les Royal Enfield ?",
+        "a": "La production principale se situe dans le Tamil Nadu, en Inde, avec également des opérations d’assemblage dans plusieurs pays."
+      }
+    ],
+    aboutTitle: "À propos de Royal Enfield",
+    highlights: [
+      {
+        "label": "Origines",
+        "value": "Royaume-Uni · 1901",
+        "description": "La première moto Royal Enfield est produite au début du XXe siècle."
+      },
+      {
+        "label": "Maison mère",
+        "value": "Eicher Motors Limited",
+        "description": "Royal Enfield est aujourd’hui intégrée au groupe indien Eicher Motors."
+      },
+      {
+        "label": "Production",
+        "value": "Tamil Nadu · Inde",
+        "description": "Les principaux sites industriels sont situés autour de Chennai."
+      },
+      {
+        "label": "R&D",
+        "value": "Chennai · Bruntingthorpe",
+        "description": "La marque dispose de centres techniques en Inde et au Royaume-Uni."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-royal-enfield",
+        "title": "Histoire de Royal Enfield",
+        "content": "Royal Enfield construit sa première moto au Royaume-Uni en 1901. À partir des années 1950, la production de la Bullet se développe en Inde avec Madras Motors. Lorsque l’activité britannique cesse, la branche indienne assure la continuité de la marque et devient le centre de son développement mondial."
+      },
+      {
+        "id": "eicher-royal-enfield",
+        "title": "Royal Enfield et Eicher Motors",
+        "content": "Royal Enfield fait aujourd’hui partie d’Eicher Motors Limited. Le groupe accompagne son développement industriel, commercial et international tout en conservant l’identité spécifique de la marque moto."
+      },
+      {
+        "id": "usines-royal-enfield",
+        "title": "Production dans le Tamil Nadu",
+        "content": "La production principale est concentrée dans le Tamil Nadu, autour de Chennai, avec plusieurs sites industriels dédiés aux différentes familles de motos. Cette base accompagne la forte croissance internationale de Royal Enfield."
+      },
+      {
+        "id": "rd-royal-enfield",
+        "title": "Développement en Inde et au Royaume-Uni",
+        "content": "Royal Enfield dispose de centres techniques à Chennai et à Bruntingthorpe. Ils participent au développement des nouvelles plateformes, des moteurs et des véhicules destinés aux différents marchés."
+      },
+      {
+        "id": "international-royal-enfield",
+        "title": "Une marque devenue mondiale",
+        "content": "Royal Enfield assemble également certaines motos dans plusieurs pays afin de servir localement différents marchés. Cette organisation internationale complète la production indienne sans remettre en cause le rôle central du Tamil Nadu."
+      }
     ],
   },
   {
@@ -816,13 +932,71 @@ export const BRANDS: BrandData[] = [
     metaDescription: "Trouvez votre concessionnaire Moto Guzzi en France parmi 31 adresses vérifiées. V7, V9, V100 Mandello, Stelvio — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires Moto Guzzi en France',
     intro: [
-      "Moto Guzzi, fondée en 1921 et membre du groupe Piaggio, est l'une des marques les plus emblématiques de la moto italienne. Son moteur bicylindre en V transversal est unique au monde. En France, plus de 30 concessionnaires agréés proposent les V7, V9, V100 Mandello et Stelvio.",
-      "LabelMoto recense tous les concessionnaires Moto Guzzi en France avec fiches vérifiées et coordonnées directes.",
+      "Moto Guzzi est une marque italienne fondée en 1921 et intimement liée à Mandello del Lario, sur les rives du lac de Côme. La marque a construit une forte identité autour de son bicylindre en V transversal et d’un héritage mêlant route, voyage et compétition. Après plusieurs changements de propriétaire, Moto Guzzi rejoint le groupe Piaggio en 2004. Son site historique de Mandello a fait l’objet d’une profonde modernisation inaugurée en 2026."
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Moto Guzzi près de chez moi ?", a: "LabelMoto recense 31 concessions Moto Guzzi en France. Le réseau est moins dense que les grandes marques japonaises mais couvre bien le territoire. Utilisez la carte interactive." },
-      { q: "Moto Guzzi est-elle une marque fiable ?", a: "Les modèles récents de Moto Guzzi sont bien plus fiables que les anciennes générations. Le V7 et le V100 Mandello reçoivent d'excellents retours. L'entretien est cependant plus cher qu'une japonaise." },
-      { q: "Quel est le prix d'entretien d'une Moto Guzzi ?", a: "Comptez 350 à 600 € pour une révision complète en concession Moto Guzzi. Les intervalles sont de 10 000 km. La courroie trapézoïdale de transmission finale ne nécessite pas d'entretien — un avantage concret." },
+      {
+        "q": "Moto Guzzi est-elle une marque italienne ?",
+        "a": "Oui. Moto Guzzi est née en Italie en 1921 et reste historiquement implantée à Mandello del Lario."
+      },
+      {
+        "q": "À quel groupe appartient Moto Guzzi ?",
+        "a": "Moto Guzzi appartient au Piaggio Group depuis 2004."
+      },
+      {
+        "q": "Quelle est la particularité mécanique la plus connue de Moto Guzzi ?",
+        "a": "La marque est particulièrement associée à son bicylindre en V transversal à 90°, utilisé sur de nombreuses générations de motos."
+      }
+    ],
+    aboutTitle: "À propos de Moto Guzzi",
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Italie · 1921",
+        "description": "Moto Guzzi est fondée en 1921 par Emanuele Vittorio Parodi, Giorgio Parodi et Carlo Guzzi."
+      },
+      {
+        "label": "Maison historique",
+        "value": "Mandello del Lario",
+        "description": "Le site de Mandello est associé à la marque depuis ses débuts."
+      },
+      {
+        "label": "Signature mécanique",
+        "value": "V-twin transversal",
+        "description": "Le bicylindre en V transversal est devenu l’une des signatures de Moto Guzzi."
+      },
+      {
+        "label": "Groupe",
+        "value": "Piaggio Group · depuis 2004",
+        "description": "Moto Guzzi fait partie du groupe Piaggio depuis 2004."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-guzzi",
+        "title": "Histoire de Moto Guzzi",
+        "content": "Moto Guzzi est fondée en 1921 par Emanuele Vittorio Parodi, Giorgio Parodi et Carlo Guzzi. La marque s’installe à Mandello del Lario et développe rapidement une identité technique forte, soutenue par de nombreux succès sportifs au cours de la première moitié du XXe siècle."
+      },
+      {
+        "id": "groupe-guzzi",
+        "title": "De Moto Guzzi à Piaggio",
+        "content": "L’histoire de Moto Guzzi passe par plusieurs propriétaires et structures industrielles. Après la période De Tomaso puis son intégration à Aprilia, la marque rejoint le groupe Piaggio en 2004, où elle évolue aujourd’hui aux côtés d’Aprilia, Vespa et Piaggio."
+      },
+      {
+        "id": "v-twin-guzzi",
+        "title": "Le V-twin transversal",
+        "content": "Le bicylindre en V transversal à 90° apparaît dans les années 1960 et devient l’une des architectures les plus emblématiques de Moto Guzzi. Cette configuration équipe encore plusieurs familles modernes et participe fortement à l’identité visuelle et mécanique de la marque."
+      },
+      {
+        "id": "mandello-guzzi",
+        "title": "Mandello del Lario : usine, musée et patrimoine",
+        "content": "Mandello del Lario reste le cœur de Moto Guzzi. Le site historique a été profondément rénové et accueille à la fois les activités industrielles, le musée et des espaces destinés au public et aux passionnés."
+      },
+      {
+        "id": "competition-guzzi",
+        "title": "Une longue histoire en compétition",
+        "content": "Moto Guzzi possède un important palmarès sportif construit avant son retrait officiel des Grands Prix à la fin des années 1950. Cet héritage reste un élément central de l’histoire et de l’image de la marque."
+      }
     ],
   },
   {
@@ -834,13 +1008,66 @@ export const BRANDS: BrandData[] = [
     metaDescription: "Trouvez votre concessionnaire Indian Motorcycle en France parmi 33 adresses vérifiées. Scout, Chief, Challenger, FTR — concessions officielles avec contacts sur LabelMoto.",
     h1: 'Concessionnaires Indian Motorcycle en France',
     intro: [
-      "Indian Motorcycle, la plus ancienne marque moto américaine encore en production, dispose d'un réseau de plus de 30 concessionnaires agréés en France. Ses cruisers (Scout, Chief, Pursuit) et sa sportive FTR séduisent les amateurs de motos américaines premium cherchant une alternative à Harley-Davidson.",
-      "LabelMoto recense tous les concessionnaires Indian Motorcycle en France avec fiches vérifiées et coordonnées directes.",
+      "Indian Motorcycle est une marque américaine fondée en 1901 à Springfield, dans le Massachusetts, par George Hendee et Oscar Hedstrom. Après plusieurs décennies mouvementées, la marque moderne est relancée sous Polaris à partir de 2011. Depuis février 2026, Indian Motorcycle fonctionne comme une société autonome contrôlée majoritairement par Carolwood LP, tandis que Polaris conserve une participation minoritaire."
     ],
     faq: [
-      { q: "Où trouver un concessionnaire Indian Motorcycle près de chez moi ?", a: "LabelMoto recense 33 concessions Indian Motorcycle en France. Utilisez la carte interactive pour trouver l'adresse la plus proche avec les horaires." },
-      { q: "Indian Motorcycle est-elle une bonne alternative à Harley-Davidson ?", a: "Indian propose souvent plus de technologie moderne (TFT, aides à la conduite) pour un prix équivalent à Harley. La qualité de finition est très appréciée. Le réseau SAV est moins dense mais croît rapidement en France." },
-      { q: "Quel est le prix d'entretien d'une Indian ?", a: "Comptez 400 à 700 € pour une révision complète en concession Indian. Les intervalles sont de 8 000 km. L'entretien est dans la même gamme que Harley-Davidson." },
+      {
+        "q": "À qui appartient Indian Motorcycle aujourd’hui ?",
+        "a": "Depuis février 2026, Indian Motorcycle est une société autonome contrôlée majoritairement par Carolwood LP. Polaris conserve une participation minoritaire."
+      },
+      {
+        "q": "Où sont conçues et fabriquées les Indian ?",
+        "a": "La marque s’appuie sur plusieurs sites aux États-Unis ainsi que sur un centre de design et de technologie en Suisse."
+      },
+      {
+        "q": "Quels moteurs équipent les Indian actuelles ?",
+        "a": "Les principales familles sont Thunderstroke, PowerPlus et SpeedPlus, selon les modèles et les générations."
+      }
+    ],
+    aboutTitle: "À propos de Indian Motorcycle",
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "États-Unis · 1901",
+        "description": "Indian Motorcycle naît à Springfield, Massachusetts."
+      },
+      {
+        "label": "Relance moderne",
+        "value": "Polaris · 2011",
+        "description": "Polaris relance durablement la marque au début des années 2010."
+      },
+      {
+        "label": "Depuis 2026",
+        "value": "Société autonome",
+        "description": "Carolwood LP détient la participation majoritaire, Polaris restant actionnaire minoritaire."
+      },
+      {
+        "label": "Familles moteur",
+        "value": "Thunderstroke · PowerPlus · SpeedPlus",
+        "description": "Plusieurs architectures équipent les gammes Indian actuelles."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-indian",
+        "title": "Histoire d’Indian Motorcycle",
+        "content": "George Hendee et Oscar Hedstrom lancent Indian Motorcycle à Springfield au début du XXe siècle. Les Scout et Chief deviennent rapidement des modèles emblématiques. L’entreprise historique cesse son activité en 1953, avant plusieurs tentatives de renaissance et une relance durable sous Polaris à partir de 2011."
+      },
+      {
+        "id": "carolwood-indian",
+        "title": "Indian Motorcycle depuis 2026",
+        "content": "En février 2026, Indian Motorcycle devient une société autonome avec Carolwood LP comme actionnaire majoritaire. Polaris conserve une participation minoritaire après avoir piloté la relance moderne de la marque pendant plus d’une décennie."
+      },
+      {
+        "id": "sites-indian",
+        "title": "Sites industriels et développement",
+        "content": "Indian s’appuie notamment sur les installations de Spirit Lake dans l’Iowa, de Monticello dans le Minnesota et sur un centre de design et de technologie à Burgdorf, en Suisse. La conception et la production sont donc réparties entre plusieurs sites."
+      },
+      {
+        "id": "moteurs-indian",
+        "title": "Thunderstroke, PowerPlus et SpeedPlus",
+        "content": "La gamme actuelle utilise plusieurs familles de moteurs. Le Thunderstroke équipe notamment les cruisers traditionnels, le PowerPlus les modèles les plus performants et le SpeedPlus certaines générations récentes de Scout. Les caractéristiques varient selon la famille et le modèle."
+      }
     ],
   },
   {
@@ -1415,17 +1642,75 @@ export const BRANDS: BrandData[] = [
     name: 'Dafy Moto',
     displayName: 'Dafy Moto',
     firestoreValue: 'Dafy Moto',
-    metaTitle: "Trouver un Dafy Moto en France : 158 magasins vérifiés | LabelMoto",
-    metaDescription: "Trouvez le Dafy Moto le plus proche parmi 158 magasins référencés en France. Équipements moto, accessoires, pièces détachées et atelier — contacts et horaires sur LabelMoto.",
+    metaTitle: "Dafy Moto en France : magasins, ateliers et équipements | LabelMoto",
+    metaDescription: "Trouvez les magasins et ateliers Dafy Moto référencés en France et découvrez l’histoire du réseau, ses services et ses principales activités.",
     h1: 'Magasins Dafy Moto en France',
     intro: [
-      "Dafy Moto est la plus grande chaîne française de distribution d'équipements et d'accessoires moto avec plus de 150 magasins en France. Casques, blousons, gants, bottes, pneus et pièces détachées — Dafy propose une offre complète avec des prix compétitifs et un réseau national dense.",
-      "LabelMoto recense tous les magasins Dafy Moto en France avec fiches vérifiées, horaires et coordonnées directes pour trouver le point de vente le plus proche.",
+      "Dafy est un réseau français spécialisé dans l’équipement du motard, les accessoires, les pièces et l’entretien moto. Créée à Clermont-Ferrand en 1974, l’enseigne s’est développée dans toute la France avec des magasins, des ateliers et une activité e-commerce. Le réseau regroupe notamment les formats Dafy Moto, Dafy Scoot et Dafy Speed."
     ],
     faq: [
-      { q: "Où trouver un Dafy Moto près de chez moi ?", a: "LabelMoto recense 158 magasins Dafy Moto en France. Utilisez la carte interactive pour trouver l'adresse et les horaires du magasin le plus proche de vous." },
-      { q: "Dafy Moto propose-t-il des services d'atelier ?", a: "Certains magasins Dafy disposent d'un atelier pour l'entretien et la réparation de motos. Consultez la fiche du magasin le plus proche sur LabelMoto pour vérifier les services disponibles." },
-      { q: "Peut-on essayer les équipements en magasin Dafy ?", a: "Oui, les magasins Dafy permettent l'essayage de casques, blousons et autres équipements. C'est l'un des avantages du réseau physique par rapport aux achats en ligne." },
+      {
+        "q": "Dafy est-il un réseau français ?",
+        "a": "Oui. Dafy a été créé à Clermont-Ferrand en 1974 et s’est développé en France autour de l’équipement, des accessoires et de l’entretien moto."
+      },
+      {
+        "q": "Que trouve-t-on dans un magasin Dafy ?",
+        "a": "On y trouve principalement des casques, vêtements, protections, accessoires, pièces, pneumatiques et consommables pour moto et scooter."
+      },
+      {
+        "q": "Les magasins Dafy proposent-ils un atelier ?",
+        "a": "De nombreux points de vente disposent d’un atelier, mais les prestations proposées dépendent du magasin."
+      }
+    ],
+    aboutTitle: "À propos de Dafy",
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "France · 1974",
+        "description": "Dafy est créé à Clermont-Ferrand en 1974."
+      },
+      {
+        "label": "Réseau",
+        "value": "Plus de 180 magasins et ateliers",
+        "description": "L’enseigne dispose d’un maillage national associant vente et entretien."
+      },
+      {
+        "label": "Activité",
+        "value": "Équipement · Accessoires · Pièces",
+        "description": "Dafy couvre l’essentiel des besoins du motard et de son deux-roues."
+      },
+      {
+        "label": "Services",
+        "value": "Magasins · Ateliers · E-commerce",
+        "description": "Le réseau combine conseil en magasin, entretien et vente en ligne."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-dafy",
+        "title": "Histoire de Dafy",
+        "content": "Dafy naît à Clermont-Ferrand en 1974. L’enseigne se développe progressivement autour de l’équipement du motard, des accessoires et des pièces, puis étend son réseau à l’échelle nationale. Cette implantation physique est aujourd’hui complétée par les ateliers et la vente en ligne."
+      },
+      {
+        "id": "reseau-dafy",
+        "title": "Un réseau national de magasins et d’ateliers",
+        "content": "Dafy s’appuie sur plus de 180 magasins et ateliers en France. Selon les points de vente, les motards peuvent y trouver équipements, accessoires, pièces détachées, pneumatiques et prestations d’entretien."
+      },
+      {
+        "id": "formats-dafy",
+        "title": "Dafy Moto, Dafy Scoot et Dafy Speed",
+        "content": "Le réseau se décline en plusieurs formats. Dafy Moto constitue l’enseigne principale, Dafy Scoot est orienté vers les usages scooter et urbains, tandis que Dafy Speed a été conçu pour renforcer la proximité dans les petites villes de moins de 20 000 habitants."
+      },
+      {
+        "id": "marques-dafy",
+        "title": "Équipements et marques du réseau",
+        "content": "Dafy distribue de nombreuses marques d’équipement et d’accessoires moto et développe également des marques propres. L’offre couvre notamment les casques, vêtements, protections, bagagerie, pièces, consommables et pneumatiques."
+      },
+      {
+        "id": "atelier-dafy",
+        "title": "Entretien et services atelier",
+        "content": "Une partie du réseau Dafy dispose d’ateliers capables d’assurer des opérations d’entretien courant, le montage de pneus, le remplacement de consommables et diverses interventions mécaniques. Les prestations proposées peuvent varier d’un magasin à l’autre."
+      }
     ],
   },
   {
@@ -1433,17 +1718,70 @@ export const BRANDS: BrandData[] = [
     name: 'Speedway',
     displayName: 'Speedway',
     firestoreValue: 'Speedway',
-    metaTitle: "Trouver un Speedway en France : 21 magasins vérifiés | LabelMoto",
-    metaDescription: "Trouvez le magasin Speedway le plus proche parmi 21 adresses référencées en France. Équipements moto, accessoires et atelier — contacts et horaires sur LabelMoto.",
+    metaTitle: "Speedway en France : magasins et équipements moto | LabelMoto",
+    metaDescription: "Trouvez les magasins Speedway référencés en France et découvrez l’histoire de l’enseigne, son réseau et son offre d’équipements et accessoires moto.",
     h1: 'Magasins Speedway en France',
     intro: [
-      "Speedway est une chaîne française de distribution d'équipements moto présente dans toute la France avec plus de 20 magasins. Spécialisée dans les casques, équipements de protection et accessoires moto, Speedway propose des conseils personnalisés par des passionnés.",
-      "LabelMoto recense tous les magasins Speedway en France avec fiches vérifiées, horaires et coordonnées directes.",
+      "Speedway est une enseigne française spécialisée dans l’équipement du motard et les accessoires pour moto et scooter. Le premier magasin ouvre à Marseille en 1979, avant le développement progressif d’un réseau national. L’enseigne compte aujourd’hui 22 magasins en France et complète son implantation physique par Speedway.fr, son activité de vente en ligne."
     ],
     faq: [
-      { q: "Où trouver un magasin Speedway près de chez moi ?", a: "LabelMoto recense 21 magasins Speedway en France. Utilisez la carte interactive pour trouver l'adresse et les horaires du magasin le plus proche." },
-      { q: "Speedway est-il moins cher que Dafy Moto ?", a: "Les deux enseignes sont comparables en termes de prix et de gamme. Speedway est parfois perçu comme plus spécialisé dans l'équipement premium. Comparez les offres en magasin pour les grandes marques de casques et vêtements." },
-      { q: "Speedway propose-t-il des services d'atelier ?", a: "Certains magasins Speedway disposent d'un atelier ou proposent des services comme le montage de pneus. Consultez la fiche du magasin le plus proche sur LabelMoto." },
+      {
+        "q": "Speedway est-il un réseau français ?",
+        "a": "Oui. Le premier magasin Speedway a ouvert à Marseille en 1979. L’enseigne s’est ensuite développée dans plusieurs régions et compte aujourd’hui 22 magasins en France."
+      },
+      {
+        "q": "Que vend Speedway ?",
+        "a": "Speedway est spécialisé dans l’équipement du motard et les accessoires pour moto et scooter : casques, vêtements, protections, bagagerie, pièces, pneumatiques et différents équipements pour le deux-roues."
+      },
+      {
+        "q": "Peut-on acheter en ligne chez Speedway ?",
+        "a": "Oui. Le projet e-commerce Speedway.fr a été lancé en 2007 et complète aujourd’hui le réseau de magasins physiques."
+      }
+    ],
+    aboutTitle: "À propos de Speedway",
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "Marseille · 1979",
+        "description": "Le premier magasin Speedway est ouvert à Marseille par Jacques Marques."
+      },
+      {
+        "label": "Réseau",
+        "value": "22 magasins en France",
+        "description": "Speedway dispose d’un réseau de magasins spécialisés répartis sur le territoire français."
+      },
+      {
+        "label": "E-commerce",
+        "value": "Speedway.fr · depuis 2007",
+        "description": "Le projet e-commerce complète le réseau physique avec une offre accessible en ligne."
+      },
+      {
+        "label": "Spécialité",
+        "value": "Équipement & accessoires moto",
+        "description": "Casques, vêtements, protections, bagagerie, pièces, pneumatiques et accessoires."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-speedway",
+        "title": "Histoire de Speedway",
+        "content": "Speedway trouve ses origines à Marseille, où Jacques Marques ouvre le premier magasin en 1979. En 1988, Jean-Jacques et Maurice Coq reprennent l’activité. À partir de 1991, le réseau commence à s’étendre avec de nouveaux points de vente et poursuit ensuite son développement dans plusieurs grandes villes françaises."
+      },
+      {
+        "id": "reseau-speedway",
+        "title": "Le réseau de magasins Speedway",
+        "content": "Speedway compte aujourd’hui 22 magasins en France. Le réseau associe des points de vente physiques spécialisés dans l’équipement moto et scooter à une activité en ligne, avec des implantations dans plusieurs grandes agglomérations françaises."
+      },
+      {
+        "id": "equipements-speedway",
+        "title": "Équipements et accessoires moto",
+        "content": "L’enseigne distribue de nombreuses marques de casques, vêtements, gants, bottes et protections. Son catalogue comprend également de la bagagerie, des pièces détachées, des pneumatiques, des produits d’entretien et différents accessoires pour moto et scooter."
+      },
+      {
+        "id": "services-speedway",
+        "title": "Magasins et vente en ligne",
+        "content": "Les magasins Speedway permettent de découvrir et d’essayer les équipements tout en bénéficiant de conseils. Speedway.fr complète cette présence physique avec la vente en ligne et différents services de livraison ou de retrait selon les produits et les points de vente."
+      }
     ],
   },
   {
@@ -1451,35 +1789,154 @@ export const BRANDS: BrandData[] = [
     name: "Doc'Biker",
     displayName: "Doc'Biker",
     firestoreValue: "Doc'Biker",
-    metaTitle: "Trouver un Doc'Biker en France : 15 magasins vérifiés | LabelMoto",
-    metaDescription: "Trouvez le Doc'Biker le plus proche parmi 15 adresses référencées en France. Entretien moto, réparation, équipements — contacts et horaires sur LabelMoto.",
-    h1: "Magasins Doc'Biker en France",
+    metaTitle: "Doc'Biker : centres d’entretien moto et scooter | LabelMoto",
+    metaDescription: "Trouvez les centres Doc'Biker référencés et découvrez leurs services d’entretien et de réparation multi-marques pour motos et scooters.",
+    h1: "Centres Doc'Biker en France",
     intro: [
-      "Doc'Biker est une chaîne française spécialisée dans l'entretien et la réparation de motos et scooters, présente avec plus de 15 centres en France. Révisions, diagnostics, pneus, chaînes et pièces détachées — Doc'Biker propose des services complets à prix transparents.",
-      "LabelMoto recense tous les centres Doc'Biker en France avec fiches vérifiées, horaires et coordonnées directes.",
+      "Doc’Biker est une enseigne française spécialisée depuis 1997 dans l’entretien et la réparation des deux et trois-roues. Son concept repose sur une prise en charge multi-marques, des forfaits d’entretien et des interventions rapides, avec un accueil sans rendez-vous mis en avant par le réseau. Les centres interviennent sur les motos et scooters thermiques comme électriques."
     ],
     faq: [
-      { q: "Où trouver un Doc'Biker près de chez moi ?", a: "LabelMoto recense 15 centres Doc'Biker en France, principalement en région parisienne et dans les grandes villes. Utilisez la carte interactive pour trouver le plus proche." },
-      { q: "Doc'Biker assure-t-il les révisions sous garantie constructeur ?", a: "Doc'Biker est un atelier indépendant. Pour les motos sous garantie constructeur, vérifiez que l'entretien respecte les préconisations du carnet. En cas de doute, préférez un concessionnaire agréé de la marque." },
-      { q: "Quel est le prix d'une révision chez Doc'Biker ?", a: "Doc'Biker est généralement positionné dans la moyenne du marché, parfois moins cher qu'une concession officielle. Les tarifs varient selon le modèle et le type d'intervention. Contactez le centre le plus proche pour un devis." },
+      {
+        "q": "Depuis quand Doc’Biker existe-t-il ?",
+        "a": "Doc’Biker est spécialisé dans l’entretien et la réparation des deux-roues depuis 1997."
+      },
+      {
+        "q": "Quels services propose Doc’Biker ?",
+        "a": "Les centres proposent notamment révisions, pneumatiques, freinage, transmission, suspensions, diagnostic, électricité et différentes opérations de réparation et d’entretien."
+      },
+      {
+        "q": "Faut-il prendre rendez-vous chez Doc’Biker ?",
+        "a": "Doc’Biker met en avant la prise en charge sans rendez-vous pour de nombreuses interventions. Pour une opération particulière ou plus longue, il reste utile de contacter le centre concerné avant de se déplacer."
+      },
+      {
+        "q": "Doc’Biker entretient-il les motos encore sous garantie constructeur ?",
+        "a": "Oui. Doc’Biker indique effectuer les révisions dans le respect des préconisations constructeur, avec des pièces d’origine ou équivalentes et une traçabilité des interventions."
+      }
+    ],
+    aboutTitle: "À propos de Doc’Biker",
+    highlights: [
+      {
+        "label": "Expérience",
+        "value": "Depuis 1997",
+        "description": "Doc’Biker est spécialisé dans l’entretien des deux-roues depuis plus de vingt-cinq ans."
+      },
+      {
+        "label": "Spécialité",
+        "value": "Entretien multi-marques",
+        "description": "Motos, scooters et trois-roues sont pris en charge pour de nombreuses opérations d’entretien et de réparation."
+      },
+      {
+        "label": "Accueil",
+        "value": "Sans rendez-vous",
+        "description": "La prise en charge rapide sans rendez-vous fait partie du positionnement historique de l’enseigne."
+      },
+      {
+        "label": "Motorisations",
+        "value": "Thermique & électrique",
+        "description": "Les équipes interviennent sur les deux-roues thermiques comme électriques."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-docbiker",
+        "title": "Doc’Biker depuis 1997",
+        "content": "Doc’Biker développe depuis 1997 un concept consacré à l’entretien et à la réparation des motos et scooters. L’enseigne s’est notamment fait connaître par une approche multi-marques, des forfaits d’entretien clairement identifiés et une prise en charge rapide des deux-roues."
+      },
+      {
+        "id": "reseau-docbiker",
+        "title": "Un réseau de centres d’entretien",
+        "content": "Le site officiel Doc’Biker référence plusieurs centres à Paris ainsi qu’un centre à Roquebrune-sur-Argens. Les prestations et disponibilités peuvent varier selon le centre."
+      },
+      {
+        "id": "services-docbiker",
+        "title": "Entretien, réparation et diagnostic",
+        "content": "Les centres Doc’Biker prennent en charge de nombreuses opérations : révisions, pneumatiques, freinage, kit chaîne ou courroie, suspensions, échappement, direction, électricité, électronique, diagnostic et différentes réparations."
+      },
+      {
+        "id": "rendez-vous-docbiker",
+        "title": "Une prise en charge rapide sans rendez-vous",
+        "content": "Doc’Biker met en avant l’entretien sans rendez-vous comme l’un de ses principaux services. Cette organisation vise à permettre la prise en charge rapide des besoins courants, sous réserve de la disponibilité du centre et de la nature de l’intervention."
+      },
+      {
+        "id": "garantie-docbiker",
+        "title": "Entretien et garantie constructeur",
+        "content": "Doc’Biker indique respecter les préconisations des constructeurs lors des révisions et utiliser des pièces d’origine ou de qualité équivalente. Les interventions sont documentées afin d’assurer leur traçabilité."
+      }
     ],
   },
   {
     slug: 'teamaxe',
     name: 'TeamAxe',
-    displayName: 'TeamAxe',
+    displayName: 'TEAMAXE',
     firestoreValue: 'TeamAxe',
-    metaTitle: "Trouver un TeamAxe en France : 8 magasins vérifiés | LabelMoto",
-    metaDescription: "Trouvez le magasin TeamAxe le plus proche parmi 8 adresses référencées en France. Équipements moto premium, accessoires et casques — contacts et horaires sur LabelMoto.",
-    h1: 'Magasins TeamAxe en France',
+    metaTitle: "TEAMAXE en France : magasins et équipements moto | LabelMoto",
+    metaDescription: "Trouvez les magasins TEAMAXE référencés en France et découvrez le réseau, ses casques, vêtements, protections et accessoires moto et scooter.",
+    h1: 'Magasins TEAMAXE en France',
     intro: [
-      "TeamAxe est une enseigne parisienne et nationale spécialisée dans les équipements moto premium, avec une présence forte sur l'avenue de la Grande Armée et plusieurs magasins en France. Casques haut de gamme, équipements de protection et accessoires — TeamAxe s'adresse aux motards exigeants.",
-      "LabelMoto recense tous les magasins TeamAxe en France avec fiches vérifiées et coordonnées directes.",
+      "TEAMAXE est un réseau spécialisé dans l’équipement du motard et du scootériste. L’enseigne associe des magasins physiques et une activité e-commerce avec une offre couvrant notamment les casques, blousons, gants, chaussures, protections et accessoires pour moto et scooter. Le réseau compte actuellement 10 magasins en France et en Andorre."
     ],
     faq: [
-      { q: "Où trouver un magasin TeamAxe près de chez moi ?", a: "LabelMoto recense 8 magasins TeamAxe en France. Consultez la carte interactive pour trouver l'adresse et les horaires du magasin le plus proche." },
-      { q: "TeamAxe est-il spécialisé dans les casques premium ?", a: "Oui, TeamAxe est reconnu pour son offre de casques premium (Shoei, Arai, AGV) et ses équipements de protection haut de gamme. Le conseil en magasin est particulièrement apprécié par les clients." },
-      { q: "Peut-on trouver des pièces détachées chez TeamAxe ?", a: "TeamAxe est principalement spécialisé dans l'équipement du pilote (casques, vêtements, gants, bottes) plutôt que dans les pièces mécaniques. Pour les pièces détachées, orientez-vous vers Dafy Moto ou une concession de votre marque." },
+      {
+        "q": "TEAMAXE est-il un réseau de magasins moto ?",
+        "a": "Oui. TEAMAXE est un réseau spécialisé dans l’équipement moto et scooter, avec des magasins physiques et une activité e-commerce."
+      },
+      {
+        "q": "Que trouve-t-on chez TEAMAXE ?",
+        "a": "TEAMAXE propose notamment des casques, blousons, pantalons, gants, chaussures, protections, bagagerie, antivols, intercoms et différents accessoires pour moto et scooter."
+      },
+      {
+        "q": "Combien de magasins TEAMAXE existe-t-il ?",
+        "a": "TEAMAXE annonce actuellement 10 magasins répartis entre la France et la Principauté d’Andorre."
+      },
+      {
+        "q": "TEAMAXE vend-il aussi ses produits en ligne ?",
+        "a": "Oui. L’enseigne dispose d’un site e-commerce qui complète son réseau de magasins physiques."
+      }
+    ],
+    aboutTitle: "À propos de TEAMAXE",
+    highlights: [
+      {
+        "label": "Activité",
+        "value": "Équipement moto & scooter",
+        "description": "Casques, vêtements, gants, chaussures, protections, bagagerie et accessoires."
+      },
+      {
+        "label": "Réseau",
+        "value": "10 magasins",
+        "description": "Le réseau TEAMAXE est implanté en France et en Andorre."
+      },
+      {
+        "label": "Implantation",
+        "value": "France & Andorre",
+        "description": "TEAMAXE dispose de magasins dans plusieurs villes françaises ainsi qu’en Principauté d’Andorre."
+      },
+      {
+        "label": "Canaux",
+        "value": "Magasins & e-commerce",
+        "description": "Le réseau associe conseil en point de vente et catalogue accessible en ligne."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-teamaxe",
+        "title": "L’histoire de TEAMAXE",
+        "content": "TEAMAXE s’est développé autour d’un concept consacré à l’équipement du motard et du scootériste. Le réseau met en avant le conseil en magasin, la possibilité d’essayer les équipements et une sélection couvrant différents usages, du quotidien au touring en passant par une pratique plus sportive."
+      },
+      {
+        "id": "reseau-teamaxe",
+        "title": "Le réseau de magasins TEAMAXE",
+        "content": "TEAMAXE annonce actuellement 10 magasins en France et en Andorre. En France, l’enseigne est notamment implantée en région parisienne, à Toulouse et à Mérignac. Le réseau est complété par plusieurs magasins en Principauté d’Andorre."
+      },
+      {
+        "id": "equipements-teamaxe",
+        "title": "Équipements et accessoires moto",
+        "content": "L’offre TEAMAXE couvre les principaux besoins du motard : casques, blousons, pantalons, gants, chaussures, bottes, protections, bagagerie, antivols, produits d’entretien, intercoms, GPS et différents accessoires pour moto et scooter."
+      },
+      {
+        "id": "services-teamaxe",
+        "title": "Conseil en magasin et vente en ligne",
+        "content": "Les magasins TEAMAXE permettent d’essayer les équipements et de bénéficier de conseils adaptés à sa pratique. Le site e-commerce complète cette présence physique avec la commande en ligne et différents services de livraison ou de retrait."
+      }
     ],
   },
 
@@ -1506,17 +1963,149 @@ export const BRANDS: BrandData[] = [
     name: 'Cardy',
     displayName: 'Cardy',
     firestoreValue: 'Cardy',
-    metaTitle: "Trouver un Cardy en France : 10 magasins vérifiés | LabelMoto",
-    metaDescription: "Trouvez le magasin Cardy le plus proche parmi 10 adresses référencées en France. Équipements moto premium, casques et accessoires — contacts et horaires sur LabelMoto.",
+    metaTitle: "Cardy en France : magasins et équipements moto | LabelMoto",
+    metaDescription: "Trouvez les magasins Cardy référencés en France et découvrez l’histoire de l’enseigne, ses 17 points de vente, ses équipements et ses services moto.",
     h1: 'Magasins Cardy en France',
     intro: [
-      "Cardy est une enseigne française spécialisée dans les équipements moto premium, présente dans une dizaine de magasins en France. Casques haut de gamme, équipements de protection, accessoires et pneumatiques — Cardy s'adresse aux motards exigeants qui cherchent un conseil expert en boutique.",
-      "LabelMoto recense tous les magasins Cardy en France avec fiches vérifiées et coordonnées directes.",
+      "Cardy est une enseigne française créée en 1979 par Lucien Poiatti. D’abord consacrée aux accessoires automobiles, elle ouvre des corners moto dans ses magasins en 1985 avant d’inaugurer, en 1987 dans le 19e arrondissement de Paris, son premier magasin entièrement dédié à la moto. Cardy compte aujourd’hui 17 points de vente et propose équipements du motard, accessoires, pièces, pneumatiques et différents services selon les magasins."
     ],
     faq: [
-      { q: "Où trouver un magasin Cardy près de chez moi ?", a: "LabelMoto recense 10 magasins Cardy en France. Consultez la carte interactive pour trouver l'adresse et les horaires du magasin le plus proche." },
-      { q: "Cardy est-il spécialisé dans les équipements premium ?", a: "Oui, Cardy est reconnu pour son offre d'équipements haut de gamme (Shoei, Arai, AGV, Alpinestars) et son conseil personnalisé par des passionnés de moto." },
-      { q: "Peut-on essayer les équipements chez Cardy ?", a: "Oui, les magasins Cardy permettent l'essayage de casques et vêtements. Le conseil en boutique est l'un des points forts de l'enseigne." },
+      {
+        "q": "Cardy est-il un réseau français ?",
+        "a": "Oui. Cardy est une enseigne française créée en 1979 par Lucien Poiatti."
+      },
+      {
+        "q": "Combien de points de vente Cardy compte-t-il ?",
+        "a": "Cardy annonce actuellement 17 points de vente dans son réseau."
+      },
+      {
+        "q": "Que trouve-t-on chez Cardy ?",
+        "a": "Cardy propose notamment des casques, vêtements et protections pour le motard, ainsi que des accessoires, pièces, pneumatiques, consommables et produits destinés à la moto et au scooter."
+      },
+      {
+        "q": "Les magasins Cardy disposent-ils d’un atelier ?",
+        "a": "Certains magasins Cardy disposent d’un Atelier Service Rapide, notamment pour des prestations liées aux pneumatiques et à l’entretien courant. Ce service n’est pas disponible dans tous les points de vente."
+      }
+    ],
+    aboutTitle: "À propos de Cardy",
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "France · 1979",
+        "description": "Lucien Poiatti crée Cardy en 1979 dans le secteur de l’accessoire automobile."
+      },
+      {
+        "label": "Virage moto",
+        "value": "1985 · 1987",
+        "description": "Cardy ouvre des corners moto en 1985, puis son premier magasin 100 % moto à Paris en 1987."
+      },
+      {
+        "label": "Réseau",
+        "value": "17 points de vente",
+        "description": "Cardy dispose aujourd’hui d’un réseau de 17 points de vente."
+      },
+      {
+        "label": "Activité",
+        "value": "Équipement · Pièces · Services",
+        "description": "L’offre couvre l’équipement du motard, les accessoires, les pièces, les pneumatiques et différents services selon les magasins."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-cardy",
+        "title": "Histoire de Cardy",
+        "content": "Lucien Poiatti crée Cardy en 1979 afin de distribuer des accessoires automobiles. Passionné d’enduro, il introduit en 1985 des corners consacrés à la moto dans les trois magasins de l’enseigne. En 1987, Cardy ouvre dans le 19e arrondissement de Paris son premier magasin entièrement consacré à la moto, avant de poursuivre son développement sur le marché français."
+      },
+      {
+        "id": "reseau-cardy",
+        "title": "Le réseau Cardy",
+        "content": "Cardy annonce actuellement 17 points de vente. Le réseau s’adresse à des profils variés de motards, du scooter aux grosses cylindrées en passant par la route, le cross et l’enduro, et complète ses magasins physiques par son activité de vente en ligne."
+      },
+      {
+        "id": "equipements-cardy",
+        "title": "Équipements, pièces et accessoires",
+        "content": "Cardy commercialise notamment des casques, blousons, gants, chaussures, protections et autres équipements du motard, ainsi qu’une large gamme d’accessoires, pièces, pneumatiques, consommables et produits pour moto et scooter."
+      },
+      {
+        "id": "services-cardy",
+        "title": "Services et atelier selon les magasins",
+        "content": "Certains magasins Cardy disposent d’un Atelier Service Rapide et proposent des prestations telles que le montage de pneumatiques ou différentes opérations d’entretien. Tous les points de vente ne disposent pas d’un atelier : les services doivent donc être vérifiés sur la fiche du magasin concerné."
+      }
+    ],
+  },
+  {
+    slug: "maxxess",
+    name: "Maxxess",
+    displayName: "Maxxess",
+    firestoreValue: "Maxxess",
+    metaTitle: "Maxxess en France : magasins et équipements moto | LabelMoto",
+    metaDescription: "Trouvez les magasins Maxxess référencés en France et découvrez le réseau, ses équipements, accessoires et services pour motards et deux-roues.",
+    h1: "Magasins Maxxess en France",
+    aboutTitle: "À propos de Maxxess",
+    intro: [
+      "Maxxess est un réseau français spécialisé dans l’équipement du motard, les accessoires moto et les services liés au deux-roues. Le premier centre Maxxess ouvre en 2000 et le réseau compte aujourd’hui 40 magasins. Son offre couvre notamment les casques, vêtements, protections, bagagerie, pièces, pneumatiques, consommables et différents services d’entretien."
+    ],
+    highlights: [
+      {
+        "label": "Origine",
+        "value": "France · 2000",
+        "description": "Le premier centre Maxxess ouvre en 2000."
+      },
+      {
+        "label": "Réseau",
+        "value": "40 magasins",
+        "description": "Maxxess dispose aujourd’hui d’un réseau de 40 magasins spécialisés."
+      },
+      {
+        "label": "Activité",
+        "value": "Équipement & accessoires moto",
+        "description": "Casques, vêtements, protections, bagagerie, pièces, pneumatiques et consommables."
+      },
+      {
+        "label": "Services",
+        "value": "Conseil & entretien",
+        "description": "Le réseau propose différents services pour le motard et son deux-roues selon les magasins."
+      }
+    ],
+    accordions: [
+      {
+        "id": "histoire-maxxess",
+        "title": "Histoire de Maxxess",
+        "content": "Le premier centre Maxxess ouvre en 2000. Le réseau se développe ensuite en France autour d’un concept de magasin spécialisé dans l’équipement du motard, l’accessoire moto et l’entretien du deux-roues."
+      },
+      {
+        "id": "reseau-maxxess",
+        "title": "Un réseau national de magasins",
+        "content": "Maxxess annonce actuellement 40 magasins. Le réseau est implanté dans de nombreuses régions et s’adresse aux usages route, urbain, tout-terrain et scooter, avec une offre destinée à la fois au pilote et à son deux-roues."
+      },
+      {
+        "id": "equipements-maxxess",
+        "title": "Équipements, pièces et accessoires",
+        "content": "Les magasins Maxxess proposent notamment casques, blousons, pantalons, gants, chaussures, protections, bagagerie, accessoires high-tech, pièces, produits d’entretien, consommables et pneumatiques. Le réseau distribue de nombreuses grandes marques de l’univers moto."
+      },
+      {
+        "id": "services-maxxess",
+        "title": "Services et entretien en magasin",
+        "content": "Maxxess met en avant plusieurs services selon les magasins, notamment la station rapide atelier, le montage ou l’entretien, le retrait de commandes et le conseil en magasin. Les prestations et leurs tarifs peuvent varier selon le point de vente."
+      }
+    ],
+    faq: [
+      {
+        "q": "Depuis quand Maxxess existe-t-il ?",
+        "a": "Le premier centre Maxxess a ouvert en 2000."
+      },
+      {
+        "q": "Combien de magasins Maxxess compte-t-il ?",
+        "a": "Maxxess annonce actuellement un réseau de 40 magasins."
+      },
+      {
+        "q": "Que vend Maxxess ?",
+        "a": "Maxxess est spécialisé dans l’équipement du motard et de la moto : casques, vêtements, protections, bagagerie, accessoires, pièces, pneumatiques et consommables."
+      },
+      {
+        "q": "Les magasins Maxxess disposent-ils d’un atelier ?",
+        "a": "Le réseau propose des services d’atelier et d’entretien dans de nombreux magasins. Les prestations et tarifs peuvent varier selon le point de vente."
+      }
     ],
   },
 ];

@@ -1247,6 +1247,10 @@ function MapPageComponent() {
   const initialUrlSearchReplayRef =
     useRef(false);
   const [
+    hasInitialHomeWhat,
+    setHasInitialHomeWhat,
+  ] = useState(false);
+  const [
     resolvedProfessionalId,
     setResolvedProfessionalId,
   ] = useState<string | null>(null);
@@ -1638,6 +1642,15 @@ function MapPageComponent() {
     const params = new URLSearchParams(window.location.search);
 
     const initialSearch = params.get('search') || '';
+    const initialHomeWhat =
+      (
+        params.get('what') ||
+        ''
+      ).trim();
+
+    setHasInitialHomeWhat(
+      Boolean(initialHomeWhat)
+    );
     const initialDisplaySearch =
       params.get('display') ||
       initialSearch;
@@ -2080,6 +2093,7 @@ function MapPageComponent() {
     );
 
   const shouldLoadPoints =
+    hasInitialHomeWhat ||
     activeFilters.length > 0 ||
     Boolean(selectedId) ||
     (
@@ -4743,7 +4757,166 @@ function MapPageComponent() {
           }
         );
 
-      if (exactProfessional) {
+      const normalizeProfessionalWords = (
+        value: unknown
+      ) =>
+        String(value ?? '')
+          .normalize('NFD')
+          .replace(
+            /[\u0300-\u036f]/g,
+            ''
+          )
+          .toLowerCase()
+          .replace(
+            /&/g,
+            ' et '
+          )
+          .replace(
+            /[^a-z0-9]+/g,
+            ' '
+          )
+          .trim();
+
+      const normalizedProfessionalQueryWords =
+        normalizeProfessionalWords(
+          rawQuery
+        );
+
+      const professionalNameCandidates =
+        exactProfessional ||
+        isBrandOnlyQuery
+          ? []
+          : professionalPoints.filter(
+              point => {
+                const locationText =
+                  normalizeProfessionalWords(
+                    [
+                      (point as any).address,
+                      (point as any).city,
+                      (point as any).ville,
+                      (point as any).postalCode,
+                      (point as any).postal_code,
+                      (point as any).postcode,
+                      (point as any).departement,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+                  );
+
+                const possibleNames = [
+                  point.title,
+                  (point as any).name,
+                ];
+
+                return possibleNames.some(
+                  value => {
+                    const rawName =
+                      String(
+                        value ?? ''
+                      ).trim();
+
+                    if (!rawName) {
+                      return false;
+                    }
+
+                    const resolvedName =
+                      resolveMapProfessionSearch(
+                        rawName
+                      ).query;
+
+                    const nameVariants =
+                      Array.from(
+                        new Set(
+                          [
+                            rawName,
+                            resolvedName,
+                          ]
+                            .map(
+                              normalizeProfessionalWords
+                            )
+                            .filter(
+                              name =>
+                                name.length >= 3
+                            )
+                        )
+                      );
+
+                    return nameVariants.some(
+                      name => {
+                        /*
+                         * Nom seul :
+                         *
+                         * Francis Coupinot
+                         * =
+                         * Atelier Francis Coupinot
+                         * apres resolution du metier.
+                         */
+                        if (
+                          normalizedProfessionalQueryWords ===
+                          name
+                        ) {
+                          return true;
+                        }
+
+                        /*
+                         * Nom + localisation.
+                         */
+                        if (
+                          !normalizedProfessionalQueryWords.startsWith(
+                            name + ' '
+                          )
+                        ) {
+                          return false;
+                        }
+
+                        const locationSuffix =
+                          normalizedProfessionalQueryWords
+                            .slice(
+                              name.length
+                            )
+                            .trim();
+
+                        if (
+                          !locationSuffix ||
+                          !locationText
+                        ) {
+                          return false;
+                        }
+
+                        const locationTokens =
+                          locationSuffix
+                            .split(/\s+/)
+                            .filter(
+                              token =>
+                                token.length >= 2
+                            );
+
+                        return (
+                          locationTokens.length > 0 &&
+                          locationTokens.every(
+                            token =>
+                              locationText.includes(
+                                token
+                              )
+                          )
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            );
+
+      const professionalByNameOrLocation =
+        professionalNameCandidates.length === 1
+          ? professionalNameCandidates[0]
+          : undefined;
+
+      const resolvedProfessional =
+        exactProfessional ??
+        professionalByNameOrLocation;
+
+      if (resolvedProfessional) {
         if (
           professionalPoints.length > 0
         ) {
@@ -4765,12 +4938,12 @@ function MapPageComponent() {
         );
 
         setSelectedId(
-          exactProfessional.id
+          resolvedProfessional.id
         );
 
         // RESULTAT PROFESSIONNEL FINAL
         setResolvedProfessionalId(
-          exactProfessional.id
+          resolvedProfessional.id
         );
 
         setIsDetailView(
@@ -4802,8 +4975,8 @@ function MapPageComponent() {
         );
 
         setMapCenter([
-          exactProfessional.latitude,
-          exactProfessional.longitude,
+          resolvedProfessional.latitude,
+          resolvedProfessional.longitude,
         ]);
 
         setMapZoom(

@@ -377,6 +377,51 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [listingEditTarget, setListingEditTarget] = useState<{ collection: string; id: string } | null>(null);
 
+  useEffect(() => {
+    if (!isAdmin || typeof window === 'undefined') {
+      return;
+    }
+
+    const params =
+      new URLSearchParams(window.location.search);
+
+    const editCollection =
+      (params.get('editCollection') || '').trim();
+
+    const editId =
+      (params.get('editId') || '').trim();
+
+    if (!editCollection || !editId) {
+      return;
+    }
+
+    const allowedCollections =
+      new Set([
+        'concessions',
+        'associations',
+        'relais',
+        'creators',
+      ]);
+
+    if (!allowedCollections.has(editCollection)) {
+      return;
+    }
+
+    setListingEditTarget(current => {
+      if (
+        current?.collection === editCollection &&
+        current?.id === editId
+      ) {
+        return current;
+      }
+
+      return {
+        collection: editCollection,
+        id: editId,
+      };
+    });
+  }, [isAdmin]);
+
   const [dashboardCounts, setDashboardCounts] = useState<{
     submissions: number;
     comments: number;

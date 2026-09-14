@@ -271,6 +271,24 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
               <div className="space-y-4">
                 <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-foreground leading-none">{pro.title}</h1>
                 <p className="text-xl font-bold text-brand italic">{pro.category || 'Professionnel moto'}</p>
+
+                {isAdmin && pro.id && (
+                  <div>
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="h-10 rounded-full border-2 border-brand px-5 text-[10px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-white"
+                    >
+                      <Link
+                        href={`/admin?editCollection=${encodeURIComponent(
+                          getProCollection()
+                        )}&editId=${encodeURIComponent(pro.id)}`}
+                      >
+                        Modifier cette fiche
+                      </Link>
+                    </Button>
+                  </div>
+                )}
                 <div className="flex items-start gap-3 p-6 bg-muted/30 rounded-2xl border-2 border-dashed">
                   <MapPin className="h-6 w-6 text-brand shrink-0" />
                   <div>

@@ -208,43 +208,43 @@ const TECH_SHEETS = [
   {
     brand: 'CFMOTO',
     model: '450MT',
-    href: "/entretien?fiche=cfmoto-450mt-2024-plus",
+    href: "/fiches/cfmoto-450mt-2024-plus",
     image: "/images/motorcycles/cfmoto-450MT.webp",
   },
   {
     brand: 'Honda',
     model: 'XL750 Transalp',
-    href: "/entretien?fiche=honda-xl750-transalp-2023-plus",
+    href: "/fiches/honda-xl750-transalp-2023-plus",
     image: "/images/motorcycles/Honda-XL750-Transalp.webp",
   },
   {
     brand: 'Yamaha',
     model: 'MT-07',
-    href: "/entretien?fiche=yamaha-mt-07-2021-plus",
+    href: "/fiches/yamaha-mt-07-2021-plus",
     image: "/images/motorcycles/Yamaha-MT07.webp",
   },
   {
     brand: 'VOGE',
     model: 'DS900X',
-    href: "/entretien?fiche=voge-ds900x-2025-plus",
+    href: "/fiches/voge-ds900x-2025-plus",
     image: "/images/motorcycles/voge-DS900X(4).webp",
   },
   {
     brand: 'QJ Motor',
     model: 'SRK 800 RR',
-    href: "/entretien?fiche=qjmotor-srk800rr-2024-plus",
+    href: "/fiches/qjmotor-srk800rr-2024-plus",
     image: "/images/motorcycles/QJmotor-srk800rr.webp",
   },
   {
     brand: 'CFMOTO',
     model: '800MT',
-    href: "/entretien?fiche=cfmoto-800mt-sport-explore-2023-plus",
+    href: "/fiches/cfmoto-800mt-sport-explore-2023-plus",
     image: "/images/motorcycles/cfmoto-800MT-explore.webp",
   },
   {
     brand: 'KOVE',
     model: '800X Pro',
-    href: "/entretien?fiche=kove-800x-pro-2024-plus",
+    href: "/fiches/kove-800x-pro-2024-plus",
     image: "/images/motorcycles/kove-800x-pro-v2.webp",
   },
 ];
@@ -1454,9 +1454,9 @@ function MobileRegionLabels() {
           'univers moto au même endroit'
         );
 
-      const entretien =
+      const brands =
         findCardByText(
-          'Entretien moto'
+          'Quelques marques présentes'
         );
 
       const trouverPro =
@@ -1522,13 +1522,13 @@ function MobileRegionLabels() {
       positionBetween(
         'centre',
         universe,
-        entretien,
+        brands,
         950
       );
 
       positionBetween(
         'nouvelle',
-        entretien,
+        brands,
         trouverPro,
         1240
       );
@@ -2077,6 +2077,13 @@ function HeroSearch() {
         );
       }
 
+      if (what.trim()) {
+        params.set(
+          'what',
+          what.trim()
+        );
+      }
+
       const displaySearch = [
         what.trim(),
         whereForSearch,
@@ -2444,6 +2451,400 @@ function HeroSearch() {
         )}
       </div>
     </div>
+  );
+}
+
+function MobileBrandsSection() {
+  const manufacturers = [
+    'Honda',
+    'Yamaha',
+    'BMW',
+    'Kawasaki',
+    'CFMOTO',
+    'VOGE',
+    'QJ Motor',
+    'KOVE',
+  ];
+
+  const equipmentBrands = [
+    'Maxxess',
+    'Cardy',
+    'Speedway',
+  ];
+
+  return (
+    <Card
+      title="Quelques marques présentes"
+    >
+      <div>
+        <span
+          className="
+            text-[8px]
+            font-black
+            uppercase
+            tracking-[0.08em]
+            text-muted-foreground
+          "
+        >
+          Constructeurs
+        </span>
+
+        <div
+          className="
+            mt-3
+            flex
+            snap-x
+            snap-mandatory
+            gap-2
+            overflow-x-auto
+            pb-2
+            [scrollbar-width:none]
+            [&::-webkit-scrollbar]:hidden
+          "
+        >
+          {manufacturers.map(
+            brand => (
+              <Link
+                key={brand}
+                href={homeBrandHref(brand)}
+                className="
+                  flex
+                  min-h-[56px]
+                  w-[145px]
+                  shrink-0
+                  snap-start
+                  items-center
+                  justify-between
+                  gap-2
+                  rounded-[1rem]
+                  border
+                  border-border/60
+                  bg-white
+                  px-3
+                "
+              >
+                <strong
+                  className="
+                    min-w-0
+                    text-[10px]
+                    font-black
+                  "
+                >
+                  {brand}
+                </strong>
+
+                <ArrowRight
+                  className="
+                    h-3
+                    w-3
+                    shrink-0
+                    text-brand
+                  "
+                />
+              </Link>
+            )
+          )}
+        </div>
+      </div>
+
+      <div
+        className="
+          mt-4
+        "
+      >
+        <span
+          className="
+            text-[8px]
+            font-black
+            uppercase
+            tracking-[0.08em]
+            text-muted-foreground
+          "
+        >
+          Équipementiers & enseignes
+        </span>
+
+        <div
+          className="
+            mt-3
+            flex
+            snap-x
+            snap-mandatory
+            gap-2
+            overflow-x-auto
+            pb-2
+            [scrollbar-width:none]
+            [&::-webkit-scrollbar]:hidden
+          "
+        >
+          {equipmentBrands.map(
+            brand => (
+              <Link
+                key={brand}
+                href={homeBrandHref(brand)}
+                className="
+                  flex
+                  min-h-[56px]
+                  w-[145px]
+                  shrink-0
+                  snap-start
+                  items-center
+                  justify-between
+                  gap-2
+                  rounded-[1rem]
+                  border
+                  border-border/60
+                  bg-white
+                  px-3
+                "
+              >
+                <strong
+                  className="
+                    min-w-0
+                    text-[10px]
+                    font-black
+                  "
+                >
+                  {brand}
+                </strong>
+
+                <ArrowRight
+                  className="
+                    h-3
+                    w-3
+                    shrink-0
+                    text-brand
+                  "
+                />
+              </Link>
+            )
+          )}
+        </div>
+      </div>
+
+      <Link
+        href="/map"
+        className="
+          mt-3
+          inline-flex
+          items-center
+          gap-1
+          text-[8px]
+          font-black
+          uppercase
+          text-brand
+        "
+      >
+        Voir toutes
+
+        <ArrowRight
+          className="
+            h-3
+            w-3
+          "
+        />
+      </Link>
+    </Card>
+  );
+}
+
+function MobileGuidesSection() {
+  const articles = [
+    {
+      image:
+        '/images/achat-occasion.webp',
+      category:
+        'Permis & A2',
+      title:
+        'Quelle moto choisir pour débuter en A2 ?',
+      href:
+        '/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter',
+    },
+    {
+      image:
+        '/images/evitelespieges.webp',
+      category:
+        'Achat',
+      title:
+        'Acheter une moto d’occasion sans tomber dans les pièges',
+      href:
+        '/info/achat-moto-occasion-guide-complet-pour-eviter-les-pieges',
+    },
+    {
+      image:
+        '/images/casque-meilleur-casque-2026.webp',
+      category:
+        'Équipement',
+      title:
+        'Les meilleurs casques moto en 2026',
+      href:
+        '/info/meilleurs-casques-moto-2026',
+    },
+    {
+      image:
+        '/images/article-scooter-125.webp',
+      category:
+        'Scooter 125',
+      title:
+        'Quel scooter 125 choisir en 2026 ?',
+      href:
+        '/info/meilleur-scooter-125-2026-comparatif-complet',
+    },
+    {
+      image:
+        '/images/article-moto-125cc.webp',
+      category:
+        'Moto 125',
+      title:
+        'Les meilleures motos 125 cc en 2026',
+      href:
+        '/info/meilleures-motos-125cc-2026-guide-complet',
+    },
+  ];
+
+  return (
+    <Card
+      title="Guides & conseils"
+    >
+      <p
+        className="
+          mb-4
+          text-[9px]
+          font-semibold
+          leading-relaxed
+          text-muted-foreground
+        "
+      >
+        Conseils, comparatifs et dossiers
+        pour mieux choisir votre moto.
+      </p>
+
+      <div
+        className="
+          flex
+          snap-x
+          snap-mandatory
+          gap-2
+          overflow-x-auto
+          pb-2
+          [scrollbar-width:none]
+          [&::-webkit-scrollbar]:hidden
+        "
+      >
+        {articles.map(
+          article => (
+            <Link
+              key={article.href}
+              href={article.href}
+              className="
+                w-[145px]
+                shrink-0
+                snap-start
+                overflow-hidden
+                rounded-[1rem]
+                border
+                border-border/60
+                bg-white
+              "
+            >
+              <div
+                className="
+                  h-[88px]
+                  overflow-hidden
+                  bg-muted/40
+                "
+              >
+                <img
+                  src={article.image}
+                  alt={article.title}
+                  loading="lazy"
+                  className="
+                    h-full
+                    w-full
+                    object-cover
+                  "
+                />
+              </div>
+
+              <div
+                className="
+                  p-3
+                "
+              >
+                <span
+                  className="
+                    block
+                    text-[7px]
+                    font-bold
+                    uppercase
+                    tracking-[0.08em]
+                    text-brand
+                  "
+                >
+                  {article.category}
+                </span>
+
+                <div
+                  className="
+                    mt-1.5
+                    flex
+                    items-start
+                    justify-between
+                    gap-2
+                  "
+                >
+                  <strong
+                    className="
+                      min-h-[34px]
+                      min-w-0
+                      overflow-hidden
+                      text-[9px]
+                      font-semibold
+                      leading-[1.25]
+                    "
+                  >
+                    {article.title}
+                  </strong>
+
+                  <ArrowRight
+                    className="
+                      mt-0.5
+                      h-3
+                      w-3
+                      shrink-0
+                      text-brand
+                    "
+                  />
+                </div>
+              </div>
+            </Link>
+          )
+        )}
+      </div>
+
+      <Link
+        href="/info"
+        className="
+          mt-3
+          inline-flex
+          items-center
+          gap-1
+          text-[8px]
+          font-black
+          uppercase
+          text-brand
+        "
+      >
+        Voir tous les guides
+
+        <ArrowRight
+          className="
+            h-3
+            w-3
+          "
+        />
+      </Link>
+    </Card>
   );
 }
 
@@ -4682,7 +5083,7 @@ function DesktopUniverseSection() {
               {equipmentBrands.map(brand => (
                 <Link
                   key={brand}
-                  href={`/map?search=${encodeURIComponent(brand)}`}
+                  href={homeBrandHref(brand)}
                   className="
                     flex
                     h-[66px]
@@ -5661,7 +6062,7 @@ export default function HomepageRoad() {
         </Stage>
 
         {/* ==================================================
-            ENTRETIEN
+            MARQUES / EQUIPEMENT
         =================================================== */}
 
         <Stage
@@ -5669,101 +6070,13 @@ export default function HomepageRoad() {
           pinSide="right"
           height="compact"
         >
-          <Card
-            title="Entretien moto"
-          >
-            <p
-              className="
-                text-[10px]
-                font-semibold
-                text-muted-foreground
-              "
-            >
-              Révisions, maintenance
-              et coûts par modèle.
-            </p>
-
-            <div
-              className="
-                mt-4
-                space-y-2
-              "
-            >
-              <Link
-                href="/entretien"
-                className="
-                  flex
-                  min-h-[42px]
-                  items-center
-                  justify-between
-                  rounded-xl
-                  bg-muted/55
-                  px-3
-                  text-[9px]
-                  font-black
-                "
-              >
-                Yamaha MT-07
-
-                <ArrowRight
-                  className="
-                    h-3
-                    w-3
-                    text-brand
-                  "
-                />
-              </Link>
-
-              <Link
-                href="/entretien"
-                className="
-                  flex
-                  min-h-[42px]
-                  items-center
-                  justify-between
-                  rounded-xl
-                  bg-muted/55
-                  px-3
-                  text-[9px]
-                  font-black
-                "
-              >
-                Honda XL750 Transalp
-
-                <ArrowRight
-                  className="
-                    h-3
-                    w-3
-                    text-brand
-                  "
-                />
-              </Link>
-            </div>
-
-            <Link
-              href="/entretien"
-              className="
-                mt-4
-                inline-flex
-                items-center
-                gap-1
-                text-[8px]
-                font-black
-                uppercase
-                text-brand
-              "
-            >
-              Voir l’entretien
-
-              <ArrowRight
-                className="
-                  h-3
-                  w-3
-                "
-              />
-            </Link>
-          </Card>
+          <MobileBrandsSection />
         </Stage>
+
+        <div
+          className="h-8"
+          aria-hidden="true"
+        />
 
         {/* ==================================================
             TROUVER PRO
@@ -5865,21 +6178,10 @@ export default function HomepageRoad() {
         >
           <div
             className="
-              grid
               w-full
-              grid-cols-2
-              gap-3
             "
           >
-            <SmallEditorialCard
-              pinSide="left"
-              icon={BookOpen}
-              title="Guides & conseils"
-              text="Nos guides pour entretenir, choisir et profiter de votre moto."
-              cta="Voir les guides"
-              href="/info"
-            />
-
+            <MobileGuidesSection />
           </div>
         </section>
 

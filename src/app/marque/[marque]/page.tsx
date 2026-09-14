@@ -158,6 +158,19 @@ export default async function MarquePage({ params }: PageProps) {
   const brand = getBrandBySlug(marque);
   if (!brand) notFound();
 
+  const cityListingNoun =
+    [
+      'dafy',
+      'speedway',
+      'teamaxe',
+      'maxxess',
+      'cardy',
+    ].includes(brand.slug)
+      ? 'magasin'
+      : brand.slug === 'docbiker'
+        ? 'centre'
+        : 'concessionnaire';
+
   const pros = await getProsForBrand(brand.firestoreValue);
   const departmentGroups = groupProsByDepartment(pros);
 
@@ -302,7 +315,7 @@ export default async function MarquePage({ params }: PageProps) {
 
         {/* Top villes */}
         <div className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border">
-          <h2 className="text-xl font-black uppercase tracking-tight mb-4">Trouver un concessionnaire {brand.displayName} par ville</h2>
+          <h2 className="text-xl font-black uppercase tracking-tight mb-4">Trouver un {cityListingNoun} {brand.displayName} par ville</h2>
           <div className="flex flex-wrap gap-2">
             {CITIES.slice(0, 20).map(city => (
               <Link key={city.slug} href={`/garages-moto/${city.slug}`} className="px-3 py-1.5 bg-muted/30 rounded-full text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:bg-brand/10 hover:text-brand transition-colors">
