@@ -1456,12 +1456,12 @@ function MobileRegionLabels() {
 
       const brands =
         findCardByText(
-          'Quelques marques présentes'
+          'Rechercher par marque'
         );
 
       const trouverPro =
         findCardByText(
-          'Trouver le bon pro'
+          'Rechercher par métier'
         );
 
       const technicalSheets =
@@ -2404,13 +2404,11 @@ function HeroSearch() {
                 key={choice.label}
                 type="button"
                 onClick={() => {
-                  setWhat(
-                    choice.value
-                  );
+                  const href = choice.filter
+                    ? `/map?filter=${encodeURIComponent(choice.filter)}`
+                    : `/map?search=${encodeURIComponent(choice.value)}`;
 
-                  setSelectedFilter(
-                    choice.filter || ''
-                  );
+                  window.location.assign(href);
                 }}
                 className="
                   flex
@@ -2474,7 +2472,7 @@ function MobileBrandsSection() {
 
   return (
     <Card
-      title="Quelques marques présentes"
+      title="Rechercher par marque"
     >
       <div>
         <span
@@ -4795,7 +4793,7 @@ function DesktopUniverseSection() {
                     xl:text-[38px]
                   "
                 >
-                  Trouver le bon pro
+                  Rechercher par métier
                 </h3>
               </div>
 
@@ -4961,7 +4959,7 @@ function DesktopUniverseSection() {
                   xl:text-[32px]
                 "
               >
-                Quelques marques présentes
+                Rechercher par marque
               </h3>
             </div>
 
@@ -6089,7 +6087,7 @@ export default function HomepageRoad() {
           desktopHidden
         >
           <Card
-            title="Trouver le bon pro"
+            title="Rechercher par métier"
           >
             <div
               className="

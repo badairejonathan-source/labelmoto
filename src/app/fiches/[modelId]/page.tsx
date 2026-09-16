@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { cache } from 'react';
 import { permanentRedirect } from 'next/navigation';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import FicheClient from '@/components/app/fiche-client';
@@ -14,7 +15,7 @@ function formatModelTitle(id: string): string {
     .toUpperCase();
 }
 
-async function getFicheMetadata(modelId: string) {
+const getFicheMetadata = cache(async (modelId: string) => {
   try {
     const db = getAdminFirestore();
     // Cherche d'abord par id exact
@@ -30,7 +31,7 @@ async function getFicheMetadata(modelId: string) {
     console.error('getFicheMetadata error:', e);
   }
   return null;
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ modelId: string }> }): Promise<Metadata> {
   const { modelId } = await params;
@@ -100,5 +101,10 @@ export default async function Page({
     permanentRedirect(`/fiches/${modelId}`);
   }
 
-  return <FicheClient modelId={modelId} />;
+  const ficheData = await getFicheMetadata(modelId);
+  const initialFiche = ficheData
+    ? JSON.parse(JSON.stringify(ficheData))
+    : null;
+
+  return <FicheClient modelId={modelId} initialFiche={initialFiche} />;
 }

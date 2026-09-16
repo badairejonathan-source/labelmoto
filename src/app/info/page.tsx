@@ -65,7 +65,7 @@ const getArticleCategories = (article: any) => {
     return cats;
 };
 
-const ArticleCard = ({ article, priority = false }: { article: any, priority?: boolean }) => {
+const ArticleCard = ({ article, priority = false, eager = false }: { article: any, priority?: boolean, eager?: boolean }) => {
     const imageUrl = React.useMemo(() => {
         const id = (article.id || '').toLowerCase();
         const title = (article.title || '').toLowerCase();
@@ -111,6 +111,7 @@ const ArticleCard = ({ article, priority = false }: { article: any, priority?: b
                         className="object-cover transition-transform duration-700 group-hover:scale-110" 
                         sizes="(max-width: 768px) 100vw, 33vw" 
                         priority={priority}
+                        loading={priority ? undefined : (eager ? "eager" : "lazy")}
                     />
                 </div>
             </div>
@@ -377,7 +378,7 @@ function InfoPageComponent() {
                             ) : (
                                 <>
                                     {filteredArticles.map((article, idx) => (
-                                        <ArticleCard key={article.id} article={article} priority={idx < 2} />
+                                        <ArticleCard key={article.id} article={article} priority={idx < 2} eager={idx < 13} />
                                     ))}
                                     {filteredArticles.length === 0 && (
                                         <div className="text-center text-muted-foreground py-20 border-2 border-dashed rounded-3xl bg-muted/10">

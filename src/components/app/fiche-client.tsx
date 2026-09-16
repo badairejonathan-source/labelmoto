@@ -102,10 +102,12 @@ export default function FicheClient({
   modelId,
   embedded = false,
   onModelSelect,
+  initialFiche,
 }: {
   modelId: string;
   embedded?: boolean;
   onModelSelect?: (modelId: string) => void;
+  initialFiche?: any;
 }) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
@@ -116,7 +118,8 @@ export default function FicheClient({
 
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => (firestore && modelId) ? doc(firestore, 'motorcycle_sheets', modelId) : null, [firestore, modelId]);
-  const { data: fiche, isLoading } = useDoc(ficheRef);
+  const { data: liveFiche, isLoading } = useDoc(ficheRef);
+  const fiche = liveFiche ?? initialFiche;
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -286,7 +289,7 @@ export default function FicheClient({
     }
   };
 
-  if (isLoading || !displayData) return (
+  if ((!initialFiche && isLoading) || !displayData) return (
     <div className={embedded ? "bg-background" : "min-h-screen bg-background"}>
         {!embedded && <UnifiedSiteHeader />}
         <main className="container mx-auto px-4 py-8"><div className="max-w-5xl mx-auto space-y-8 pt-4"><Skeleton className="h-4 w-40" /><Skeleton className="h-12 w-full rounded-full" /><Skeleton className="aspect-video w-full rounded-[2.5rem]" /></div></main>
@@ -323,21 +326,6 @@ export default function FicheClient({
           </div>
 
           <div className="space-y-10">
-            {v2 ? (
-              <MotorcycleSheetV2View
-                modelId={modelId}
-                displayData={displayData}
-                v2={v2}
-                selectedVariantIndex={selectedVariantIndex}
-                onSelectVariant={setSelectedVariantIndex}
-                relatedModels={relatedModels}
-                onModelSelect={onModelSelect}
-                reviews={reviews}
-                reviewsLoading={reviewsLoading}
-                onLeaveReview={handleLeaveReviewClick}
-              />
-            ) : (
-              <>
             <section className="w-full">
   <div className="mb-3 md:mb-5">
     <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.18em] text-brand">
@@ -379,6 +367,21 @@ export default function FicheClient({
   </div>
 </section>
 
+            {v2 ? (
+              <MotorcycleSheetV2View
+                modelId={modelId}
+                displayData={displayData}
+                v2={v2}
+                selectedVariantIndex={selectedVariantIndex}
+                onSelectVariant={setSelectedVariantIndex}
+                relatedModels={relatedModels}
+                onModelSelect={onModelSelect}
+                reviews={reviews}
+                reviewsLoading={reviewsLoading}
+                onLeaveReview={handleLeaveReviewClick}
+              />
+            ) : (
+              <>
             {displayData.hasVariants && (
                 <div className="bg-muted/30 p-4 md:p-6 rounded-2xl border-2 border-muted flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground">SÉLECTIONNEZ LA VERSION :</span>

@@ -66,41 +66,61 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('r7')) return 'yamaha-r7-2022-plus';
   if (t.includes('cbr500r')) return 'honda-cbr500r-2022-plus';
   if (t.includes('sv650')) return 'suzuki-sv650-2016-plus';
-  if (t.includes('cmx500') || t.includes('rebel 500')) return 'honda-cmx500-rebel';
+
   if (t.includes('v-strom 650')) return 'suzuki-v-strom-650-2017-plus';
   if (t.includes('transalp') || t.includes('xl750')) return 'honda-xl750-transalp-2023-plus';
-  if (t.includes('450 mt') || t.includes('450mt')) return 'cfmoto-450-mt-2024-plus';
+  if (t.includes('450 mt') || t.includes('450mt')) return 'cfmoto-450mt-2024-plus';
   if (t.includes('hornet 750') || t.includes('cb750')) return 'honda-cb750-hornet-2023-plus';
   if (t.includes('gsx-8s')) return 'suzuki-gsx-8s-2023-plus';
   if (t.includes('z900 a2')) return 'kawasaki-z900-a2-2020-plus';
   if (t.includes('g 310 r') || t.includes('g310r')) return 'bmw-g310r-2021-plus';
-  if (t.includes('g 310 gs') || t.includes('g310gs')) return 'bmw-g310gs-2021-plus';
+
   if (t.includes('f900r')) return 'bmw-f900r-2020-plus';
   return null;
 };
 
 const InternalLinkCard = ({ title, description, link, icon: Icon }: any) => (
-  <div className="mt-8 mb-12">
-    <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden hover:border-brand/40 transition-all group/link">
-      <CardContent className="p-8 flex flex-col md:p-6 md:flex-row items-center gap-6">
-        <div className="bg-brand/10 p-4 rounded-full group-hover/link:bg-brand/20 transition-colors">
-          <Icon className="h-8 w-8 text-brand" />
-        </div>
-        <div className="flex-1 text-center md:text-left">
-          <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title}</h4>
-          <p className="text-sm font-bold text-muted-foreground leading-snug">{description}</p>
-        </div>
-        <Button asChild className="w-full md:w-auto bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-10 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
-          <Link href={link} className="flex items-center gap-2">
-            Voir le guide complet <ChevronRight className="h-4 w-4" />
-          </Link>
-        </Button>
-      </CardContent>
-    </Card>
+  <div className="mt-5 mb-7">
+    <Link href={link} className="group/link block">
+      <Card className="overflow-hidden rounded-2xl border border-border/70 border-l-4 border-l-brand bg-card shadow-sm transition-all hover:border-brand/40 hover:shadow-md">
+        <CardContent className="p-4 md:p-5">
+          <div className="flex items-start gap-3 md:items-center">
+            <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand/10 transition-colors group-hover/link:bg-brand/15 md:mt-0">
+              <Icon className="h-4 w-4 text-brand" />
+            </div>
+
+            <div className="min-w-0 flex-1 text-left">
+              <h4 className="text-[15px] font-black leading-tight tracking-tight text-foreground">
+                {title}
+              </h4>
+
+              <p className="mt-1 text-xs font-normal leading-relaxed text-muted-foreground">
+                {description}
+              </p>
+
+              <span className="mt-2.5 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-brand">
+                Lire le guide
+                <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-0.5" />
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </Link>
   </div>
 );
 
-export default function ArticleClient({ id, showHeader = true, children }: { id: string, showHeader?: boolean, children?: React.ReactNode }) {
+export default function ArticleClient({
+  id,
+  showHeader = true,
+  children,
+  initialArticle = null,
+}: {
+  id: string;
+  showHeader?: boolean;
+  children?: React.ReactNode;
+  initialArticle?: any | null;
+}) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [scheduleFilter, setScheduleFilter] = useState('TOUT');
@@ -108,7 +128,9 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
 
   const firestore = useFirestore();
   const articleRef = useMemoFirebase(() => firestore ? doc(firestore, 'articles', id) : null, [firestore, id]);
-  const { data: article, isLoading } = useDoc(articleRef);
+  const { data: liveArticle, isLoading } = useDoc(articleRef);
+  const article = liveArticle ?? initialArticle;
+  const isArticleLoading = isLoading && !initialArticle;
 
   const articlesListRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
   const { data: allArticles, isLoading: isArticlesListLoading } = useCollection(articlesListRef);
@@ -145,7 +167,16 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     if (articleId.includes('entretien') || id.includes('entretien') || title.includes('révision')) return "/images/motard-entretien-page.webp";
     if (articleId.includes('relais')) return "/images/article-relais-motards.webp";
     
-    if (article?.imageUrl && article.imageUrl.trim() !== '') return article.imageUrl;
+    if (article?.imageUrl && article.imageUrl.trim() !== '') {
+      const value = article.imageUrl.trim();
+      const labelMotoOrigin = 'https://labelmoto.fr';
+
+      if (value.startsWith(`${labelMotoOrigin}/`)) {
+        return value.slice(labelMotoOrigin.length);
+      }
+
+      return value;
+    }
     return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
   }, [article, id]);
 
@@ -392,7 +423,14 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
   const renderCards = (cards: any[], keyPrefix: string) => {
     if (!cards || cards.length === 0) return null;
     return (
-      <div key={keyPrefix} className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
+      <div key={keyPrefix} className="my-8">
+        {cards.length > 1 && (
+          <div className="mb-2 flex items-center justify-end gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-brand md:hidden">
+            <span>Glissez pour voir les autres</span>
+            <ChevronRight className="h-3.5 w-3.5 shrink-0" />
+          </div>
+        )}
+        <div className="flex w-full max-w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0">
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
@@ -403,7 +441,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
           const summary = card.summary || card.description || card.text || card.intro || card.content;
           const formula = card.formula || card.recommended_formula || card.recommended_option;
           return (
-            <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all rounded-3xl">
+            <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all rounded-3xl w-full max-w-full min-w-0 shrink-0 snap-start md:w-auto md:max-w-none">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">{card.title || "Information"}</CardTitle>
@@ -468,31 +506,53 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             </Card>
           );
         })}
+        </div>
       </div>
     );
   };
 
   const renderFaq = (faqData: any[], key: string) => {
     if (!faqData || !Array.isArray(faqData) || faqData.length === 0) return null;
+
     return (
-      <div key={key} className="space-y-8 pt-8 mb-12">
-        <h3 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3 pl-2">
-          <HelpCircle className="h-8 w-8 text-brand" /> Questions Fréquentes
-        </h3>
-        <div className="space-y-4">
-          {faqData.map((item: any, idx: number) => {
+      <div key={key} className="pt-8 mb-12">
+        <div className="mb-5">
+          <div className="text-[10px] font-black uppercase tracking-[0.18em] text-brand">
+            Recherche rapide
+          </div>
+          <h3 className="mt-1 text-2xl font-black uppercase tracking-tight text-foreground">
+            {'Questions fr\u00e9quentes'}
+          </h3>
+        </div>
+
+        <div className="space-y-3">
+          {faqData.map((item: any, index: number) => {
             const question = getRobustValue(item, ['question', 'q', 'titre', 'query']);
             const answer = getRobustValue(item, ['answer', 'a', 'reponse', 'content', 'response']);
-            
+
+            if (!question || !answer) return null;
+
             return (
-              <Card key={idx} className="border-none shadow-xl rounded-[2rem] bg-card overflow-hidden">
-                <CardHeader className="p-8 bg-muted/20 border-b">
-                  <CardTitle className="text-lg font-black uppercase leading-tight">{question}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <p className="text-base font-bold text-muted-foreground leading-relaxed">{answer}</p>
-                </CardContent>
-              </Card>
+              <details
+                key={`${key}-faq-${index}`}
+                className="group overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 text-left text-sm font-black leading-snug text-foreground md:px-5 md:py-5">
+                  <span className="min-w-0">
+                    {question}
+                  </span>
+
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/10 text-xl font-black leading-none text-brand transition-transform group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+
+                <div className="border-t border-border/60 bg-muted/20 px-4 py-4 md:px-5 md:py-5">
+                  <p className="text-sm font-normal leading-6 text-muted-foreground">
+                    {answer}
+                  </p>
+                </div>
+              </details>
             );
           })}
         </div>
@@ -511,7 +571,25 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const isRelaisCta = targetSlug === 'carte-relais-motards' || label.toLowerCase().includes('relais');
     const isRegistrationCta = label.toLowerCase().includes('ajouter mon association') || label.toLowerCase().includes('inscrire') || label.toLowerCase().includes('ajouter une adresse');
 
-    let href = targetSlug ? (targetSlug.startsWith('http') ? targetSlug : `/info/${targetSlug}`) : "/map";
+    const legacyArticleTargets: Record<string, string> = {
+      'assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil':
+        'assurance-moto-bien-choisir-sa-formule-selon-votre-profil',
+      '/info/assurance-moto-2026-bien-choisir-sa-formule-selon-votre-profil':
+        '/info/assurance-moto-bien-choisir-sa-formule-selon-votre-profil',
+    };
+
+    const normalizedTarget = targetSlug
+      ? (legacyArticleTargets[targetSlug] || targetSlug)
+      : '';
+
+    let href = normalizedTarget
+      ? (
+          normalizedTarget.startsWith('http') ||
+          normalizedTarget.startsWith('/')
+            ? normalizedTarget
+            : `/info/${normalizedTarget}`
+        )
+      : "/map";
 
     if (targetSlug === 'carte-associations-moto') {
         href = "/map?filter=association";
@@ -527,30 +605,64 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     const isFicheLink = href.includes('/fiches/');
     const isMarqueLink = href.includes('/marque/');
     const CtaIcon = isMapLink ? Map : isFicheLink ? FileText : isMarqueLink ? MapPin : ArrowRight;
-    const shortLabel = isMapLink ? "Voir la carte" : isFicheLink ? "Voir la fiche" : isMarqueLink ? "Voir les concessions" : "Découvrir";
+    const normalizedLabel = label
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
+
+    const isGenericArticleLabel =
+      normalizedLabel === 'decouvrir' ||
+      normalizedLabel === 'en savoir plus';
+
+    const shortLabel = isMapLink
+      ? "Voir la carte"
+      : isFicheLink
+        ? "Voir la fiche"
+        : isMarqueLink
+          ? "Voir les concessions"
+          : "Lire l'article";
 
     return (
-      <div key={key} className="my-8">
-        <Card className="bg-brand/5 border-2 border-brand/20 shadow-xl rounded-[2.5rem] overflow-hidden hover:border-brand/40 transition-all group/cta">
-          <CardContent className="p-8 flex flex-col md:flex-row md:items-center gap-6">
+      <div key={key} className="my-5">
+        <Card className="overflow-hidden rounded-2xl border border-border/70 border-l-4 border-l-brand bg-card shadow-sm transition-all hover:border-brand/40 hover:shadow-md group/cta">
+          <CardContent
+            className={cn(
+              "p-4 md:p-5 gap-3 md:flex md:flex-row md:items-center md:gap-4",
+              !isMapLink && !isFicheLink && !isMarqueLink
+                ? "grid grid-cols-[36px_minmax(0,1fr)] items-start"
+                : "flex flex-col items-start"
+            )}
+          >
             {(isAssociationCta || isRelaisCta) && !isRegistrationCta ? (
-              <div className="relative w-full md:w-40 aspect-video md:aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-lg bg-muted shrink-0 mx-auto md:mx-0">
+              <div className="relative w-full max-w-[180px] md:w-28 aspect-video rounded-xl overflow-hidden border border-border/60 shadow-sm bg-muted shrink-0">
                   <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-700 group-hover/cta:scale-110" loading="lazy"/>
               </div>
             ) : (
-              <div className="bg-brand/10 p-4 rounded-full shrink-0 mx-auto md:mx-0 group-hover/cta:bg-brand/20 transition-colors">
-                <CtaIcon className="h-8 w-8 text-brand" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand/10 group-hover/cta:bg-brand/15 transition-colors">
+                <CtaIcon className="h-4 w-4 text-brand" />
               </div>
             )}
-            <div className="flex-1 text-center md:text-left">
-              {(title || label) && <h4 className="text-xl font-black uppercase tracking-tighter text-foreground mb-1">{title || label}</h4>}
-              {text && <p className="text-sm font-bold text-muted-foreground leading-snug">{text}</p>}
+            <div className="flex-1 min-w-0 text-left">
+              {(title || label) && <h4 className="text-[15px] font-black leading-tight tracking-tight text-foreground">{title || label}</h4>}
+              {(text || (!isMapLink && !isFicheLink && !isMarqueLink)) && (
+                <p className="mt-1 text-xs font-normal text-muted-foreground leading-relaxed">
+                  {text || "Consultez notre guide complet pour aller plus loin sur ce sujet."}
+                </p>
+              )}
             </div>
-            <Button asChild className="w-full md:w-auto shrink-0 bg-brand hover:bg-brand/90 font-black uppercase tracking-widest text-[10px] px-8 py-6 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95">
-              <Link href={href} className="flex items-center justify-center gap-2">
-                {shortLabel} <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+            <Link
+              href={href}
+              className={cn(
+                "inline-flex shrink-0 items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-brand transition-colors hover:text-brand/80 md:self-center",
+                !isMapLink && !isFicheLink && !isMarqueLink
+                  ? "col-start-2"
+                  : ""
+              )}
+            >
+              {shortLabel}
+              <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover/cta:translate-x-0.5" />
+            </Link>
           </CardContent>
         </Card>
       </div>
@@ -584,7 +696,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
             <img src={section.image} alt={section.title || ''} className="w-full h-full object-cover" loading="lazy" />
           </div>
         )}
-        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-bold leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-bold leading-relaxed mb-6">{bodyText}</p>))}
+        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
         
         {schedule && renderSchedule(schedule, `schedule-${sectionId}`)}
         
@@ -604,8 +716,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
         {faq && renderFaq(faq, `faq-${sectionId}`)}
         {cta && renderCta(cta, `cta-${sectionId}`)}
-        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-black">{item}</li>))}</ul>)}
-        {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-bold leading-relaxed pl-2">{item}</li>))}</ol>)}
+        {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-medium">{item}</li>))}</ul>)}
+        {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-medium leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
         
         {(section.note || isBudgetNote || isAssuranceNote || isGabaritNote) && (
@@ -632,7 +744,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                 icon={Bike}
               />
             ) : section.note ? (
-              <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-bold">
+              <div className="bg-brand/5 border-l-4 border-brand p-6 mt-4 mb-8 italic rounded-r-3xl shadow-sm text-foreground font-medium">
                 {fixText(section.note)}
               </div>
             ) : null}
@@ -642,7 +754,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
     );
   };
 
-  if (isLoading || !article) return (
+  if (isArticleLoading || !article) return (
     <div className={showHeader ? "min-h-screen bg-background" : "min-h-screen bg-transparent"}>
         {showHeader && <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />}
         <main className="container mx-auto px-4 py-8">
@@ -702,7 +814,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {children && (<div className="mb-8">{children}</div>)}
 
               {article.intro && Array.isArray(article.intro) && (
-                <div className="my-8 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-lg leading-relaxed text-foreground font-black">{p}</p>))}</div>
+                <div className="my-8 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-lg leading-relaxed text-foreground font-medium">{p}</p>))}</div>
               )}
 
               {rootSchedule && renderSchedule(rootSchedule, "root-schedule")}
@@ -722,7 +834,7 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
               {article.conclusion && (
                   <div className="mt-16 pt-8 border-t border-brand/20">
                       <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                      <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-black leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-black leading-relaxed">{article.conclusion}</p>)}</div>
+                      <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-medium leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-medium leading-relaxed">{article.conclusion}</p>)}</div>
                       <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={110} height={110} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-10" loading="lazy"/></div>
                   </div>
               )}
@@ -738,8 +850,8 @@ export default function ArticleClient({ id, showHeader = true, children }: { id:
                       <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-8 w-8 text-white" /></div>
                     </div>
                     <p className="text-xs font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
-                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[9px] py-4 rounded-full shadow-xl transition-all hover:scale-105 active:scale-95">
-                      <Link href="/map">🔘 Voir la carte interactive</Link>
+                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[9px] py-2 h-auto rounded-full shadow-sm transition-colors">
+                      <Link href="/map">Voir la carte</Link>
                     </Button>
                   </CardContent>
                 </Card>

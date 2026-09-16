@@ -1,25 +1,40 @@
 import { Metadata } from 'next';
+import { cache } from 'react';
 import ArticleClient from '@/components/app/article-client';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 
-async function getArticleSeo(id: string) {
+const getArticleRaw = cache(async (id: string) => {
   try {
     const db = getAdminFirestore();
     const doc = await db.collection('articles').doc(id).get();
     if (!doc.exists) return null;
-    const data = doc.data();
-    return {
-      title: data?.seo?.meta_title || data?.display_title || data?.title || null,
-      description: data?.seo?.meta_description || null,
-      keywords: data?.seo?.keywords || [],
-      image: data?.image || data?.cover_image || null,
-      publishedAt: data?.timestamps?.publishedAt || data?.updatedAt || null,
-      updatedAt: data?.updatedAt || null,
-      category: data?.category || 'Conseils moto',
-    };
+
+    return doc.data() ?? null;
   } catch {
     return null;
   }
+});
+
+const getArticleData = cache(async (id: string) => {
+  const data = await getArticleRaw(id);
+  if (!data) return null;
+
+  return JSON.parse(JSON.stringify(data));
+});
+
+async function getArticleSeo(id: string) {
+  const data = await getArticleRaw(id);
+  if (!data) return null;
+
+  return {
+    title: data?.seo?.meta_title || data?.display_title || data?.title || null,
+    description: data?.seo?.meta_description || null,
+    keywords: data?.seo?.keywords || [],
+    image: data?.image || data?.cover_image || null,
+    publishedAt: data?.timestamps?.publishedAt || data?.updatedAt || null,
+    updatedAt: data?.updatedAt || null,
+    category: data?.category || 'Conseils moto',
+  };
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -36,7 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const image = seo?.image || 'https://labelmoto.fr/images/og-image.webp';
 
   return {
-    title,
+    title: { absolute: title },
     description,
     keywords: seo?.keywords?.join(', ') || 'moto, conseil moto, guide moto, entretien moto',
     alternates: {
@@ -63,6 +78,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const seo = await getArticleSeo(id);
+  const initialArticle = await getArticleData(id);
 
   const title = seo?.title || id.replace(/-/g, ' ');
   const description = seo?.description || '';
@@ -132,7 +148,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
       />
-      <ArticleClient id={id} />
+      <ArticleClient id={id} initialArticle={initialArticle} />
     </>
   );
 }

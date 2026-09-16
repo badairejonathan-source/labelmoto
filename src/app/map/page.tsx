@@ -1998,6 +1998,12 @@ function MapPageComponent() {
     const normalized =
       normalizeText(raw);
 
+    const compactNormalized =
+      normalized.replace(
+        /[^a-z0-9]/g,
+        ''
+      );
+
     const hasBrandIntent =
       MOTORCYCLE_BRANDS.some(
         brand => {
@@ -2006,11 +2012,27 @@ function MapPageComponent() {
               brand
             );
 
+          const compactBrand =
+            normalizedBrand.replace(
+              /[^a-z0-9]/g,
+              ''
+            );
+
           return (
             normalized ===
               normalizedBrand ||
             normalized.includes(
               normalizedBrand
+            ) ||
+            (
+              compactBrand.length > 0 &&
+              (
+                compactNormalized ===
+                  compactBrand ||
+                compactNormalized.includes(
+                  compactBrand
+                )
+              )
             )
           );
         }
@@ -5672,7 +5694,7 @@ function MapPageComponent() {
                 "shadow-[0_8px_26px_rgba(0,0,0,0.18)]",
                 "transition hover:-translate-y-0.5",
                 isMobile
-                  ? "top-[176px]"
+                  ? "top-[204px]"
                   : "top-5"
               )}
             >
@@ -5716,7 +5738,7 @@ function MapPageComponent() {
           !isViewportReady
             ? "left-6 right-6 top-6 lg:left-auto lg:right-6 lg:w-[400px]"
             : isMobile
-              ? "left-4 right-4 top-[60px]"
+              ? "left-4 right-4 top-[88px]"
               : "hidden"
         )}
       >
@@ -6200,7 +6222,7 @@ function MapPageComponent() {
           className={cn(
             "z-[1450]",
             isMobile
-              ? "fixed left-0 right-0 top-[124px] overflow-hidden"
+              ? "fixed left-0 right-0 top-[152px] overflow-hidden"
               : "absolute left-6 top-[310px] w-[620px] overflow-visible"
           )}
         >

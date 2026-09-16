@@ -325,7 +325,40 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     },
   ],
 
-  consumables_v2: [],
+  consumables_v2: [
+    {
+      part: 'Huile moteur',
+      specification: 'SAE 10W-50 · 2,8 L avec filtre',
+      replacement_interval: '1 000 km puis tous les 15 000 km / 1 an',
+      observed_price: '≈25 €/L',
+      source_type: 'observed',
+      note: 'Prix observé en France le 16/09/2026 ; quantité et périodicité issues de la documentation constructeur 800MT.',
+    },
+    {
+      part: 'Filtre à huile',
+      specification: 'Origine CFMOTO',
+      reference_oem: '61338015200',
+      replacement_interval: 'Avec la vidange',
+      observed_price: '12,90 €',
+      source_type: 'observed',
+      note: 'Référence OEM et prix observés en France le 16/09/2026.',
+    },
+    {
+      part: 'Filtre à air',
+      specification: 'Origine CFMOTO · 800MT Explore / Sport+',
+      replacement_interval: '30 000 km · plus souvent en usage poussiéreux',
+      observed_price: '21,95 €',
+      source_type: 'observed',
+      note: 'Compatibilité et prix observés en France le 16/09/2026 ; périodicité issue de la table constructeur européenne.',
+    },
+    {
+      part: 'Bougies',
+      specification: 'NGK LMAR9AI-10',
+      replacement_interval: '30 000 km',
+      source_type: 'official_eu',
+      note: 'Référence et périodicité constructeur vérifiées ; prix non ajouté faute de tarif actuel suffisamment fiable.',
+    },
+  ],
 
   known_issues_v2: [
     {

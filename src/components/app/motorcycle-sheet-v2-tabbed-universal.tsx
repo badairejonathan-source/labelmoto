@@ -2,13 +2,11 @@
 'use client';
 
 import * as React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronRight, Loader2, MessageSquare, Star, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
-import { isMotorcycleProductImage } from '@/data/motorcycle-product-images';
 import type { MotorcycleKnownIssueV2, MotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -253,28 +251,6 @@ export default function MotorcycleSheetV2TabbedUniversal({
 
   return (
     <>
-      <section className={cn("overflow-hidden rounded-[28px] shadow-xl", isMotorcycleProductImage(displayData.imageUrl) ? "bg-zinc-100" : "bg-zinc-950")}>
-        <div className="relative h-[280px] md:h-[370px]">
-          <Image
-            src={displayData.imageUrl}
-            alt={displayData.modelName || displayData.model || 'Moto'}
-            fill
-            priority
-            className={isMotorcycleProductImage(displayData.imageUrl) ? "object-contain p-3 md:p-6" : "object-cover brightness-[1.38] saturate-[1.08] contrast-[1.02]"}
-            sizes="(max-width: 1200px) 100vw, 1200px"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 p-6 md:p-9">
-            <h1 className="max-w-3xl text-[32px] font-black leading-[0.98] tracking-[-0.04em] text-white [text-shadow:0_2px_12px_rgba(0,0,0,0.65)] md:text-5xl">
-              {displayData.modelName}
-            </h1>
-            <p className="mt-3 text-sm font-black italic md:text-lg" style={{ color: '#ff7a22' }}>
-              Millésime {displayData.year}
-            </p>
-          </div>
-        </div>
-      </section>
-
       <section id="v2-quickfacts-carousel" className="-mt-1 overflow-hidden rounded-b-[24px] border border-zinc-200 bg-white shadow-sm">
         <div className="px-4 pb-1 pt-4">
           <div className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: ORANGE }}>En un coup d'œil</div>
@@ -291,6 +267,24 @@ export default function MotorcycleSheetV2TabbedUniversal({
           </div>
         </div>
       </section>
+
+      {displayData.brand ? (
+        <Link
+          href={`/map?search=${encodeURIComponent(String(displayData.brand))}&filter=concessionnaires-revendeurs`}
+          className="mt-3 flex w-full items-center justify-between gap-3 rounded-xl border border-orange-200 bg-orange-50/40 px-4 py-2.5 transition hover:border-orange-300 hover:bg-orange-50 md:w-fit md:min-w-[320px]"
+        >
+          <div className="min-w-0">
+            <div className="text-[11px] font-bold leading-4 text-zinc-900">
+              Trouver un concessionnaire {displayData.brand}
+            </div>
+            <div className="mt-0.5 text-[9px] font-medium text-zinc-500">
+              Voir sur la carte LabelMoto
+            </div>
+          </div>
+
+          <ChevronRight className="h-4 w-4 shrink-0 text-orange-600" />
+        </Link>
+      ) : null}
 
       {displayData.hasVariants ? (
         <section className="mt-6 rounded-2xl border border-zinc-200 bg-white p-4 shadow-sm">
@@ -410,7 +404,70 @@ export default function MotorcycleSheetV2TabbedUniversal({
           {consumables.length ? (
             <section className="mt-4 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6">
               <div className="mb-5"><div className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600">Références utiles</div><h2 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">Références & prix observés</h2></div>
-              <div className="divide-y divide-zinc-100 overflow-hidden rounded-[22px] border border-zinc-200">{consumables.map((item: any, index: number) => <div key={`${item.part}-${index}`} className="grid gap-2 px-4 py-4 text-sm sm:grid-cols-[1fr_1.2fr_auto]"><div className="font-black">{item.part}</div><div className="text-zinc-600">{item.reference_oem || item.specification || item.replacement_interval || '—'}</div><div className="font-bold text-zinc-900">{item.observed_price || '—'}</div></div>)}</div>
+              <div
+                data-labelmoto-consumables-table="true"
+                className="overflow-hidden rounded-[22px] border border-zinc-200"
+              >
+                <div className="overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500">
+                  <table className="w-full min-w-[760px] border-collapse text-left text-sm">
+                    <thead className="bg-zinc-50">
+                      <tr className="border-b border-zinc-200">
+                        <th className="min-w-[170px] px-4 py-3 text-[9px] font-black uppercase tracking-[0.14em] text-zinc-400">
+                          Pièce
+                        </th>
+                        <th className="min-w-[250px] px-4 py-3 text-[9px] font-black uppercase tracking-[0.14em] text-zinc-400">
+                          Référence / spécification
+                        </th>
+                        <th className="min-w-[190px] px-4 py-3 text-[9px] font-black uppercase tracking-[0.14em] text-zinc-400">
+                          Périodicité
+                        </th>
+                        <th className="min-w-[150px] px-4 py-3 text-right text-[9px] font-black uppercase tracking-[0.14em] text-zinc-400">
+                          Prix observé
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody className="divide-y divide-zinc-100">
+                      {consumables.map((item: any, index: number) => (
+                        <tr
+                          key={`${item.part}-${index}`}
+                          className="align-top transition-colors hover:bg-orange-50/30"
+                        >
+                          <td className="px-4 py-4 font-black text-zinc-950">
+                            {item.part}
+                          </td>
+
+                          <td className="px-4 py-4 text-zinc-600">
+                            <div className="font-bold text-zinc-800">
+                              {item.reference_oem || item.specification || '—'}
+                            </div>
+
+                            {item.reference_oem && item.specification ? (
+                              <div className="mt-1 text-xs leading-5 text-zinc-500">
+                                {item.specification}
+                              </div>
+                            ) : null}
+
+                            {item.note ? (
+                              <div className="mt-1.5 max-w-[360px] text-[10px] leading-4 text-zinc-400">
+                                {item.note}
+                              </div>
+                            ) : null}
+                          </td>
+
+                          <td className="px-4 py-4 text-zinc-600">
+                            {item.replacement_interval || '—'}
+                          </td>
+
+                          <td className="px-4 py-4 text-right font-black text-zinc-900">
+                            {item.observed_price || '—'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </section>
           ) : null}
         </>
