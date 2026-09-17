@@ -4418,22 +4418,9 @@ function MapPageComponent() {
       null
     );
 
-    if (
-      window.innerWidth < 1024
-    ) {
-      setSearchTerm(
-        query
-      );
-    }
-    else {
-      setDesktopWhat(
-        query
-      );
-
-      setDesktopWhere(
-        ''
-      );
-    }
+    setSearchTerm(
+      query
+    );
 
     void handleDirectMapSearch(
       query
@@ -4447,14 +4434,9 @@ function MapPageComponent() {
       }
 
       const hasActiveSearchText =
-        recentSearchPanel === 'mobile'
-          ? Boolean(
-              searchTerm.trim()
-            )
-          : Boolean(
-              desktopWhat.trim() ||
-              desktopWhere.trim()
-            );
+        Boolean(
+          searchTerm.trim()
+        );
 
       if (hasActiveSearchText) {
         return null;
@@ -4469,7 +4451,7 @@ function MapPageComponent() {
             "bg-white shadow-[0_14px_40px_rgba(0,0,0,0.17)]",
             recentSearchPanel === 'mobile'
               ? "left-6 right-6 top-[158px]"
-              : "left-6 top-[286px] w-[560px]"
+              : "left-6 top-[172px] w-[560px]"
           )}
         >
           <div
@@ -5762,13 +5744,14 @@ function MapPageComponent() {
       )}
 
       <div
+        data-map-home-search
         className={cn(
           "absolute z-[1500]",
           !isViewportReady
             ? "left-6 right-6 top-6 lg:left-auto lg:right-6 lg:w-[400px]"
             : isMobile
               ? "left-4 right-4 top-[88px]"
-              : "hidden"
+              : "left-6 top-[104px] w-[560px]"
         )}
       >
         <Header
@@ -5923,72 +5906,9 @@ function MapPageComponent() {
       </div>
 
       {isViewportReady && !isMobile && (
-        <form
-          data-map-home-search
-          onSubmit={(event) => {
-            event.preventDefault();
-
-            const combinedSearch = [
-              desktopWhat.trim(),
-              desktopWhere.trim(),
-            ]
-              .filter(Boolean)
-              .join(' ');
-
-            setSelectedId(null);
-            setIsDetailView(false);
-            setSelectionSource(null);
-
-            if (!combinedSearch) {
-              setAppliedSearchTerm('');
-              return;
-            }
-
-            handleDirectMapSearch(
-              combinedSearch
-            );
-          }}
-          className="absolute left-6 top-[104px] z-[1500] w-[560px] rounded-[1.65rem] border border-black/[0.035] bg-white/[0.97] p-3 shadow-[0_18px_48px_rgba(0,0,0,0.09)]"
+        <div
+          className="absolute left-6 top-[170px] z-[1900] flex w-[560px] justify-end"
         >
-          <div
-            className="relative"
-          >
-            <label
-              className="flex min-h-[55px] items-center gap-3 rounded-[1rem] border border-border/75 bg-white px-4 pr-[118px]"
-            >
-              <Search
-                className="h-[18px] w-[18px] shrink-0 text-brand"
-              />
-
-              <input
-                value={desktopWhat}
-                onChange={(event) => {
-                  const value =
-                    event.target.value;
-
-                  setDesktopWhat(
-                    value
-                  );
-
-                  setSelectedId(null);
-                  setIsDetailView(false);
-                  setSelectionSource(null);
-
-                  if (
-                    !value.trim() &&
-                    !desktopWhere.trim()
-                  ) {
-                    setAppliedSearchTerm(
-                      ''
-                    );
-                  }
-                }}
-                type="search"
-                placeholder="Que recherchez-vous ?"
-                className="min-w-0 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted-foreground"
-              />
-            </label>
-
             <details
               data-map-filter-root
               onToggle={(event) => {
@@ -6000,7 +5920,7 @@ function MapPageComponent() {
                   );
                 }
               }}
-              className="group absolute right-2 top-1/2 z-[1900] -translate-y-1/2"
+              className="group relative z-[1900]"
             >
               <summary
                 className={cn(
@@ -6177,71 +6097,7 @@ function MapPageComponent() {
                 )}
               </div>
             </details>
-          </div>
-          <label
-            className="mt-2 flex min-h-[55px] items-center gap-3 rounded-[1rem] border border-border/75 bg-white px-4"
-          >
-            <MapPin
-              className="h-[18px] w-[18px] shrink-0 text-brand"
-            />
-
-            <input
-              value={desktopWhere}
-              onChange={(event) => {
-                const value =
-                  event.target.value;
-
-                setDesktopWhere(
-                  value
-                );
-
-                setSelectedId(null);
-                setIsDetailView(false);
-                setSelectionSource(null);
-
-                if (
-                  !value.trim() &&
-                  !searchTerm.trim()
-                ) {
-                  setAppliedSearchTerm('');
-                }
-              }}
-              placeholder="Où ? Ville ou code postal"
-              autoComplete="off"
-              autoCorrect="off"
-              spellCheck={false}
-              className="min-w-0 flex-1 bg-transparent text-[14px] font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground md:text-[13px] md:font-bold"
-            />
-
-            <button
-              type="button"
-              onClick={handleLocate}
-              aria-label="Utiliser ma position"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-brand transition-colors hover:bg-brand/5"
-            >
-              {isLocating ? (
-                <Loader2
-                  className="
-                    h-4
-                    w-4
-                    animate-spin
-                  "
-                />
-              ) : (
-                <Crosshair
-                  className="h-4 w-4"
-                />
-              )}
-            </button>
-          </label>
-
-          <button
-            type="submit"
-            className="mt-2 min-h-[50px] w-full rounded-[0.95rem] bg-brand text-[15px] font-semibold text-white shadow-lg transition-all hover:bg-brand/90 active:scale-[0.99] md:text-[13px] md:font-black"
-          >
-            Rechercher
-          </button>
-        </form>
+        </div>
       )}
       <RecentSearchesPanel />
 
@@ -6283,7 +6139,7 @@ function MapPageComponent() {
       )}
 
       {isViewportReady && !isMobile && (
-        <aside className="absolute left-6 top-[326px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
+        <aside className="absolute left-6 top-[228px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
           <div className="hidden">
             <div className="shrink-0"><LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" /></div>
             <div className="shrink-0"><UserMenu /></div>
