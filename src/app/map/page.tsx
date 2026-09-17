@@ -1720,7 +1720,10 @@ function MapPageComponent() {
     if (
       !hasAppliedInitialUrl ||
       !firestore ||
-      points.length === 0 ||
+      (
+        points.length === 0 &&
+        !isPureGeoSearch
+      ) ||
       initialUrlSearchReplayRef.current
     ) {
       return;
@@ -1755,6 +1758,12 @@ function MapPageComponent() {
         initialDisplaySearch
       );
     }
+    else if (isPureGeoSearch) {
+      setDesktopWhat('');
+      setDesktopWhere(
+        initialDisplaySearch
+      );
+    }
     else {
       setDesktopWhat(
         initialDisplaySearch
@@ -1768,6 +1777,8 @@ function MapPageComponent() {
         preserveSelectedArea: true,
         displayQuery:
           initialDisplaySearch,
+        skipProfessionalLookup:
+          isPureGeoSearch,
       }
     );
   }, [
@@ -2120,10 +2131,7 @@ function MapPageComponent() {
     Boolean(selectedId) ||
     (
       appliedSearchTerm.trim().length > 0 &&
-      (
-        !isPureGeoSearch ||
-        isMunicipalArrondissementSearch
-      )
+      !isPureGeoSearch
     );
 
   // Index public partagé : aucun scan Firestore pour les marqueurs.
@@ -3332,12 +3340,10 @@ function MapPageComponent() {
     }
 
     // GEO SEUL :
-    // une ville ou un département seuls peuvent rester
-    // sans professionnels, mais un arrondissement doit
-    // afficher ses professionnels.
+    // ville, code postal, departement ou arrondissement
+    // ne montrent aucun professionnel sans filtre.
     if (
       isPureGeoSearch &&
-      !isMunicipalArrondissementSearch &&
       activeFilters.length === 0 &&
       !selectedId
     ) {
@@ -3570,7 +3576,8 @@ function MapPageComponent() {
       // ===============================================
 
       if (
-        freeTextTokens.length > 0
+        freeTextTokens.length > 0 &&
+        !isPureGeoSearch
       ) {
         const haystack =
           [
@@ -4582,6 +4589,7 @@ function MapPageComponent() {
     options?: {
       preserveSelectedArea?: boolean;
       displayQuery?: string;
+      skipProfessionalLookup?: boolean;
     }
   ) {
         // RESET RESULTAT PROFESSIONNEL PRECEDENT
@@ -4687,6 +4695,7 @@ function MapPageComponent() {
       );
 
     if (
+      !options?.skipProfessionalLookup &&
       professionalQueryKey.length >= 3
     ) {
       let professionalPoints =
@@ -5500,6 +5509,26 @@ function MapPageComponent() {
       return;
     }
 
+    if (isPureGeoSearch) {
+      setSearchTerm('');
+      setAppliedSearchTerm('');
+
+      setDesktopWhat('');
+      setDesktopWhere('');
+
+      setForceProfessionalTextSearch(
+        false
+      );
+
+      setResolvedProfessionalId(
+        null
+      );
+
+      setBrandCitySearch(
+        null
+      );
+    }
+
     const nextCenter =
       pendingMapCenterRef.current;
 
@@ -6264,7 +6293,12 @@ function MapPageComponent() {
               <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
             ) : (
               <div className="space-y-4">
-                {activeFilters.length === 0 && !searchTerm.trim() && !isLoadingPoints && (
+                {activeFilters.length === 0 &&
+                  (
+                    !searchTerm.trim() ||
+                    isPureGeoSearch
+                  ) &&
+                  !isLoadingPoints && (
                   <div className="rounded-3xl border-2 border-dashed border-brand/40 bg-brand/5 px-6 py-5 mb-4">
                     <p className="text-sm font-black uppercase tracking-wide text-brand mb-1">
                       Choisissez un filtre
@@ -6509,6 +6543,19 @@ function MapPageComponent() {
                 <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => { setIsDetailView(false); setDrawerHeight('collapsed'); }} />
               ) : (
                 <div className="space-y-4">
+                  {activeFilters.length === 0 &&
+                    isPureGeoSearch &&
+                    !isLoadingPoints && (
+                      <div className="rounded-2xl border border-brand/20 bg-white px-4 py-3 shadow-sm">
+                        <p className="text-[12px] font-black text-brand">
+                          Choisissez un filtre
+                        </p>
+                        <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">
+                          S&eacute;lectionnez une cat&eacute;gorie pour afficher les professionnels de cette zone.
+                        </p>
+                      </div>
+                    )}
+
                   {pointsLoadError && (
                   <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
                     <p className="text-[12px] font-black text-red-700">
