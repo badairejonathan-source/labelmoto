@@ -118,8 +118,17 @@ export interface MotorcycleMaintenanceBudgetCardV2 {
   note?: string;
 }
 
+export interface MotorcycleMaintenanceBudgetSummaryV2 {
+  horizon_km: number;
+  total_cost: string;
+  cost_per_km: string;
+  interval_rule: string;
+  note?: string;
+}
+
 export interface MotorcycleMaintenanceBudgetV2 {
   title?: string;
+  summary?: MotorcycleMaintenanceBudgetSummaryV2;
   cards: MotorcycleMaintenanceBudgetCardV2[];
   note?: string;
 }

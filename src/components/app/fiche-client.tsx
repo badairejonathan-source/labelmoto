@@ -9,6 +9,7 @@ import { pickRelatedModels } from '@/lib/related-models-pool';
 import { getMotorcycleProductImage, isMotorcycleProductImage } from '@/data/motorcycle-product-images';
 import MotorcycleSheetV2View from '@/components/app/motorcycle-sheet-v2-view';
 import { getMotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
+import { getLocalMotorcycleSheetV2 } from '@/lib/motorcycle-sheets-v2/registry';
 import { 
   ArrowLeft, 
   Gauge, 
@@ -119,7 +120,30 @@ export default function FicheClient({
   const firestore = useFirestore();
   const ficheRef = useMemoFirebase(() => (firestore && modelId) ? doc(firestore, 'motorcycle_sheets', modelId) : null, [firestore, modelId]);
   const { data: liveFiche, isLoading } = useDoc(ficheRef);
-  const fiche = liveFiche ?? initialFiche;
+
+  const firestoreFiche = liveFiche ?? initialFiche;
+
+  const fiche = useMemo(() => {
+    if (!firestoreFiche) {
+      return firestoreFiche;
+    }
+
+    const localV2 = getLocalMotorcycleSheetV2(modelId);
+
+    if (!localV2) {
+      return firestoreFiche;
+    }
+
+    return {
+      ...firestoreFiche,
+      service_guide: {
+        ...(firestoreFiche.service_guide || {}),
+        ...localV2,
+      },
+    };
+  }, [firestoreFiche, modelId]);
+
+  // data-labelmoto-local-v2-registry
 
   useEffect(() => {
     if (typeof window !== 'undefined') {

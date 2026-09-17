@@ -396,40 +396,40 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
 
   budget: {
     title: "Repères de coût d'entretien",
+    summary: {
+      horizon_km: 30000,
+      total_cost: '≈1 150–1 960 €',
+      cost_per_km: '≈0,038–0,065 €/km',
+      interval_rule:
+        '1 000 km puis tous les 5 000 km / 1 an',
+      note:
+        "Calcul LabelMoto basé sur l'addition des fourchettes des révisions programmées jusqu'à 30 000 km. Pneus, kit chaîne, plaquettes, batterie et autres consommables d'usure sont exclus du total principal. Les échéances calendaires peuvent ajouter des opérations selon l'âge réel de la moto.",
+    },
     cards: [
       {
-        label: 'Première révision 1 000 km',
-        value: '≈120–180 €',
-        note: 'Estimation déjà présente dans les données LabelMoto V1',
+        label: 'Kit chaîne / transmission',
+        value:
+          '≈120–175 € pièces · ≈180–235 € monté',
+        note:
+          'Kit chaîne 520 compatible 450SR observé en France. Remplacement selon usure, tension et entretien.',
       },
       {
-        label: 'Révision périodique 5 000 km',
-        value: '≈120–210 €',
-        note: 'Estimation LabelMoto',
+        label: 'Train de pneus',
+        value:
+          '≈175–300 € pièces · ≈220–350 € monté',
+        note:
+          'Repère pour un train sport ou sport-touring homologué en 110/70 R17 et 150/60 R17.',
       },
       {
-        label: 'Révision 10 000 km',
-        value: '≈170–290 €',
-        note: 'Huile, filtre et consommables selon échéance',
-      },
-      {
-        label: 'Révision 20 000 / 30 000 km',
-        value: '≈250–430 €',
-        note: 'Entretien renforcé selon tableau constructeur',
-      },
-      {
-        label: 'Contrôle majeur 40 000 km',
-        value: '≈250–430 € + réglage soupapes si nécessaire',
-        note: 'Le coût augmente si un réglage des soupapes est nécessaire',
-      },
-      {
-        label: 'Pneus / transmission',
-        value: 'Pneus ≈175–300 € · kit chaîne ≈120–175 €',
-        note: 'Prix pièces observés · montage en supplément',
+        label: 'Plaquettes de frein',
+        value:
+          '≈23–42 € le jeu adaptable · ≈139,80 € pack origine observé',
+        note:
+          'Prix pièces observés ; références et quantité à vérifier selon le frein avant ou arrière.',
       },
     ],
     note:
-      'Fourchettes indicatives et non contractuelles. Le montant réel dépend de l’atelier, des pièces remplacées, de la région et de l’état de la moto.',
+      'Estimations indicatives et non contractuelles. Les tarifs atelier varient selon la région, la main-d’œuvre et les opérations réellement nécessaires.',
   },
 
   maintenance_details: [
@@ -830,20 +830,15 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
   warranty: {
     duration:
       '2 ans',
-
     coverage:
-      "pièces & main-d'œuvre",
-
+      "2 ans annoncés pièces & main-d’œuvre",
     market:
       'France',
-
     maintenance_requirement:
       "CFMOTO France demande que l'entretien soit effectué dans le réseau agréé et que le carnet soit renseigné après chaque passage.",
-
     legal_warranty_note:
-      "La garantie commerciale constructeur est distincte des garanties légales. Les conditions du carnet de garantie remis avec la moto restent prioritaires.",
+      "La page garantie CFMOTO France présente la 450SR à 2 ans pièces et main-d’œuvre. Les mentions légales de cette même page indiquent aussi que les coûts de main-d’œuvre sont pris en charge durant la première année uniquement. Le carnet de garantie et les conditions contractuelles applicables lors de la vente restent prioritaires.",
   },
-
 
   equivalents_v2: [
     {
@@ -922,7 +917,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
 
 
     last_verified:
-      '08/09/2026',
+      '17/09/2026',
 
     sources: [
       {
@@ -965,6 +960,20 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
           '1 000 km puis tous les 5 000 km ou annuellement.',
       },
 
+      {
+        label:
+          'CFMOTO France · garantie',
+        type:
+          'official_fr',
+        market:
+          'France',
+        model_year:
+          '2026',
+        url:
+          'https://www.cf-moto.fr/moto/garantie/',
+        note:
+          "La page modèle annonce 2 ans pièces et main-d’œuvre pour la 450SR ; les mentions légales de la page garantie comportent une formulation différente sur la durée de prise en charge de la main-d’œuvre.",
+      },
       {
         label:
           'CFMOTO 450SR Owner’s Manual 2024',

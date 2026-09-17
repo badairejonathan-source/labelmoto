@@ -1,3 +1,5 @@
+import type { MotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
+
 // CFMOTO 675 SR-R - candidat LabelMoto V2 généré le 08/09/2026
 // Source active non modifiée pendant ce dry-run.
 
@@ -75,7 +77,7 @@ export const cfmoto675srrDisplayData = {
   "conclusion": "La 675SR-R associe un trois cylindres performant, un châssis sportif et un équipement complet à une disponibilité en permis A2. Son calendrier de révision tous les 5 000 km reste relativement rapproché. Comme sur toute sportive récente, un suivi rigoureux de l'huile, de la transmission, des pneus et du freinage est particulièrement important, tandis que le recul à très fort kilométrage reste encore limité."
 };
 
-export const cfmoto675srrV2 = {
+export const cfmoto675srrV2: MotorcycleSheetV2 = {
   "layout_version": 2,
   "hero_subtitle": "Le guide LabelMoto de la CFMOTO 675SR-R : révisions, huile, filtres, bougies, soupapes, transmission, coûts et données constructeur.",
   "quick_facts": [
@@ -117,7 +119,7 @@ export const cfmoto675srrV2 = {
     },
     {
       "label": "Huile",
-      "value": "SAE 10W-40 · API SN+ · JASO MA2",
+      "value": "SAE 10W-40 · API SL/SM · JASO MA2",
       "confidence": "official_eu"
     },
     {
@@ -295,46 +297,33 @@ export const cfmoto675srrV2 = {
     }
   ],
   "budget": {
-    "title": "Repères de coût d'entretien",
-    "cards": [
-      {
-        "label": "Révision de rodage 1 000 km",
-        "value": "≈140–200 €",
-        "note": "Fourchette déjà présente dans le calendrier historique LabelMoto du même document."
-      },
-      {
-        "label": "Révision périodique 5 000 km",
-        "value": "≈160–280 €",
-        "note": "Fourchette V2 existante, selon atelier et opérations réellement dues."
-      },
-      {
-        "label": "Révision 10 000 km",
-        "value": "≈220–360 €",
-        "note": "Fourchette V2 existante avec opérations renforcées."
-      },
-      {
-        "label": "Révisions majeures 20 000 / 30 000 km",
-        "value": "≈320–520 €",
-        "note": "Fourchette V2 existante ; bougies prévues à 30 000 km selon table révisée."
-      },
-      {
-        "label": "Contrôle soupapes 40 000 km",
-        "value": "≈320–520 € + réglage si nécessaire",
-        "note": "Le contrôle est documenté à 40 000 km ; réglage et pièces éventuelles s’ajoutent."
-      },
-      {
-        "label": "Pièces d’usure",
-        "value": "Vidange 74,80 € · chaîne ≈116–160 € · plaquettes ≈31–57 € / jeu",
-        "note": "Prix pièces observés en France en septembre 2026, hors main-d’œuvre."
-      }
-    ],
-    "note": "Prix indicatifs et non contractuels. Les coûts atelier varient selon la région, la main-d’œuvre, l’état de la moto et les opérations réellement nécessaires."
+  "title": "Repères de coût d'entretien",
+  "summary": {
+    "horizon_km": 30000,
+    "total_cost": "≈1 480–2 440 €",
+    "cost_per_km": "≈0,049–0,081 €/km",
+    "interval_rule": "1 000 km puis tous les 5 000 km / 1 an",
+    "note": "Calcul LabelMoto basé sur l'addition des révisions programmées jusqu'à 30 000 km. Pneus, kit chaîne, plaquettes, batterie et autres consommables d'usure sont exclus du total principal afin de conserver une comparaison cohérente entre motos."
   },
+  "cards": [
+    {
+      "label": "Kit chaîne / transmission",
+      "value": "159,85 € (kit 15/48, pièces)",
+      "note": "Kit chaîne 15/48 compatible 675 SR observé en France le 17/09/2026. Montage et remplacement selon usure non inclus."
+    },
+    {
+      "label": "Plaquettes de frein",
+      "value": "AV 37,66 € · AR 30,73 € (origine, pièces)",
+      "note": "Prix origine CFMOTO 675 SR observés en France le 17/09/2026, hors main-d'oeuvre."
+    }
+  ],
+  "note": "Estimations indicatives et non contractuelles. Les tarifs atelier varient selon la région, la main-d'œuvre et les opérations réellement nécessaires."
+},
   "maintenance_details": [
     {
       "id": "huile",
       "title": "Huile moteur & filtre",
-      "summary": "SAE 10W-40 · API SN+ · JASO MA2 · 3,1 L avec filtre",
+      "summary": "SAE 10W-40 · API SL/SM · JASO MA2 · 3,1 L avec filtre",
       "rows": [
         {
           "label": "Viscosité",
@@ -343,7 +332,7 @@ export const cfmoto675srrV2 = {
         },
         {
           "label": "Norme",
-          "value": "API SN ou supérieur · JASO MA2 recommandé",
+          "value": "API SL/SM · JASO MA2",
           "confidence": "official_eu"
         },
         {
@@ -369,6 +358,11 @@ export const cfmoto675srrV2 = {
         {
           "label": "Filtre à huile",
           "value": "Périodicité à confirmer selon millésime : manuel EU 2024 = 5 000 km · table Italie 2025 = 10 000 km après rodage",
+          "confidence": "official_eu"
+        },
+        {
+          "label": "Couple filtre à huile",
+          "value": "17 Nm",
           "confidence": "official_eu"
         }
       ],
@@ -419,7 +413,7 @@ export const cfmoto675srrV2 = {
         },
         {
           "label": "Écartement",
-          "value": "0,8 à 1,0 mm",
+          "value": "0,8–1,0 mm",
           "confidence": "official_eu"
         },
         {
@@ -555,12 +549,12 @@ export const cfmoto675srrV2 = {
         },
         {
           "label": "Pression avant à froid",
-          "value": "230 kPa · 2,3 bar",
+          "value": "2,30 bar à froid",
           "confidence": "official_eu"
         },
         {
           "label": "Pression arrière à froid",
-          "value": "260 kPa · 2,6 bar",
+          "value": "2,60 bar à froid",
           "confidence": "official_eu"
         }
       ]
@@ -591,18 +585,18 @@ export const cfmoto675srrV2 = {
           "confidence": "official_eu"
         },
         {
-          "label": "Limite d'allongement",
-          "value": "320,7 mm maximum sur 20 maillons sous une charge de 10 kg",
+          "label": "Contre-écrous de réglage",
+          "value": "6 Nm",
           "confidence": "official_eu"
         }
       ],
-      "note": "Contrôler et lubrifier plus fréquemment après pluie, lavage ou utilisation dans des conditions sévères."
+      "note": "Table d'entretien : contrôler et lubrifier tous les 1 000 km. Le chapitre détaillé du manuel demande une lubrification tous les 500 km. Raccourcir encore l'intervalle après pluie, lavage ou usage sévère."
     }
   ],
   "consumables_v2": [
     {
       "part": "Kit vidange",
-      "specification": "SAE 10W-40 · API SN ou supérieur · JASO MA2 · 3,1 L avec filtre",
+      "specification": "SAE 10W-40 · API SL/SM · JASO MA2 · 3,1 L avec filtre",
       "replacement_interval": "Huile : 1 000 km puis tous les 5 000 km / 1 an selon table CFMOTO Italie 2025",
       "observed_price": "74,80 €",
       "source_type": "observed",
@@ -652,7 +646,7 @@ export const cfmoto675srrV2 = {
       "part": "Plaquettes avant",
       "specification": "Compatibles CFMOTO 675 SR-R · double disque avant",
       "replacement_interval": "Selon usure",
-      "observed_price": "≈35,91–56,90 € par référence/jeu route",
+      "observed_price": "37,66 €",
       "source_type": "observed",
       "note": "Exemples Brembo / CL Brakes compatibles observés chez 3AS Racing. Vérifier quantité de jeux et référence exacte avant commande."
     },
@@ -660,7 +654,7 @@ export const cfmoto675srrV2 = {
       "part": "Plaquettes arrière",
       "specification": "Compatibles / origine CFMOTO 675 SR-R",
       "replacement_interval": "Selon usure",
-      "observed_price": "≈30,73–49,90 €",
+      "observed_price": "30,73 €",
       "source_type": "observed",
       "note": "Origine CFMOTO et alternatives route observées en France."
     },
@@ -668,7 +662,7 @@ export const cfmoto675srrV2 = {
       "part": "Kit chaîne",
       "specification": "520 · 15/48 · 114 maillons",
       "replacement_interval": "Selon usure · contrôler et lubrifier tous les 1 000 km",
-      "observed_price": "≈116–160 €",
+      "observed_price": "159,85 €",
       "source_type": "observed",
       "note": "Kit DID 520 VX3 compatible 675 SR-R 2025 observé chez Moto And Co et 3AS Racing."
     },
@@ -748,7 +742,7 @@ export const cfmoto675srrV2 = {
     "technical_documentation_verified": true,
     "consumables_verified": true,
     "recall_checked": false,
-    "last_verified": "08/09/2026",
+    "last_verified": "17/09/2026",
     "sources": [
       {
         "label": "CFMOTO France · 675SR-R",

@@ -144,6 +144,7 @@ export default function MotorcycleSheetV2TabbedUniversal({
     });
   })();
   const budgetCards = v2.budget?.cards || [];
+  const budgetSummary = v2.budget?.summary;
 
   const tabs = [
     schedule.length ? { id: 'revisions', label: 'Révisions' } : null,
@@ -163,6 +164,9 @@ export default function MotorcycleSheetV2TabbedUniversal({
     setActiveTab(id);
     if (typeof window !== 'undefined') window.history.replaceState(null, '', `#${id}`);
   };
+
+  const tabContentRef = React.useRef<HTMLDivElement | null>(null);
+  const previousActiveTabRef = React.useRef(activeTab);
 
   const tabRailRef =
     React.useRef<HTMLDivElement | null>(
@@ -203,6 +207,35 @@ export default function MotorcycleSheetV2TabbedUniversal({
   }, [activeTab]);
 
 
+  React.useEffect(() => {
+    if (previousActiveTabRef.current === activeTab) {
+      return;
+    }
+
+    previousActiveTabRef.current = activeTab;
+
+    const frame = window.requestAnimationFrame(() => {
+      const content = tabContentRef.current;
+      const nav = document.getElementById('v2-tabs-navigation');
+
+      if (!content || !nav) {
+        return;
+      }
+
+      const navHeight = nav.getBoundingClientRect().height;
+      const contentTop =
+        window.scrollY + content.getBoundingClientRect().top;
+
+      window.scrollTo({
+        top: Math.max(0, contentTop - navHeight - 12),
+        behavior: 'smooth',
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeTab]);
+
+  // data-labelmoto-tab-scroll-reset
   const tabSwipeStartRef =
     React.useRef<{ x: number; y: number } | null>(null);
 
@@ -348,6 +381,7 @@ export default function MotorcycleSheetV2TabbedUniversal({
 
       <div
         data-labelmoto-v2-tab-swipe="true"
+        ref={tabContentRef}
         onTouchStart={handleTabSwipeStart}
         onTouchEnd={handleTabSwipeEnd}
       >
@@ -514,7 +548,101 @@ export default function MotorcycleSheetV2TabbedUniversal({
             <p className="mt-4 max-w-4xl text-sm leading-6 text-zinc-600 md:text-[15px] md:leading-7">{v2.verdict?.text || displayData.conclusion}</p>
             <div className="mt-5 flex flex-wrap gap-2">{(v2.verdict?.strengths || []).map((item) => <span key={item} className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[9px] font-black uppercase text-emerald-800">+ {item}</span>)}{(v2.verdict?.weaknesses || []).map((item) => <span key={item} className="rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-[9px] font-black uppercase text-orange-800">À surveiller : {item}</span>)}</div>
             <div className="mt-6 space-y-3">
-              {budgetCards.length ? <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 md:px-5"><span className="text-[12px] font-black uppercase tracking-[0.04em] text-zinc-950">Budget</span><span className="text-xl font-black transition group-open:rotate-45" style={{ color: ORANGE }}>+</span></summary><div className="border-t border-zinc-100 bg-zinc-50/50 p-4"><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{budgetCards.map((card: any, index: number) => <div key={`${card.label}-${index}`} className="rounded-xl border border-zinc-200 bg-white p-4"><div className="text-[9px] font-black uppercase tracking-wide text-zinc-400">{card.label}</div><div className="mt-2 text-lg font-black text-zinc-950">{card.value}</div>{card.note ? <p className="mt-2 text-[10px] leading-4 text-zinc-500">{card.note}</p> : null}</div>)}</div>{v2.budget?.note ? <p className="mt-3 text-[10px] leading-5 text-zinc-500">{v2.budget.note}</p> : null}</div></details> : null}
+{(budgetSummary || budgetCards.length > 0) ? (
+                <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 md:px-5">
+                    <span className="text-[12px] font-black uppercase tracking-[0.04em] text-zinc-950">
+                      Budget
+                    </span>
+
+                    <span
+                      className="text-xl font-black transition group-open:rotate-45"
+                      style={{ color: ORANGE }}
+                    >
+                      +
+                    </span>
+                  </summary>
+
+                  <div className="border-t border-zinc-100 bg-zinc-50/50 p-4">
+                    {budgetSummary ? (
+                      <div className="mb-4 rounded-2xl border border-orange-200 bg-orange-50/60 p-4 md:p-5">
+                        <div className="text-[9px] font-black uppercase tracking-[0.16em] text-orange-600">
+                          Budget entretien sur {Number(budgetSummary.horizon_km).toLocaleString('fr-FR')} km
+                        </div>
+
+                        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                          <div className="rounded-xl border border-orange-100 bg-white p-4">
+                            <div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">
+                              Coût estimé
+                            </div>
+
+                            <div className="mt-2 text-lg font-black text-zinc-950 md:text-xl">
+                              {budgetSummary.total_cost}
+                            </div>
+                          </div>
+
+                          <div className="rounded-xl border border-orange-100 bg-white p-4">
+                            <div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">
+                              Coût au km
+                            </div>
+
+                            <div className="mt-2 text-lg font-black text-zinc-950 md:text-xl">
+                              {budgetSummary.cost_per_km}
+                            </div>
+                          </div>
+
+                          <div className="rounded-xl border border-orange-100 bg-white p-4">
+                            <div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">
+                              Intervalle constructeur
+                            </div>
+
+                            <div className="mt-2 text-sm font-black leading-5 text-zinc-950">
+                              {budgetSummary.interval_rule}
+                            </div>
+                          </div>
+                        </div>
+
+                        {budgetSummary.note ? (
+                          <p className="mt-3 text-[10px] leading-5 text-zinc-500">
+                            {budgetSummary.note}
+                          </p>
+                        ) : null}
+                      </div>
+                    ) : null}
+
+                    {budgetCards.length > 0 ? (
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        {budgetCards.map((card: any, index: number) => (
+                          <div
+                            key={card.label + '-' + index}
+                            className="rounded-xl border border-zinc-200 bg-white p-4"
+                          >
+                            <div className="text-[9px] font-black uppercase tracking-wide text-zinc-400">
+                              {card.label}
+                            </div>
+
+                            <div className="mt-2 text-lg font-black text-zinc-950">
+                              {card.value}
+                            </div>
+
+                            {card.note ? (
+                              <p className="mt-2 text-[10px] leading-4 text-zinc-500">
+                                {card.note}
+                              </p>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {v2.budget?.note ? (
+                      <p className="mt-3 text-[10px] leading-5 text-zinc-500">
+                        {v2.budget.note}
+                      </p>
+                    ) : null}
+                  </div>
+                </details>
+              ) : null}
               {issues.length ? <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 md:px-5"><div><div className="text-[9px] font-black uppercase tracking-[0.18em]" style={{ color: ORANGE }}>Avant d'acheter</div><div className="mt-1 text-sm font-black text-zinc-950 md:text-base">Points à vérifier</div></div><span className="text-xl font-black transition group-open:rotate-45" style={{ color: ORANGE }}>+</span></summary><div className="border-t border-zinc-100 bg-white px-5 py-5"><div className="space-y-4">{issues.map((issue, index) => <div key={`${issue.title}-${index}`}><div className="flex items-center gap-2"><span className="text-sm font-black text-zinc-900">{issue.title}</span><span className="rounded-full bg-zinc-100 px-2 py-1 text-[8px] font-black uppercase text-zinc-500">{issueLabel(issue)}</span></div><p className="mt-1 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">{issue.description}</p></div>)}</div></div></details> : null}
               {displayData.longevityTips?.length ? <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4"><div><div className="text-[9px] font-black uppercase tracking-[0.18em]" style={{ color: ORANGE }}>Usage</div><div className="mt-1 text-sm font-black text-zinc-950 md:text-base">Conseils de longévité</div></div><span className="text-xl font-black transition group-open:rotate-45" style={{ color: ORANGE }}>+</span></summary><div className="border-t border-zinc-200 bg-white px-5 py-5"><ul className="space-y-3 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">{displayData.longevityTips.map((tip: string, index: number) => <li key={index} className="flex gap-2"><span className="font-black" style={{ color: ORANGE }}>•</span><span>{tip}</span></li>)}</ul></div></details> : null}
               {displayData.conclusion && displayData.conclusion !== v2.verdict?.text ? <details className="group overflow-hidden rounded-2xl border border-orange-200 bg-orange-50"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4"><div><div className="text-[9px] font-black uppercase tracking-[0.18em] text-orange-700">Notre recommandation</div><div className="mt-1 text-sm font-black text-zinc-950 md:text-base">Le conseil LabelMoto</div></div><span className="text-xl font-black text-orange-600 transition group-open:rotate-45">+</span></summary><div className="border-t border-orange-200 bg-white px-5 py-5"><p className="text-sm font-bold leading-6 text-zinc-900 md:text-[15px] md:leading-7">{displayData.conclusion}</p></div></details> : null}
