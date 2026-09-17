@@ -14,6 +14,7 @@ import { useFirestore, useCollection, useMemoFirebase } from '@/firebase/client'
 import { collection } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import GuidesDesktopSidebar from '@/components/app/guides-desktop-sidebar';
 
 const CATEGORIES = [
     { id: 'ALL', label: 'TOUT' },
@@ -311,14 +312,15 @@ function InfoPageComponent() {
 
             <main
                 className="
-                    container
                     relative
                     z-10
                     mx-auto
+                    w-full
                     px-4
                     py-8
                     sm:px-6
-                    lg:px-8
+                    lg:px-0
+                    lg:py-0
 
                     before:pointer-events-none
                     before:absolute
@@ -331,7 +333,7 @@ function InfoPageComponent() {
                     [&>*]:z-10
                 "
             >
-                <div className="max-w-6xl mx-auto">
+                <div className="max-w-6xl mx-auto lg:hidden">
                     <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-semibold uppercase tracking-[0.08em] mb-8 pt-3 md:pt-6"><Link href="/" className="hover:text-brand transition-colors flex items-center gap-1"><Home className="h-3 w-3" /><span>Accueil</span></Link><ChevronRight className="h-3 w-3" /><span className="text-foreground">Conseils</span></nav>
 
                     <div className="text-center mb-8">
@@ -419,6 +421,139 @@ function InfoPageComponent() {
                             </div>
                         </aside>
                     </div>
+                </div>
+
+                <div
+                    className="
+                        hidden
+                        lg:ml-6
+                        lg:mr-8
+                        lg:grid
+                        lg:grid-cols-[394px_minmax(0,1fr)]
+                        lg:items-start
+                        lg:gap-6
+                        lg:pt-6
+                    "
+                >
+                    <GuidesDesktopSidebar
+                        articles={allArticles}
+                        isLoading={isLoading}
+                    />
+
+                    <section
+                        className="
+                            min-h-[calc(100vh-128px)]
+                            min-w-0
+                            w-full
+                            bg-transparent
+                            pb-16
+                        "
+                    >
+                        <nav
+                            className="
+                                flex
+                                items-center
+                                gap-2
+                                text-[10px]
+                                font-semibold
+                                uppercase
+                                tracking-[0.08em]
+                                text-muted-foreground
+                            "
+                        >
+                            <Link
+                                href="/"
+                                className="
+                                    flex
+                                    items-center
+                                    gap-1
+                                    transition-colors
+                                    hover:text-brand
+                                "
+                            >
+                                <Home className="h-3 w-3" />
+                                <span>Accueil</span>
+                            </Link>
+
+                            <ChevronRight className="h-3 w-3" />
+
+                            <span className="text-foreground">
+                                Conseils
+                            </span>
+                        </nav>
+
+                        <div
+                            className="
+                                flex
+                                min-h-[560px]
+                                items-center
+                                justify-center
+                            "
+                        >
+                            <div
+                                className="
+                                    mx-auto
+                                    max-w-xl
+                                    text-center
+                                "
+                            >
+                                <div
+                                    className="
+                                        mx-auto
+                                        flex
+                                        h-16
+                                        w-16
+                                        items-center
+                                        justify-center
+                                        rounded-[22px]
+                                        bg-brand/10
+                                        text-brand
+                                    "
+                                >
+                                    <FileText className="h-7 w-7" />
+                                </div>
+
+                                <h1
+                                    className="
+                                        mt-6
+                                        text-4xl
+                                        font-black
+                                        tracking-[-0.04em]
+                                        text-foreground
+                                    "
+                                >
+                                    Guides &amp; conseils
+                                </h1>
+
+                                <p
+                                    className="
+                                        mx-auto
+                                        mt-4
+                                        max-w-lg
+                                        text-[15px]
+                                        leading-7
+                                        text-muted-foreground
+                                    "
+                                >
+                                    Sélectionnez un article dans la colonne de gauche
+                                    pour afficher le guide complet ici.
+                                </p>
+
+                                <p
+                                    className="
+                                        mt-5
+                                        text-[10px]
+                                        font-black
+                                        uppercase
+                                        tracking-[0.14em]
+                                        text-brand
+                                    "
+                                >
+                                    Recherche, permis A2, événements et conseils moto
+                                </p>
+                            </div>
+                        </div>
+                    </section>
                 </div>
             </main>
         </div>

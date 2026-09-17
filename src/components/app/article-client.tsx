@@ -22,6 +22,7 @@ import Link from 'next/link';
 import Script from 'next/script';
 
 import Header from '@/components/app/header';
+import GuidesDesktopSidebar from '@/components/app/guides-desktop-sidebar';
 import {
   Table,
   TableBody,
@@ -212,6 +213,105 @@ export default function ArticleClient({
     if (!article) return [];
     return article.sections || article.content || [];
   }, [article]);
+
+  const isBudgetCarouselArticle =
+    id === 'combien-coute-vraiment-une-moto-par-mois';
+
+  const budgetCarouselRef = React.useRef<HTMLDivElement | null>(null);
+  const previousBudgetSlideRef = React.useRef(0);
+  const budgetCarouselScrollTimerRef = React.useRef<number | null>(null);
+
+  useEffect(() => {
+    previousBudgetSlideRef.current = 0;
+
+    return () => {
+      if (budgetCarouselScrollTimerRef.current !== null) {
+        window.clearTimeout(budgetCarouselScrollTimerRef.current);
+      }
+    };
+  }, [id]);
+
+  const handleBudgetCarouselScroll = () => {
+    if (!isBudgetCarouselArticle || window.innerWidth >= 768) {
+      return;
+    }
+
+    const carousel = budgetCarouselRef.current;
+
+    if (!carousel) {
+      return;
+    }
+
+    if (budgetCarouselScrollTimerRef.current !== null) {
+      window.clearTimeout(budgetCarouselScrollTimerRef.current);
+    }
+
+    budgetCarouselScrollTimerRef.current = window.setTimeout(() => {
+      budgetCarouselScrollTimerRef.current = null;
+
+      const slides = Array.from(carousel.children) as HTMLElement[];
+
+      if (slides.length === 0) {
+        return;
+      }
+
+      const carouselRect = carousel.getBoundingClientRect();
+      const paddingLeft =
+        Number.parseFloat(window.getComputedStyle(carousel).paddingLeft) || 0;
+      const snapLeft = carouselRect.left + paddingLeft;
+
+      let activeIndex = 0;
+      let smallestDistance = Number.POSITIVE_INFINITY;
+
+      slides.forEach((slide, index) => {
+        const distance = Math.abs(
+          slide.getBoundingClientRect().left - snapLeft
+        );
+
+        if (distance < smallestDistance) {
+          smallestDistance = distance;
+          activeIndex = index;
+        }
+      });
+
+      if (previousBudgetSlideRef.current === activeIndex) {
+        return;
+      }
+
+      previousBudgetSlideRef.current = activeIndex;
+
+      window.requestAnimationFrame(() => {
+        const currentCarousel = budgetCarouselRef.current;
+
+        if (!currentCarousel) {
+          return;
+        }
+
+        const header = document.querySelector('header');
+        let stickyOffset = 0;
+
+        if (header instanceof HTMLElement) {
+          const headerPosition = window.getComputedStyle(header).position;
+
+          if (
+            headerPosition === 'fixed' ||
+            headerPosition === 'sticky'
+          ) {
+            stickyOffset = header.getBoundingClientRect().height;
+          }
+        }
+
+        const contentTop =
+          window.scrollY +
+          currentCarousel.getBoundingClientRect().top;
+
+        window.scrollTo({
+          top: Math.max(0, contentTop - stickyOffset - 12),
+          behavior: 'smooth',
+        });
+      });
+    }, 160);
+  };
 
   const getCellValue = (row: any, header: string, colIndex: number) => {
     if (!row) return '';
@@ -560,12 +660,57 @@ export default function ArticleClient({
     );
   };
 
-  const renderCta = (cta: any, key: string) => {
+  const renderCta = (cta: any, key: string, sectionId?: string) => {
     if (!cta) return null;
-    const label = cta.label || "Voir l'info";
-    const targetSlug = cta.target_slug || cta.target;
-    const title = cta.title || "";
-    const text = cta.text || "";
+
+    const isStringCta = typeof cta === 'string';
+    const ctaData = isStringCta ? { text: cta } : cta;
+
+    const budgetArticleCtaTargets: Record<
+      string,
+      { target: string; title: string; text?: string }
+    > = {
+      'le-prix-d-achat-le-budget-de-depart': {
+        target: 'meilleure-moto-a2-quelle-moto-choisir-pour-debuter',
+        title: 'Quelle moto A2 choisir pour débuter ?',
+      },
+      'l-assurance-la-plus-grosse-surprise-pour-un-debutant': {
+        target: 'assurance-moto-bien-choisir-sa-formule-selon-votre-profil',
+        title: 'Bien choisir son assurance moto',
+        text: 'Compare les formules et les garanties selon ton profil avant de choisir ta moto.',
+      },
+      'l-entretien-le-cout-invisible-qui-compte-vraiment': {
+        target: 'achat-moto-occasion-guide-complet-pour-eviter-les-pieges',
+        title: 'Acheter une moto d’occasion : éviter les pièges',
+      },
+    };
+
+    const budgetOverride =
+      id === 'combien-coute-vraiment-une-moto-par-mois' && sectionId
+        ? budgetArticleCtaTargets[sectionId]
+        : undefined;
+
+    if (
+      id === 'combien-coute-vraiment-une-moto-par-mois' &&
+      isStringCta &&
+      sectionId &&
+      !budgetOverride
+    ) {
+      return (
+        <div
+          key={key}
+          className="my-5 rounded-2xl border-l-4 border-brand bg-brand/5 px-4 py-4 text-sm font-medium leading-6 text-foreground"
+        >
+          {cta}
+        </div>
+      );
+    }
+
+    const label = ctaData.label || "Voir l'info";
+    const targetSlug =
+      budgetOverride?.target || ctaData.target_slug || ctaData.target;
+    const title = budgetOverride?.title || ctaData.title || "";
+    const text = budgetOverride?.text || ctaData.text || "";
 
     const isAssociationCta = targetSlug === 'carte-associations-moto' || label.toLowerCase().includes('association');
     const isRelaisCta = targetSlug === 'carte-relais-motards' || label.toLowerCase().includes('relais');
@@ -689,8 +834,26 @@ export default function ArticleClient({
     const isGabaritNote = !isGabaritArticle && !cta && ((section.note && (section.note.includes("gabarit") || section.note.includes("tailles"))) || (sectionId.includes("taille") || sectionId.includes("hauteur") || sectionId.includes("gabarit")));
 
     return (
-      <div key={key || sectionId} id={sectionId} className="mb-12 scroll-mt-28">
-        {section.title && <h2 className="text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2">{section.title}</h2>}
+      <div
+        key={key || sectionId}
+        id={sectionId}
+        className={cn(
+          "mb-12 scroll-mt-28",
+          isBudgetCarouselArticle &&
+            !key &&
+            "max-md:mb-0 max-md:w-[88vw] max-md:max-w-[88vw] max-md:flex-none max-md:snap-start max-md:rounded-[2rem] max-md:border max-md:border-border/70 max-md:bg-card max-md:p-5 max-md:shadow-sm"
+        )}
+      >
+        {section.title && (
+          <h2
+            className={cn(
+              "text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2",
+              isBudgetCarouselArticle && !key && "max-md:mt-0 max-md:text-2xl"
+            )}
+          >
+            {section.title}
+          </h2>
+        )}
         {section.image && (
           <div className="relative w-full overflow-hidden rounded-[2rem] mb-6 bg-[#f8f7f5] shadow-md" style={{ aspectRatio: '4/5' }}>
             <img src={section.image} alt={section.title || ''} className="w-full h-full object-cover" loading="lazy" />
@@ -715,7 +878,7 @@ export default function ArticleClient({
         {section.table && renderTable(section.table, `table-${sectionId}`)}
         {section.cards && renderCards(section.cards, `cards-${sectionId}`)}
         {faq && renderFaq(faq, `faq-${sectionId}`)}
-        {cta && renderCta(cta, `cta-${sectionId}`)}
+        {cta && renderCta(cta, `cta-${sectionId}`, sectionId)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-medium">{item}</li>))}</ul>)}
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-medium leading-relaxed pl-2">{item}</li>))}</ol>)}
         {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
@@ -777,7 +940,92 @@ export default function ArticleClient({
 
   return (
     <div className={showHeader ? "min-h-screen relative bg-background" : "min-h-screen relative bg-transparent"}>
-      {showHeader && <Header searchTerm={searchTerm} onSearchTermChange={setSearchTerm} onSearch={() => router.push(`/map?search=${encodeURIComponent(searchTerm)}`)} activeFilter={null} placeholderText="Recherche..." />}
+      {showHeader && (
+        <div className="lg:sticky lg:top-0 lg:z-[2200]">
+          <Header
+            searchTerm={searchTerm}
+            onSearchTermChange={setSearchTerm}
+            onSearch={() =>
+              router.push(
+                `/map?search=${encodeURIComponent(searchTerm)}`
+              )
+            }
+            activeFilter={null}
+            placeholderText="Recherche..."
+          />
+        </div>
+      )}
+      {showHeader && (
+        <style>{`
+          @media (min-width: 1024px) {
+            .guides-desktop-article h1 {
+              font-family: inherit !important;
+              font-size: clamp(36px, 2.7vw, 46px) !important;
+              font-weight: 700 !important;
+              line-height: 1.03 !important;
+              letter-spacing: -0.035em !important;
+              text-transform: none !important;
+            }
+
+            .guides-desktop-article h2 {
+              font-family: inherit !important;
+              font-size: 30px !important;
+              font-weight: 700 !important;
+              line-height: 1.08 !important;
+              letter-spacing: -0.03em !important;
+              text-transform: none !important;
+            }
+
+            .guides-desktop-article h3 {
+              font-family: inherit !important;
+              font-size: 22px !important;
+              font-weight: 600 !important;
+              line-height: 1.15 !important;
+              letter-spacing: -0.02em !important;
+              text-transform: none !important;
+            }
+
+            .guides-desktop-article h4 {
+              font-family: inherit !important;
+              font-weight: 600 !important;
+              line-height: 1.2 !important;
+              letter-spacing: -0.015em !important;
+              text-transform: none !important;
+            }
+
+            .guides-desktop-article p {
+              font-family: inherit !important;
+              font-size: 16px !important;
+              font-weight: 400 !important;
+              line-height: 1.62 !important;
+            }
+
+            .guides-desktop-article li {
+              font-family: inherit !important;
+              font-size: 16px !important;
+              font-weight: 400 !important;
+              line-height: 1.55 !important;
+            }
+
+            .guides-desktop-article strong {
+              font-weight: 600 !important;
+            }
+
+            .guides-desktop-article a {
+              font-weight: 600;
+            }
+
+            .guides-desktop-article th {
+              font-weight: 600 !important;
+            }
+
+            .guides-desktop-article td {
+              font-weight: 400 !important;
+            }
+          }
+        `}</style>
+      )}
+
       {breadcrumbLd && (
         <Script
           id="breadcrumb-ld"
@@ -786,8 +1034,36 @@ export default function ArticleClient({
         />
       )}
       
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10">
-        <div className="max-w-6xl mx-auto">
+      <main
+        className={cn(
+          "container mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10",
+          showHeader &&
+            "lg:max-w-none lg:mx-0 lg:px-0 lg:py-0"
+        )}
+      >
+        <div
+          className={cn(
+            "max-w-6xl mx-auto",
+            showHeader &&
+              "lg:max-w-none lg:mx-0 lg:ml-6 lg:mr-8 lg:pt-6 lg:grid lg:grid-cols-[394px_minmax(0,1fr)] lg:items-start lg:gap-6"
+          )}
+        >
+          {showHeader && (
+            <GuidesDesktopSidebar
+              articles={allArticles}
+              isLoading={isArticlesListLoading}
+              currentId={id}
+            />
+          )}
+
+          <div
+            className={cn(
+              "min-w-0",
+              showHeader &&
+                "lg:h-[calc(100vh-104px)] lg:overflow-y-auto lg:overscroll-contain lg:pr-2 [scrollbar-width:thin]"
+            )}
+          >
+          <div className={showHeader ? "guides-desktop-article" : undefined}>
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-6 md:pt-8">
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
@@ -827,7 +1103,30 @@ export default function ArticleClient({
                 </div>
               )}
 
-              <div className="space-y-3">{activeSections.map((section: any, idx: number) => renderSection(section, idx))}</div>
+              {isBudgetCarouselArticle && (
+                <div className="mb-3 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground md:hidden">
+                  <span>{activeSections.length} parties</span>
+                  <span className="text-brand">Glisse pour lire →</span>
+                </div>
+              )}
+
+              <div
+                ref={isBudgetCarouselArticle ? budgetCarouselRef : undefined}
+                onScroll={
+                  isBudgetCarouselArticle
+                    ? handleBudgetCarouselScroll
+                    : undefined
+                }
+                className={cn(
+                  "space-y-3",
+                  isBudgetCarouselArticle &&
+                    "max-md:-mx-4 max-md:flex max-md:items-start max-md:gap-4 max-md:space-y-0 max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-mandatory max-md:scroll-smooth max-md:px-4 max-md:pb-4"
+                )}
+              >
+                {activeSections.map((section: any, idx: number) =>
+                  renderSection(section, idx)
+                )}
+              </div>
               
               {(article.faq || article.faqs) && renderFaq(article.faq || article.faqs, "article-faq")}
 
@@ -893,6 +1192,8 @@ export default function ArticleClient({
               </div>
             </aside>
           </div>
+          </div>
+        </div>
         </div>
       </main>
     </div>

@@ -741,7 +741,7 @@ const closeSheet =
         inset-0
         z-[1900]
         hidden
-        overflow-x-hidden
+        overflow-hidden
         bg-[#fbfcfc]
         lg:block
           min-h-screen
@@ -1247,10 +1247,15 @@ const closeSheet =
           z-20
 
 
-          bg-transparent
-          pb-16
+          h-[calc(100vh-104px)]
           min-w-0
           w-full
+          overflow-y-auto
+          overscroll-contain
+          bg-transparent
+          pb-16
+          pr-2
+          [scrollbar-width:thin]
         "
       >
         {selectedSheet ? (
