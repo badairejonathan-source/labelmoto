@@ -1778,7 +1778,8 @@ function MapPageComponent() {
         displayQuery:
           initialDisplaySearch,
         skipProfessionalLookup:
-          isPureGeoSearch,
+          isPureGeoSearch &&
+          !hasInitialHomeWhat,
       }
     );
   }, [
@@ -3101,6 +3102,11 @@ function MapPageComponent() {
   // Si on arrive via une fiche (selectedId) sans filtre choisi, activer le filtre de sa collection
   useEffect(() => {
     if (activeFilters.length > 0) return;
+
+    // Une selection issue d'une recherche texte ne doit pas
+    // injecter automatiquement un filtre metier.
+    if (appliedSearchTerm.trim()) return;
+
     if (!selectedId || points.length === 0) return;
     const target = points.find(p => p.id === selectedId);
     if (!target) return;
@@ -3114,7 +3120,12 @@ function MapPageComponent() {
         [filter]
       );
     }
-  }, [selectedId, points, activeFilters.length]);
+  }, [
+    selectedId,
+    points,
+    activeFilters.length,
+    appliedSearchTerm,
+  ]);
 
   // ==========================================================
   // ARRONDISSEMENT GEOJSON OFFICIEL
