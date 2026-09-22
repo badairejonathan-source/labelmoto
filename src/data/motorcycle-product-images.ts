@@ -282,6 +282,16 @@ const entries: MotorcycleProductImageEntry[] = [
 
   // VOGE
   {
+    imageUrl: '/images/motorcycles/voge-r125-2025-plus.webp',
+    exactIds: ['voge-r125-2025-plus'],
+    aliases: ['voge r125', 'voge r 125'],
+  },
+  {
+    imageUrl: '/images/motorcycles/voge-r625-2025-plus.webp',
+    exactIds: ['voge-r625-2025-plus'],
+    aliases: ['voge r625', 'voge r 625'],
+  },
+  {
     imageUrl: '/images/motorcycles/voge-300AC.webp',
     exactIds: ['voge-300ac-2021-plus'],
     aliases: ['voge 300 ac', 'voge 300ac'],
