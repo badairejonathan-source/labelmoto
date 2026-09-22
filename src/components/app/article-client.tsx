@@ -16,7 +16,8 @@ import {
   HelpCircle,
   Clock,
   MapPin,
-  Flag
+  Flag,
+  Heart
 } from 'lucide-react';
 import Link from 'next/link';
 import Script from 'next/script';
@@ -35,8 +36,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase/client';
-import { doc, collection } from 'firebase/firestore';
+import { doc, collection, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const slugify = (text: string) => 
   text?.toLowerCase()
@@ -125,13 +127,108 @@ export default function ArticleClient({
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
   const [scheduleFilter, setScheduleFilter] = useState('TOUT');
+  const [isFavoriteUpdating, setIsFavoriteUpdating] = useState(false);
   const { user } = useUser();
+  const { toast } = useToast();
 
   const firestore = useFirestore();
   const articleRef = useMemoFirebase(() => firestore ? doc(firestore, 'articles', id) : null, [firestore, id]);
   const { data: liveArticle, isLoading } = useDoc(articleRef);
   const article = liveArticle ?? initialArticle;
   const isArticleLoading = isLoading && !initialArticle;
+
+  const articleFavoriteId =
+    id
+      ? `articles__${id}`
+      : null;
+
+  const articleFavoriteRef = useMemoFirebase(
+    () =>
+      user &&
+      firestore &&
+      articleFavoriteId
+        ? doc(
+            firestore,
+            'users',
+            user.uid,
+            'favorites',
+            articleFavoriteId
+          )
+        : null,
+    [firestore, user, articleFavoriteId]
+  );
+
+  const {
+    data: articleFavorite,
+    isLoading: isFavoriteLoading
+  } = useDoc(articleFavoriteRef);
+
+  const isArticleFavorite = !!articleFavorite;
+
+  const handleArticleFavoriteClick = async () => {
+    const currentPath = `/info/${id}`;
+
+    if (!user) {
+      router.push(
+        `/login?callbackUrl=${encodeURIComponent(currentPath)}`
+      );
+      return;
+    }
+
+    if (
+      !firestore ||
+      !articleFavoriteRef ||
+      !id ||
+      isFavoriteUpdating
+    ) {
+      return;
+    }
+
+    setIsFavoriteUpdating(true);
+
+    try {
+      if (isArticleFavorite) {
+        await deleteDoc(articleFavoriteRef);
+
+        toast({
+          title: 'Favori retir\u00e9',
+          description:
+            "Cet article a \u00e9t\u00e9 retir\u00e9 de vos favoris."
+        });
+      } else {
+        await setDoc(
+          articleFavoriteRef,
+          {
+            type: 'article',
+            targetCollection: 'articles',
+            targetId: id,
+            addedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        toast({
+          title: 'Ajout\u00e9 aux favoris',
+          description:
+            'Vous retrouverez cet article dans votre espace compte.'
+        });
+      }
+    } catch (error) {
+      console.error(
+        'Modification du favori article impossible',
+        error
+      );
+
+      toast({
+        variant: 'destructive',
+        title: 'Favori impossible',
+        description:
+          "L'enregistrement n'a pas pu \u00eatre effectu\u00e9."
+      });
+    } finally {
+      setIsFavoriteUpdating(false);
+    }
+  };
 
   const articlesListRef = useMemoFirebase(() => firestore ? collection(firestore, 'articles') : null, [firestore]);
   const { data: allArticles, isLoading: isArticlesListLoading } = useCollection(articlesListRef);
@@ -1073,6 +1170,49 @@ export default function ArticleClient({
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tight leading-[0.95] mb-6 text-foreground">
             {article.display_title || article.title}
           </h1>
+
+          {showHeader && (
+            <div className="-mt-2 mb-6">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={
+                  isFavoriteLoading ||
+                  isFavoriteUpdating
+                }
+                onClick={handleArticleFavoriteClick}
+                className={cn(
+                  "rounded-full border-2 px-4 font-black uppercase tracking-widest text-[9px] transition-all",
+                  isArticleFavorite
+                    ? "border-brand bg-brand text-white hover:bg-brand/90 hover:text-white"
+                    : "hover:border-brand hover:text-brand"
+                )}
+                aria-pressed={isArticleFavorite}
+                aria-label={
+                  isArticleFavorite
+                    ? "Retirer cet article des favoris"
+                    : "Ajouter cet article aux favoris"
+                }
+              >
+                {isFavoriteUpdating ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Heart
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      isArticleFavorite &&
+                        "fill-current"
+                    )}
+                  />
+                )}
+
+                {isArticleFavorite
+                  ? 'Dans mes favoris'
+                  : 'Ajouter aux favoris'}
+              </Button>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <article className="lg:col-span-8">

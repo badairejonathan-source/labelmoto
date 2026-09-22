@@ -58,9 +58,30 @@ service cloud.firestore {
 
     // --- NOYAU IDENTITÉ & PROFILS ---
     match /users/{userId} {
-      allow create: if isOwner(userId);
-      allow read, update: if isAdmin() || isOwner(userId);
+      // Un utilisateur peut creer/modifier son propre noyau de compte,
+      // mais ne peut jamais s'attribuer le role admin.
+      allow create: if isOwner(userId) && (
+        isAdmin()
+        || request.resource.data.role in ['user', 'pro']
+      );
+
+      allow read: if isAdmin() || isOwner(userId);
+
+      allow update: if isAdmin() || (
+        isOwner(userId)
+        && request.resource.data.role in ['user', 'pro']
+      );
+
       allow list: if isAdmin();
+
+      // Espace personnel prive du motard.
+      match /garage/{garageId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /favorites/{favoriteId} {
+        allow read, write: if isOwner(userId);
+      }
     }
     
     match /standardProfiles/{userId} {

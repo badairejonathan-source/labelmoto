@@ -2,15 +2,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import UnifiedSiteHeader from '@/components/app/unified-site-header';
+import LabelMotoLogo from '@/components/app/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { MapPin, Phone, Globe, Clock, Home, ChevronRight, Star, MessageSquare, User, Loader2, Send, Instagram } from 'lucide-react';
+import { MapPin, Phone, Globe, Clock, Home, ChevronRight, Star, MessageSquare, User, Loader2, Send, Instagram, Heart } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Dealership } from '@/lib/types';
 import { useFirestore, useCollection, useMemoFirebase, useUser, useDoc, addDocumentNonBlocking } from '@/firebase/client';
 import { DEPARTMENTS } from '@/app/lib/departments';
-import { collection, query, orderBy, serverTimestamp, doc, updateDoc, increment, getDocs, where, limit } from 'firebase/firestore';
+import { collection, query, orderBy, serverTimestamp, doc, updateDoc, increment, getDocs, where, limit, setDoc, deleteDoc } from 'firebase/firestore';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,89 @@ const reviewSchema = z.object({
 });
 
 type ReviewFormValues = z.infer<typeof reviewSchema>;
+
+const PROFESSIONAL_DAYS = [
+  'lundi',
+  'mardi',
+  'mercredi',
+  'jeudi',
+  'vendredi',
+  'samedi',
+  'dimanche',
+] as const;
+
+type ProfessionalDay =
+  typeof PROFESSIONAL_DAYS[number];
+
+function normalizeProfessionalText(
+  value: unknown
+) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function getProfessionalHourValue(
+  pro: Dealership,
+  day: ProfessionalDay
+): string {
+  const structured =
+    (pro as any).horaires?.[day];
+
+  if (typeof structured === 'string') {
+    return structured.trim();
+  }
+
+  if (
+    structured &&
+    typeof structured === 'object'
+  ) {
+    if (
+      structured.ferme === true ||
+      structured.closed === true
+    ) {
+      return 'Ferm\u00e9';
+    }
+
+    const ranges: string[] = [];
+
+    if (structured.om && structured.fm) {
+      ranges.push(
+        `${structured.om}-${structured.fm}`
+      );
+    }
+
+    if (structured.oa && structured.fa) {
+      ranges.push(
+        `${structured.oa}-${structured.fa}`
+      );
+    }
+
+    return ranges.join(', ');
+  }
+
+  const direct =
+    (pro as any)[day];
+
+  return typeof direct === 'string'
+    ? direct.trim()
+    : '';
+}
+
+function isClosedHourValue(
+  value: string
+) {
+  const normalized =
+    normalizeProfessionalText(value);
+
+  return (
+    normalized === 'ferme' ||
+    normalized === 'fermee' ||
+    normalized === 'closed'
+  );
+}
 
 export default function DealershipDetailClient({ pro, hasCityPage = false }: DealershipDetailClientProps) {
   const { user, isUserLoading } = useUser();
@@ -92,6 +176,7 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
   
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [isFavoriteUpdating, setIsFavoriteUpdating] = useState(false);
 
   const proProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
   const { data: proProfile } = useDoc(proProfileRef);
@@ -99,6 +184,72 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
   const { data: stdProfile } = useDoc(stdProfileRef);
   
   const activeProfile = proProfile || stdProfile;
+
+  const professionalCollection = getProCollection();
+
+  const professionalFavoriteId =
+    pro.id
+      ? `${professionalCollection}__${pro.id}`
+      : null;
+
+  const professionalFavoriteRef = useMemoFirebase(
+    () =>
+      user &&
+      firestore &&
+      professionalFavoriteId
+        ? doc(
+            firestore,
+            'users',
+            user.uid,
+            'favorites',
+            professionalFavoriteId
+          )
+        : null,
+    [firestore, user, professionalFavoriteId]
+  );
+
+  const {
+    data: professionalFavorite,
+    isLoading: isFavoriteLoading
+  } = useDoc(professionalFavoriteRef);
+
+  const isProfessionalFavorite = !!professionalFavorite;
+
+  const customHeroImage =
+    String(
+      pro.imageUrl ||
+      pro.imgUrl ||
+      ''
+    ).trim();
+
+
+  const [heroFit, setHeroFit] =
+    useState<'cover' | 'contain'>('contain');
+
+  const [heroAspect, setHeroAspect] =
+    useState<number>(16 / 9);
+
+  const hoursByDay =
+    PROFESSIONAL_DAYS.map(day => ({
+      day,
+      value:
+        getProfessionalHourValue(
+          pro,
+          day
+        ),
+    }));
+
+  const hasPublishedHours =
+    hoursByDay.some(
+      ({ value }) =>
+        Boolean(value) &&
+        !isClosedHourValue(value)
+    );
+
+  useEffect(() => {
+    setHeroFit('contain');
+    setHeroAspect(16 / 9);
+  }, [customHeroImage]);
 
   useEffect(() => {
     if (
@@ -172,6 +323,72 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
       }
     }
   }, [user, activeProfile]);
+
+  const handleProfessionalFavoriteClick = async () => {
+    const currentPath =
+      `/concessions/${pro.slug || pro.id}`;
+
+    if (!user) {
+      router.push(
+        `/login?callbackUrl=${encodeURIComponent(currentPath)}`
+      );
+      return;
+    }
+
+    if (
+      !firestore ||
+      !pro.id ||
+      !professionalFavoriteRef ||
+      isFavoriteUpdating
+    ) {
+      return;
+    }
+
+    setIsFavoriteUpdating(true);
+
+    try {
+      if (isProfessionalFavorite) {
+        await deleteDoc(professionalFavoriteRef);
+
+        toast({
+          title: 'Favori retir\u00e9',
+          description:
+            'Ce professionnel a \u00e9t\u00e9 retir\u00e9 de vos favoris.'
+        });
+      } else {
+        await setDoc(
+          professionalFavoriteRef,
+          {
+            type: 'professional',
+            targetCollection: professionalCollection,
+            targetId: pro.id,
+            addedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        toast({
+          title: 'Ajout\u00e9 aux favoris',
+          description:
+            'Vous retrouverez ce professionnel dans votre espace compte.'
+        });
+      }
+    } catch (error) {
+      console.error(
+        'Modification du favori professionnel impossible',
+        error
+      );
+
+      toast({
+        variant: 'destructive',
+        title: 'Favori impossible',
+        description:
+          "L'enregistrement n'a pas pu \u00eatre effectu\u00e9."
+      });
+    } finally {
+      setIsFavoriteUpdating(false);
+    }
+  };
 
   const handleLeaveReviewClick = () => {
     const currentPath = `/concessions/${pro.slug || pro.id}`;
@@ -258,18 +475,132 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-8 space-y-12">
             <div className="space-y-8">
-              <div className="relative aspect-video rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-muted">
-                <Image 
-                  src={pro.imageUrl || pro.imgUrl || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop"} 
-                  alt={pro.title} 
-                  fill 
-                  className="object-cover" 
-                  priority
-                />
+              <div
+                className={cn(
+                  "relative rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white",
+                  customHeroImage && heroFit === "contain"
+                    ? "bg-gradient-to-br from-white via-muted/30 to-muted/70"
+                    : "bg-white"
+                )}
+                style={{
+                  aspectRatio:
+                    customHeroImage
+                      ? heroAspect
+                      : 16 / 9,
+                }}
+              >
+                {customHeroImage ? (
+                  <Image
+                    src={customHeroImage}
+                    alt={pro.title}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 640px"
+                    className={cn(
+                      "transition-[object-fit,padding] duration-200",
+                      heroFit === "contain"
+                        ? "object-contain"
+                        : "object-cover"
+                    )}
+                    priority
+                    onLoad={(event) => {
+                      const image =
+                        event.currentTarget;
+
+                      const ratio =
+                        image.naturalWidth /
+                        Math.max(
+                          image.naturalHeight,
+                          1
+                        );
+
+                      const minHeroRatio = 4 / 3;
+                      const maxHeroRatio = 16 / 9;
+
+                      const displayRatio =
+                        Math.min(
+                          Math.max(
+                            ratio,
+                            minHeroRatio
+                          ),
+                          maxHeroRatio
+                        );
+
+                      setHeroAspect(
+                        displayRatio
+                      );
+
+                      setHeroFit(
+                        ratio >= minHeroRatio &&
+                          ratio <= maxHeroRatio
+                          ? 'cover'
+                          : 'contain'
+                      );
+                    }}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center px-10 sm:px-16 md:px-20">
+                    <div className="w-full max-w-[260px]">
+                      <LabelMotoLogo
+                        noBubble
+                        noLink
+                        className="w-full border-none bg-transparent px-0 shadow-none"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
-              
               <div className="space-y-4">
-                <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tighter text-foreground leading-none">{pro.title}</h1>
+                <div className="flex items-start justify-between gap-4">
+                  <h1 className="min-w-0 text-3xl md:text-5xl font-black uppercase tracking-tighter text-foreground leading-none">
+                    {pro.title}
+                  </h1>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={
+                      isFavoriteLoading ||
+                      isFavoriteUpdating
+                    }
+                    onClick={handleProfessionalFavoriteClick}
+                    className={cn(
+                      "shrink-0 rounded-full border-2 px-4 font-black uppercase tracking-widest text-[9px] transition-all",
+                      isProfessionalFavorite
+                        ? "border-brand bg-brand text-white hover:bg-brand/90 hover:text-white"
+                        : "hover:border-brand hover:text-brand"
+                    )}
+                    aria-pressed={isProfessionalFavorite}
+                    aria-label={
+                      isProfessionalFavorite
+                        ? "Retirer ce professionnel des favoris"
+                        : "Ajouter ce professionnel aux favoris"
+                    }
+                  >
+                    {isFavoriteUpdating ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <Heart
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          isProfessionalFavorite &&
+                            "fill-current"
+                        )}
+                      />
+                    )}
+
+                    <span className="hidden sm:inline">
+                      {isProfessionalFavorite
+                        ? 'Dans mes favoris'
+                        : 'Ajouter aux favoris'}
+                    </span>
+
+                    <span className="sm:hidden">
+                      Favori
+                    </span>
+                  </Button>
+                </div>
+
                 <p className="text-xl font-bold text-brand italic">{pro.category || 'Professionnel moto'}</p>
 
                 {isAdmin && pro.id && (
@@ -375,22 +706,47 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
                 </div>
               );
             })()}
-                        <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
+            <Card className="rounded-[2rem] border-none shadow-xl overflow-hidden bg-card">
               <CardHeader className="bg-muted/50 p-6 border-b">
                 <CardTitle className="text-sm font-black uppercase flex items-center gap-3">
                   <Clock className="h-5 w-5 text-brand" /> Horaires d'ouverture
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6 space-y-2">
-                {['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'].map(day => (
-                  <div key={day} className="flex justify-between items-center text-xs font-bold border-b border-dashed border-muted last:border-0 pb-1.5 pt-1.5">
-                    <span className="capitalize text-muted-foreground">{day}</span>
-                    <span className="text-foreground font-black">{(pro.horaires && pro.horaires[day]) || pro[day] || 'Fermé'}</span>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
 
+              {hasPublishedHours ? (
+                <CardContent className="p-6 space-y-2">
+                  {hoursByDay.map(({ day, value }) => (
+                    <div
+                      key={day}
+                      className="flex justify-between items-center text-xs font-bold border-b border-dashed border-muted last:border-0 pb-1.5 pt-1.5"
+                    >
+                      <span className="capitalize text-muted-foreground">
+                        {day}
+                      </span>
+                      <span className="text-foreground font-black">
+                        {value || 'Non renseign\u00e9'}
+                      </span>
+                    </div>
+                  ))}
+                </CardContent>
+              ) : (
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4 rounded-2xl bg-muted/35 p-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand/10">
+                      <Clock className="h-5 w-5 text-brand" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-black uppercase tracking-tight">
+                        Horaires non communiqués
+                      </p>
+                      <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+                        Contactez directement cet établissement ou consultez son site pour connaître ses disponibilités.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              )}
+            </Card>
             {/* Section concessions proches */}
             {nearby.length > 0 && (
               <section className="pt-6">

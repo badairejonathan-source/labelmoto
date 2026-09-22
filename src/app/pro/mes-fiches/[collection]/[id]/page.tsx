@@ -7,120 +7,378 @@ import { doc, getDoc } from 'firebase/firestore';
 import { useFirebase } from '@/firebase/client';
 import Header from '@/components/app/header';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, CheckCircle, Loader2, Send } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
 import { isAllowedProCollection } from '@/lib/pro-claim-utils';
+import ProfessionalListingForm, {
+  type ProfessionalAppSection,
+  type ProfessionalListingFormValues,
+} from '@/components/app/professional-listing-form';
 import { submitOwnedModificationAction } from './actions';
 
-const DAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-const FIELDS = ['title', 'address', 'phoneNumber', 'email', 'website', 'category', 'info', 'instagramUrl', 'facebookUrl', ...DAYS];
+const DAYS = [
+  'lundi',
+  'mardi',
+  'mercredi',
+  'jeudi',
+  'vendredi',
+  'samedi',
+  'dimanche',
+] as const;
+
+type DayKey = (typeof DAYS)[number];
+
+function getAllowedSections(
+  collectionName: string
+): ProfessionalAppSection[] {
+  if (collectionName === 'associations') {
+    return ['association'];
+  }
+
+  if (collectionName === 'relais') {
+    return ['relais'];
+  }
+
+  if (collectionName === 'creators') {
+    return ['creator'];
+  }
+
+  return [
+    'shopping',
+    'service',
+    'both',
+  ];
+}
+
+function getInitialSection(
+  collectionName: string,
+  listing: any
+): ProfessionalAppSection {
+  const allowed =
+    getAllowedSections(collectionName);
+
+  const current =
+    String(
+      listing?.appSection || ''
+    ).trim() as ProfessionalAppSection;
+
+  if (allowed.includes(current)) {
+    return current;
+  }
+
+  return allowed[0];
+}
+
+function numberOrNull(
+  value: unknown
+): number | null {
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed)
+    ? parsed
+    : null;
+}
 
 export default function EditOwnedListingPage() {
-  const params = useParams<{ collection: string; id: string }>();
-  const collectionName = decodeURIComponent(params.collection || '');
-  const listingId = decodeURIComponent(params.id || '');
-  const { firestore, user, isUserLoading } = useFirebase();
+  const params =
+    useParams<{
+      collection: string;
+      id: string;
+    }>();
+
+  const collectionName =
+    decodeURIComponent(
+      params.collection || ''
+    );
+
+  const listingId =
+    decodeURIComponent(
+      params.id || ''
+    );
+
+  const {
+    firestore,
+    user,
+    isUserLoading,
+  } = useFirebase();
+
   const { toast } = useToast();
   const router = useRouter();
 
-  const [listing, setListing] = useState<any | null>(null);
-  const [form, setForm] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [listing, setListing] =
+    useState<any | null>(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [submitted, setSubmitted] =
+    useState(false);
 
   useEffect(() => {
     if (isUserLoading) return;
+
     if (!user) {
-      router.replace(`/login?callbackUrl=${encodeURIComponent(`/pro/mes-fiches/${collectionName}/${listingId}`)}`);
+      router.replace(
+        `/login?callbackUrl=${encodeURIComponent(
+          `/pro/mes-fiches/${collectionName}/${listingId}`
+        )}`
+      );
+
       return;
     }
+
     if (!user.emailVerified) {
-      router.replace(`/verify-email?callbackUrl=${encodeURIComponent(`/pro/mes-fiches/${collectionName}/${listingId}`)}`);
+      router.replace(
+        `/verify-email?callbackUrl=${encodeURIComponent(
+          `/pro/mes-fiches/${collectionName}/${listingId}`
+        )}`
+      );
     }
-  }, [user, isUserLoading, router, collectionName, listingId]);
+  }, [
+    user,
+    isUserLoading,
+    router,
+    collectionName,
+    listingId,
+  ]);
 
   useEffect(() => {
-    if (!firestore || !user?.emailVerified || !isAllowedProCollection(collectionName) || !listingId) return;
+    if (
+      !firestore ||
+      !user?.emailVerified ||
+      !isAllowedProCollection(
+        collectionName
+      ) ||
+      !listingId
+    ) {
+      return;
+    }
 
     let cancelled = false;
+
     const load = async () => {
       setLoading(true);
+
       try {
-        const snapshot = await getDoc(doc(firestore, collectionName, listingId));
-        if (!snapshot.exists()) throw new Error('Fiche introuvable.');
+        const snapshot =
+          await getDoc(
+            doc(
+              firestore,
+              collectionName,
+              listingId
+            )
+          );
+
+        if (!snapshot.exists()) {
+          throw new Error(
+            'Fiche introuvable.'
+          );
+        }
+
         const data = snapshot.data();
-        if (data.ownerUid !== user.uid) throw new Error('Cette fiche n’est pas rattachée à votre compte.');
 
-        const values: Record<string, string> = {};
-        for (const field of FIELDS) {
-          values[field] = DAYS.includes(field)
-            ? String(data.horaires?.[field] ?? data[field] ?? '')
-            : String(data[field] ?? '');
+        if (
+          data.ownerUid !== user.uid
+        ) {
+          throw new Error(
+            'Cette fiche n’est pas rattachée à votre compte.'
+          );
         }
 
         if (!cancelled) {
-          setListing({ id: snapshot.id, ...data });
-          setForm(values);
+          setListing({
+            id: snapshot.id,
+            ...data,
+          });
         }
-      } catch (error: any) {
+      }
+      catch (error: any) {
         if (!cancelled) {
-          toast({ title: 'Accès impossible', description: error.message, variant: 'destructive' });
+          toast({
+            title: 'Accès impossible',
+            description:
+              error.message,
+            variant: 'destructive',
+          });
         }
-      } finally {
-        if (!cancelled) setLoading(false);
+      }
+      finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     load();
-    return () => { cancelled = true; };
-  }, [firestore, user, collectionName, listingId, toast]);
 
-  const setField = (field: string, value: string) => {
-    setForm(previous => ({ ...previous, [field]: value }));
-  };
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    firestore,
+    user,
+    collectionName,
+    listingId,
+    toast,
+  ]);
 
-  const submit = async () => {
+  const submit = async (
+    values: ProfessionalListingFormValues
+  ) => {
     if (!user || !listing) return;
-    setSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.set('idToken', await user.getIdToken(true));
-      formData.set('targetCollection', collectionName);
-      formData.set('targetId', listingId);
-      for (const field of FIELDS) formData.set(field, form[field] || '');
 
-      const result = await submitOwnedModificationAction(formData);
+    try {
+      const formData =
+        new FormData();
+
+      formData.set(
+        'idToken',
+        await user.getIdToken(true)
+      );
+
+      formData.set(
+        'targetCollection',
+        collectionName
+      );
+
+      formData.set(
+        'targetId',
+        listingId
+      );
+
+      formData.set(
+        'title',
+        values.name
+      );
+
+      formData.set(
+        'appSection',
+        values.appSection
+      );
+
+      formData.set(
+        'address',
+        values.address
+      );
+
+      formData.set(
+        'phoneNumber',
+        values.phone
+      );
+
+      formData.set(
+        'email',
+        values.email
+      );
+
+      formData.set(
+        'website',
+        values.website
+      );
+
+      formData.set(
+        'category',
+        values.category
+      );
+
+      formData.set(
+        'info',
+        values.description
+      );
+
+      formData.set(
+        'instagramUrl',
+        values.instagram
+      );
+
+      formData.set(
+        'facebookUrl',
+        values.facebook
+      );
+
+      formData.set(
+        'imageUrl',
+        values.imageUrl
+      );
+
+      for (const day of DAYS) {
+        formData.set(
+          day,
+          values.horaires[day] || ''
+        );
+      }
+
+      const result =
+        await submitOwnedModificationAction(
+          formData
+        );
+
       if (result?.error) {
-        toast({ title: 'Demande impossible', description: result.error, variant: 'destructive' });
+        toast({
+          title:
+            'Demande impossible',
+          description:
+            result.error,
+          variant: 'destructive',
+        });
+
         return;
       }
 
       setSubmitted(true);
-      toast({ title: 'Modifications envoyées', description: 'Elles seront publiées uniquement après validation Label Moto.' });
-    } catch (error: any) {
-      toast({ title: 'Erreur', description: error.message, variant: 'destructive' });
-    } finally {
-      setSubmitting(false);
+
+      toast({
+        title:
+          'Modifications envoyées',
+        description:
+          'Elles seront publiées uniquement après validation Label Moto.',
+      });
+    }
+    catch (error: any) {
+      toast({
+        title: 'Erreur',
+        description:
+          error.message,
+        variant: 'destructive',
+      });
     }
   };
 
-  if (loading || isUserLoading || !user) {
-    return <div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-brand" /></div>;
+  if (
+    loading ||
+    isUserLoading ||
+    !user
+  ) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-brand" />
+      </div>
+    );
   }
 
   if (submitted) {
     return (
       <div className="min-h-screen bg-muted/20">
         <Header />
+
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-black uppercase tracking-tight mb-2">Demande envoyée</h1>
-          <p className="text-sm text-muted-foreground mb-8">Votre fiche publique reste inchangée jusqu’à la validation de Label Moto.</p>
-          <Button onClick={() => router.push('/account')}>Retour à mes fiches</Button>
+
+          <h1 className="text-2xl font-black uppercase tracking-tight mb-2">
+            Demande envoyée
+          </h1>
+
+          <p className="text-sm text-muted-foreground mb-8">
+            Votre fiche publique reste inchangée jusqu’à la validation de Label Moto.
+          </p>
+
+          <Button
+            onClick={() =>
+              router.push('/account')
+            }
+          >
+            Retour à mes fiches
+          </Button>
         </div>
       </div>
     );
@@ -130,63 +388,167 @@ export default function EditOwnedListingPage() {
     return (
       <div className="min-h-screen bg-muted/20">
         <Header />
+
         <div className="max-w-xl mx-auto px-4 py-20 text-center">
-          <p className="font-black">Fiche inaccessible.</p>
-          <Button asChild className="mt-4"><Link href="/account">Retour à mon compte</Link></Button>
+          <p className="font-black">
+            Fiche inaccessible.
+          </p>
+
+          <Button
+            asChild
+            className="mt-4"
+          >
+            <Link href="/account">
+              Retour à mon compte
+            </Link>
+          </Button>
         </div>
       </div>
     );
   }
 
+  const horaires =
+    DAYS.reduce(
+      (acc, day) => {
+        acc[day] =
+          String(
+            listing.horaires?.[day] ??
+            listing[day] ??
+            ''
+          );
+
+        return acc;
+      },
+      {} as Record<DayKey, string>
+    );
+
+  const initialValues:
+    Partial<ProfessionalListingFormValues> = {
+      name:
+        String(
+          listing.title || ''
+        ),
+
+      appSection:
+        getInitialSection(
+          collectionName,
+          listing
+        ),
+
+      category:
+        String(
+          listing.category || ''
+        ),
+
+      address:
+        String(
+          listing.address || ''
+        ),
+
+      phone:
+        String(
+          listing.phoneNumber ||
+          listing.phone ||
+          ''
+        ),
+
+      email:
+        String(
+          listing.email ||
+          user.email ||
+          ''
+        ),
+
+      website:
+        String(
+          listing.website || ''
+        ),
+
+      facebook:
+        String(
+          listing.facebookUrl ||
+          listing.facebook ||
+          ''
+        ),
+
+      instagram:
+        String(
+          listing.instagramUrl ||
+          listing.instagram ||
+          ''
+        ),
+
+      description:
+        String(
+          listing.info ||
+          listing.description ||
+          ''
+        ),
+
+      horaires,
+
+      imageUrl:
+        String(
+          listing.imageUrl ||
+          listing.imgUrl ||
+          ''
+        ),
+
+      googleMapsUrl:
+        String(
+          listing.googleMapsUrl ||
+          ''
+        ),
+
+      latitude:
+        numberOrNull(
+          listing.latitude ??
+          listing.lat
+        ),
+
+      longitude:
+        numberOrNull(
+          listing.longitude ??
+          listing.lng
+        ),
+    };
+
   return (
     <div className="min-h-screen bg-muted/20">
       <Header />
-      <div className="max-w-2xl mx-auto px-4 py-10">
-        <Link href="/account" className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground mb-5">
-          <ArrowLeft className="h-4 w-4" /> Mes fiches
-        </Link>
 
-        <h1 className="text-2xl font-black uppercase tracking-tight mb-1">Modifier ma fiche</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          Proposez vos changements. Label Moto les vérifie et garde la validation finale avant publication.
-        </p>
+      <main className="container mx-auto p-4 sm:p-8">
+        <div className="max-w-3xl mx-auto space-y-5">
+          <Link
+            href="/account"
+            className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Mes fiches
+          </Link>
 
-        <div className="bg-white rounded-3xl border-2 p-6 space-y-4">
-          <div><Label>Nom</Label><Input value={form.title || ''} onChange={e => setField('title', e.target.value)} /></div>
-          <div><Label>Adresse</Label><Input value={form.address || ''} onChange={e => setField('address', e.target.value)} /></div>
-          <div className="grid md:grid-cols-2 gap-3">
-            <div><Label>Téléphone</Label><Input value={form.phoneNumber || ''} onChange={e => setField('phoneNumber', e.target.value)} /></div>
-            <div><Label>Catégorie / spécialité</Label><Input value={form.category || ''} onChange={e => setField('category', e.target.value)} /></div>
-          </div>
-          <div><Label>E-mail public</Label><Input value={form.email || ''} onChange={e => setField('email', e.target.value)} /></div>
-          <div><Label>Site web</Label><Input value={form.website || ''} onChange={e => setField('website', e.target.value)} /></div>
-          <div className="grid md:grid-cols-2 gap-3">
-            <div><Label>Instagram</Label><Input value={form.instagramUrl || ''} onChange={e => setField('instagramUrl', e.target.value)} /></div>
-            <div><Label>Facebook</Label><Input value={form.facebookUrl || ''} onChange={e => setField('facebookUrl', e.target.value)} /></div>
-          </div>
-          <div><Label>Description</Label><Textarea value={form.info || ''} onChange={e => setField('info', e.target.value)} className="min-h-[100px]" /></div>
-
-          <div className="border-t pt-4">
-            <Label className="mb-2 block">Horaires</Label>
-            <div className="space-y-2">
-              {DAYS.map(day => (
-                <div key={day} className="flex items-center gap-2">
-                  <span className="w-20 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{day}</span>
-                  <Input value={form[day] || ''} onChange={e => setField(day, e.target.value)} placeholder="09:00-12:00, 14:00-18:00" />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="rounded-2xl bg-muted/30 p-4 text-xs text-muted-foreground">
-            La géolocalisation, le lien Google Maps et les coordonnées GPS sont gérés uniquement par Label Moto.
-          </div>
-
-          <Button onClick={submit} disabled={submitting} className="w-full h-12 rounded-xl font-black uppercase text-xs tracking-widest">
-            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Send className="h-4 w-4 mr-2" /> Envoyer mes modifications</>}
-          </Button>
+          <ProfessionalListingForm
+            initialValues={
+              initialValues
+            }
+            accountEmail={
+              user.email || ''
+            }
+            listingId={
+              listingId
+            }
+            title="Modifier ma fiche"
+            description="Proposez vos changements. Label Moto les vérifie et garde la validation finale avant publication."
+            submitLabel="Envoyer mes modifications"
+            allowedSections={
+              getAllowedSections(
+                collectionName
+              )
+            }
+            onSubmit={submit}
+          />
         </div>
-      </div>
+      </main>
     </div>
   );
 }

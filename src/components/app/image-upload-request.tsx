@@ -14,28 +14,181 @@ interface ImageUploadRequestProps {
 }
 
 // Compression image côté client via Canvas
-async function compressImage(file: File, maxWidth = 1200, quality = 0.82): Promise<Blob> {
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+const MAX_IMAGE_WIDTH = 1600;
+const MAX_IMAGE_HEIGHT = 1200;
+const TARGET_IMAGE_BYTES = 550 * 1024;
+
+const SUPPORTED_IMAGE_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+function extensionForType(type: string) {
+  if (type === 'image/png') return 'png';
+  if (type === 'image/webp') return 'webp';
+  return 'jpg';
+}
+
+function canvasToWebp(
+  canvas: HTMLCanvasElement,
+  quality: number
+): Promise<Blob | null> {
   return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let { width, height } = img;
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d')!;
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob((blob) => resolve(blob!), 'image/webp', quality);
-      };
-      img.src = e.target!.result as string;
-    };
-    reader.readAsDataURL(file);
+    canvas.toBlob(
+      resolve,
+      'image/webp',
+      quality
+    );
   });
+}
+
+async function optimizeImage(
+  file: File
+): Promise<{
+  blob: Blob;
+  contentType: string;
+  extension: string;
+}> {
+  const objectUrl =
+    URL.createObjectURL(file);
+
+  try {
+    const image =
+      await new Promise<HTMLImageElement>(
+        (resolve, reject) => {
+          const img = new Image();
+
+          img.onload = () => resolve(img);
+
+          img.onerror = () =>
+            reject(
+              new Error('Image illisible')
+            );
+
+          img.src = objectUrl;
+        }
+      );
+
+    const naturalWidth =
+      Math.max(
+        image.naturalWidth,
+        1
+      );
+
+    const naturalHeight =
+      Math.max(
+        image.naturalHeight,
+        1
+      );
+
+    const scale = Math.min(
+      1,
+      MAX_IMAGE_WIDTH / naturalWidth,
+      MAX_IMAGE_HEIGHT / naturalHeight
+    );
+
+    const width = Math.max(
+      1,
+      Math.round(
+        naturalWidth * scale
+      )
+    );
+
+    const height = Math.max(
+      1,
+      Math.round(
+        naturalHeight * scale
+      )
+    );
+
+    const canvas =
+      document.createElement('canvas');
+
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx =
+      canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error(
+        'Canvas indisponible'
+      );
+    }
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality =
+      'high';
+
+    ctx.drawImage(
+      image,
+      0,
+      0,
+      width,
+      height
+    );
+
+    const qualities =
+      file.type === 'image/png'
+        ? [0.90, 0.86, 0.82, 0.78]
+        : [0.86, 0.82, 0.78, 0.74];
+
+    let bestWebp: Blob | null = null;
+
+    for (const quality of qualities) {
+      const candidate =
+        await canvasToWebp(
+          canvas,
+          quality
+        );
+
+      if (!candidate) {
+        continue;
+      }
+
+      if (
+        !bestWebp ||
+        candidate.size < bestWebp.size
+      ) {
+        bestWebp = candidate;
+      }
+
+      if (
+        candidate.size <=
+          TARGET_IMAGE_BYTES
+      ) {
+        break;
+      }
+    }
+
+    if (
+      bestWebp &&
+      bestWebp.size < file.size
+    ) {
+      return {
+        blob: bestWebp,
+        contentType: 'image/webp',
+        extension: 'webp',
+      };
+    }
+
+    return {
+      blob: file,
+      contentType:
+        file.type || 'image/jpeg',
+      extension:
+        extensionForType(
+          file.type
+        ),
+    };
+  }
+  finally {
+    URL.revokeObjectURL(
+      objectUrl
+    );
+  }
 }
 
 export default function ImageUploadRequest({ concessionSlug, concessionTitle, onSuccess }: ImageUploadRequestProps) {
@@ -49,13 +202,34 @@ export default function ImageUploadRequest({ concessionSlug, concessionTitle, on
   const [error, setError] = useState<string | null>(null);
 
   const handleFile = async (f: File) => {
-    if (!f.type.startsWith('image/')) { setError('Fichier non reconnu — choisissez une image.'); return; }
+    if (!SUPPORTED_IMAGE_TYPES.has(f.type)) {
+      setError(
+        'Format non pris en charge - utilisez JPG, PNG ou WEBP.'
+      );
+      return;
+    }
+
+    if (f.size > MAX_UPLOAD_BYTES) {
+      setError(
+        'Image trop lourde - 5 Mo maximum.'
+      );
+      return;
+    }
+
     setError(null);
     setFile(f);
-    const url = URL.createObjectURL(f);
+
+    if (preview) {
+      URL.revokeObjectURL(
+        preview
+      );
+    }
+
+    const url =
+      URL.createObjectURL(f);
+
     setPreview(url);
   };
-
   const handleUpload = async () => {
     if (!file || !user || !firestore) return;
     setUploading(true);
@@ -63,15 +237,37 @@ export default function ImageUploadRequest({ concessionSlug, concessionTitle, on
     setError(null);
 
     try {
-      // Compression automatique
-      const compressed = await compressImage(file);
-      const storage = getStorageInstance();
-      if (!storage) throw new Error('Firebase Storage non disponible');
-      const fileName = `cover_${Date.now()}.webp`;
-      const storageRef = ref(storage, `pending_images/${user.uid}/${fileName}`);
+      // Optimisation automatique avant Firebase Storage.
+      const optimized =
+        await optimizeImage(file);
 
-      // Upload avec progression
-      const task = uploadBytesResumable(storageRef, compressed, { contentType: 'image/webp' });
+      const storage =
+        getStorageInstance();
+
+      if (!storage) {
+        throw new Error(
+          'Firebase Storage non disponible'
+        );
+      }
+
+      const fileName =
+        `cover_${Date.now()}.${optimized.extension}`;
+
+      const storageRef =
+        ref(
+          storage,
+          `pending_images/${user.uid}/${fileName}`
+        );
+
+      const task =
+        uploadBytesResumable(
+          storageRef,
+          optimized.blob,
+          {
+            contentType:
+              optimized.contentType,
+          }
+        );
       await new Promise<void>((resolve, reject) => {
         task.on('state_changed',
           (snap) => setProgress(Math.round((snap.bytesTransferred / snap.totalBytes) * 100)),
@@ -122,7 +318,7 @@ export default function ImageUploadRequest({ concessionSlug, concessionTitle, on
       >
         {preview ? (
           <div className="relative">
-            <img src={preview} alt="Aperçu" className="max-h-48 mx-auto rounded-xl object-cover" />
+            <img src={preview} alt="Aperçu" className="max-h-48 max-w-full mx-auto rounded-xl object-contain bg-muted/30" />
             <button
               type="button"
               onClick={(e) => { e.stopPropagation(); setPreview(null); setFile(null); }}
@@ -135,7 +331,7 @@ export default function ImageUploadRequest({ concessionSlug, concessionTitle, on
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <ImageIcon className="h-10 w-10 opacity-30" />
             <p className="font-black text-sm uppercase tracking-widest">Choisir une photo</p>
-            <p className="text-xs">JPG, PNG, WEBP — max 5 Mo — compression automatique</p>
+            <p className="text-xs">JPG, PNG, WEBP — max 5 Mo — optimisation automatique</p>
           </div>
         )}
       </div>
@@ -143,7 +339,7 @@ export default function ImageUploadRequest({ concessionSlug, concessionTitle, on
       <input
         ref={inputRef}
         type="file"
-        accept="image/*"
+        accept="image/jpeg,image/png,image/webp"
         className="hidden"
         onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
       />

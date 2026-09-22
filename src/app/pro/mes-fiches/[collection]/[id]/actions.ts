@@ -6,12 +6,14 @@ import { isAllowedProCollection } from '@/lib/pro-claim-utils';
 const DAYS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'] as const;
 const EDITABLE_FIELDS = [
   'title',
+  'appSection',
   'address',
   'phoneNumber',
   'email',
   'website',
   'category',
   'info',
+  'imageUrl',
   'instagramUrl',
   'facebookUrl',
   ...DAYS,
@@ -75,7 +77,9 @@ export async function submitOwnedModificationAction(formData: FormData) {
   for (const field of EDITABLE_FIELDS) {
     const oldValue = DAYS.includes(field as (typeof DAYS)[number])
       ? String(listing.horaires?.[field] ?? listing[field] ?? '')
-      : String(listing[field] ?? '');
+      : field === 'imageUrl'
+        ? String(listing.imageUrl ?? listing.imgUrl ?? '')
+        : String(listing[field] ?? '');
     const newValue = formString(formData, field);
 
     currentValues[field] = oldValue;
