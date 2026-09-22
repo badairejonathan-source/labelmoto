@@ -33,7 +33,8 @@ import {
   Star,
   MessageSquare,
   User,
-  Send
+  Send,
+  Heart
 } from 'lucide-react';
 
 import LabelMotoLogo from '@/components/app/logo';
@@ -50,7 +51,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useFirestore, useDoc, useMemoFirebase, useUser, useCollection, addDocumentNonBlocking } from '@/firebase/client';
-import { doc, collection, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { doc, collection, query, orderBy, serverTimestamp, setDoc, deleteDoc } from 'firebase/firestore';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
@@ -121,7 +122,13 @@ export default function FicheClient({
   const ficheRef = useMemoFirebase(() => (firestore && modelId) ? doc(firestore, 'motorcycle_sheets', modelId) : null, [firestore, modelId]);
   const { data: liveFiche, isLoading } = useDoc(ficheRef);
 
-  const firestoreFiche = liveFiche ?? initialFiche;
+  const rawFirestoreFiche =
+    liveFiche ?? initialFiche;
+
+  const firestoreFiche =
+    rawFirestoreFiche?.status === 'published'
+      ? rawFirestoreFiche
+      : null;
 
   const fiche = useMemo(() => {
     if (!firestoreFiche) {
@@ -255,12 +262,41 @@ export default function FicheClient({
   const { toast } = useToast();
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [isFavoriteUpdating, setIsFavoriteUpdating] = useState(false);
 
   const proProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'professionalProfiles', user.uid) : null, [firestore, user]);
   const { data: proProfile } = useDoc(proProfileRef);
   const stdProfileRef = useMemoFirebase(() => (user && firestore) ? doc(firestore, 'standardProfiles', user.uid) : null, [firestore, user]);
   const { data: stdProfile } = useDoc(stdProfileRef);
   const activeProfile = proProfile || stdProfile;
+
+  const motorcycleFavoriteId =
+    modelId
+      ? `motorcycle_sheets__${modelId}`
+      : null;
+
+  const motorcycleFavoriteRef = useMemoFirebase(
+    () =>
+      user &&
+      firestore &&
+      motorcycleFavoriteId
+        ? doc(
+            firestore,
+            'users',
+            user.uid,
+            'favorites',
+            motorcycleFavoriteId
+          )
+        : null,
+    [firestore, user, motorcycleFavoriteId]
+  );
+
+  const {
+    data: motorcycleFavorite,
+    isLoading: isFavoriteLoading
+  } = useDoc(motorcycleFavoriteRef);
+
+  const isMotorcycleFavorite = !!motorcycleFavorite;
 
   const reviewsRef = useMemoFirebase(() => {
     if (!firestore || !modelId) return null;
@@ -272,6 +308,71 @@ export default function FicheClient({
     resolver: zodResolver(reviewSchema),
     defaultValues: { rating: 5, content: '' },
   });
+
+  const handleMotorcycleFavoriteClick = async () => {
+    const currentPath = `/fiches/${modelId}`;
+
+    if (!user) {
+      router.push(
+        `/login?callbackUrl=${encodeURIComponent(currentPath)}`
+      );
+      return;
+    }
+
+    if (
+      !firestore ||
+      !motorcycleFavoriteRef ||
+      !modelId ||
+      isFavoriteUpdating
+    ) {
+      return;
+    }
+
+    setIsFavoriteUpdating(true);
+
+    try {
+      if (isMotorcycleFavorite) {
+        await deleteDoc(motorcycleFavoriteRef);
+
+        toast({
+          title: 'Favori retir\u00e9',
+          description:
+            'Cette moto a \u00e9t\u00e9 retir\u00e9e de vos favoris.'
+        });
+      } else {
+        await setDoc(
+          motorcycleFavoriteRef,
+          {
+            type: 'motorcycle',
+            targetCollection: 'motorcycle_sheets',
+            targetId: modelId,
+            addedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        toast({
+          title: 'Ajout\u00e9e aux favoris',
+          description:
+            'Vous retrouverez cette moto dans votre espace compte.'
+        });
+      }
+    } catch (error) {
+      console.error(
+        'Modification du favori moto impossible',
+        error
+      );
+
+      toast({
+        variant: 'destructive',
+        title: 'Favori impossible',
+        description:
+          "L'enregistrement n'a pas pu \u00eatre effectu\u00e9."
+      });
+    } finally {
+      setIsFavoriteUpdating(false);
+    }
+  };
 
   const handleLeaveReviewClick = () => {
     const currentPath = `/fiches/${modelId}`;
@@ -377,6 +478,49 @@ export default function FicheClient({
           : displayData.modelName
       }
     </h1>
+
+    {!embedded && (
+      <div className="mt-4">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          disabled={
+            isFavoriteLoading ||
+            isFavoriteUpdating
+          }
+          onClick={handleMotorcycleFavoriteClick}
+          className={cn(
+            "rounded-full border-2 px-4 font-black uppercase tracking-widest text-[9px] transition-all",
+            isMotorcycleFavorite
+              ? "border-brand bg-brand text-white hover:bg-brand/90 hover:text-white"
+              : "hover:border-brand hover:text-brand"
+          )}
+          aria-pressed={isMotorcycleFavorite}
+          aria-label={
+            isMotorcycleFavorite
+              ? "Retirer cette moto des favoris"
+              : "Ajouter cette moto aux favoris"
+          }
+        >
+          {isFavoriteUpdating ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Heart
+              className={cn(
+                "mr-2 h-4 w-4",
+                isMotorcycleFavorite &&
+                  "fill-current"
+              )}
+            />
+          )}
+
+          {isMotorcycleFavorite
+            ? 'Dans mes favoris'
+            : 'Ajouter aux favoris'}
+        </Button>
+      </div>
+    )}
   </div>
 
   <div className="relative w-full h-[250px] sm:h-[300px] md:h-[360px] lg:h-[410px]">

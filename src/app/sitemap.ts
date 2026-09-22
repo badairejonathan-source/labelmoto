@@ -34,7 +34,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       const [articlesSnap, motoSnap] = await Promise.all([
         db.collection('articles').get(),
-        db.collection('motorcycle_sheets').get(),
+        db
+          .collection('motorcycle_sheets')
+          .where('status', '==', 'published')
+          .get(),
       ]);
 
       articleUrls = articlesSnap.docs.map(doc => ({

@@ -325,7 +325,12 @@ async function getFiches(brandFirestoreValue: string) {
       .where('brand', '==', brandFirestoreValue)
       .get();
 
-    return snap.docs.map(doc => {
+    return snap.docs
+      .filter(
+        doc =>
+          doc.data()?.status === 'published'
+      )
+      .map(doc => {
       const d = doc.data();
       return {
         id: doc.id,

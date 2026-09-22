@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { cache } from 'react';
-import { permanentRedirect } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import FicheClient from '@/components/app/fiche-client';
 
@@ -20,13 +20,27 @@ const getFicheMetadata = cache(async (modelId: string) => {
     const db = getAdminFirestore();
     // Cherche d'abord par id exact
     const docById = await db.collection('motorcycle_sheets').doc(modelId).get();
-    if (docById.exists) return docById.data();
+    if (docById.exists) {
+      const data = docById.data();
+
+      return data?.status === 'published'
+        ? data
+        : null;
+    }
     // Sinon cherche par slug
     const snap = await db.collection('motorcycle_sheets')
       .where('slug', '==', modelId)
-      .limit(1)
       .get();
-    if (!snap.empty) return snap.docs[0].data();
+
+    const publishedDoc =
+      snap.docs.find(
+        doc =>
+          doc.data()?.status === 'published'
+      );
+
+    if (publishedDoc) {
+      return publishedDoc.data();
+    }
   } catch (e) {
     console.error('getFicheMetadata error:', e);
   }
@@ -36,6 +50,16 @@ const getFicheMetadata = cache(async (modelId: string) => {
 export async function generateMetadata({ params }: { params: Promise<{ modelId: string }> }): Promise<Metadata> {
   const { modelId } = await params;
   const data = await getFicheMetadata(modelId);
+
+  if (!data) {
+    return {
+      title: 'Page introuvable | LabelMoto',
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
 
   // Si la fiche Firestore existe et a des champs SEO, on les utilise
   const title = data?.seo?.meta_title
@@ -102,6 +126,11 @@ export default async function Page({
   }
 
   const ficheData = await getFicheMetadata(modelId);
+
+  if (!ficheData) {
+    notFound();
+  }
+
   const initialFiche = ficheData
     ? JSON.parse(JSON.stringify(ficheData))
     : null;
