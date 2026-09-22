@@ -9,6 +9,7 @@ import EntretienDesktopWorkspace from '@/components/app/entretien-desktop-worksp
 interface SheetModel {
   id: string;
   label: string;
+  displacementCc: number | null;
 }
 
 interface BrandGroup {
@@ -22,22 +23,68 @@ async function getCatalog(): Promise<BrandGroup[]> {
     const snap = await db.collection('motorcycle_sheets').get();
 
     const brands: Record<string, SheetModel[]> = {};
+
     snap.docs.forEach(doc => {
       const d = doc.data();
+
+      // Les brouillons ne doivent jamais apparaitre dans le catalogue public.
+      if (d.status !== 'published') {
+        return;
+      }
+
       const brandName = d.brand || 'AUTRE';
-      if (!brands[brandName]) brands[brandName] = [];
+
+      if (!brands[brandName]) {
+        brands[brandName] = [];
+      }
+
+      const rawDisplacement =
+        Number(d.technical_sheet?.displacement_cc);
+
       brands[brandName].push({
         id: doc.id,
-        label: d.display_title || d.model || doc.id,
+        label:
+          d.display_title ||
+          d.model ||
+          doc.id,
+        displacementCc:
+          Number.isFinite(rawDisplacement) &&
+          rawDisplacement > 0
+            ? rawDisplacement
+            : null,
       });
     });
 
     return Object.entries(brands)
       .map(([name, models]) => ({
         name,
-        models: models.sort((a, b) => a.label.localeCompare(b.label, 'fr')),
+
+        // Petite cylindree en haut, gros moteur en bas.
+        // Une fiche sans cylindree verifiee reste en fin de liste.
+        models: models.sort((a, b) => {
+          const aCc =
+            a.displacementCc ??
+            Number.POSITIVE_INFINITY;
+
+          const bCc =
+            b.displacementCc ??
+            Number.POSITIVE_INFINITY;
+
+          return (
+            aCc - bCc ||
+            a.label.localeCompare(
+              b.label,
+              'fr'
+            )
+          );
+        }),
       }))
-      .sort((a, b) => a.name.localeCompare(b.name, 'fr'));
+      .sort((a, b) =>
+        a.name.localeCompare(
+          b.name,
+          'fr'
+        )
+      );
   } catch (err) {
     console.error('[entretien] getCatalog error:', err);
     return [];
