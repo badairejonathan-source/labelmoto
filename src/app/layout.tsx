@@ -74,7 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         },
         "image": { "@id": "https://labelmoto.fr/#logo" },
         "description": "Annuaire national indépendant référençant les concessions, ateliers et relais motards en France. Plateforme de ressources et guides d'entretien pour motards.",
-        "sameAs": ["https://www.instagram.com/labelmoto.fr/"]
+        "sameAs": ["https://www.instagram.com/label.moto/"]
       },
       {
         "@type": "WebSite",

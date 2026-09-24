@@ -1,3 +1,4 @@
+import BrandLogo from '@/components/app/brand-logo';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -208,9 +209,16 @@ export default async function MarquePage({ params }: PageProps) {
             <span>›</span>
             <span className="text-foreground">{brand.displayName}</span>
           </nav>
-          <h1 className="text-2xl md:text-4xl font-black uppercase tracking-tight text-foreground mb-3">
+          <div className="mb-3 flex min-w-0 items-center gap-4">
+            <BrandLogo
+              brand={brand.displayName}
+              className="h-10 w-20 shrink-0 object-contain md:h-12 md:w-24"
+            />
+
+            <h1 className="min-w-0 text-2xl md:text-4xl font-black uppercase tracking-tight text-foreground">
             {brand.h1}
           </h1>
+          </div>
           <p className="text-brand font-black text-lg">{pros.length} professionnels référencés</p>
         </div>
       </div>

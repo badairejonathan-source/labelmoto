@@ -1,5 +1,8 @@
 'use client';
 
+import { cfmoto800mtSportExploreVariants } from '@/lib/motorcycle-sheets-v2/cfmoto-800mt-sport-explore';
+
+import BrandLogo from '@/components/app/brand-logo';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -9,6 +12,7 @@ import { pickRelatedModels } from '@/lib/related-models-pool';
 import { getMotorcycleProductImage, isMotorcycleProductImage } from '@/data/motorcycle-product-images';
 import MotorcycleSheetV2View from '@/components/app/motorcycle-sheet-v2-view';
 import { getMotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
+import { kove800xVariants } from '@/lib/motorcycle-sheets-v2/kove-800x-pro';
 import { getLocalMotorcycleSheetV2 } from '@/lib/motorcycle-sheets-v2/registry';
 import { 
   ArrowLeft, 
@@ -143,6 +147,18 @@ export default function FicheClient({
 
     return {
       ...firestoreFiche,
+      display_title:
+        modelId === 'cfmoto-800mt-sport-explore-2023-plus'
+          ? 'CFMOTO 800 MT'
+          : modelId === 'kove-800x-pro-2024-plus'
+            ? 'KOVE 800X'
+            : firestoreFiche.display_title,
+      variants:
+        modelId === 'cfmoto-800mt-sport-explore-2023-plus'
+          ? cfmoto800mtSportExploreVariants
+          : modelId === 'kove-800x-pro-2024-plus'
+            ? kove800xVariants
+            : firestoreFiche.variants,
       service_guide: {
         ...(firestoreFiche.service_guide || {}),
         ...localV2,
@@ -176,7 +192,10 @@ export default function FicheClient({
 
   const displayData = useMemo(() => {
     if (!fiche) return null;
-    const variants = fiche.variants || [];
+    const variants =
+      Array.isArray(fiche.variants) && fiche.variants.length > 0
+        ? fiche.variants
+        : [];
     const ts = fiche.technical_sheet || {};
     const activeVariant = variants[selectedVariantIndex] || {};
     const sg = fiche.service_guide || {};
@@ -457,7 +476,13 @@ export default function FicheClient({
       {displayData.brand || 'Moto'}
     </p>
 
-    <h1 className="mt-1 text-3xl md:text-5xl font-black tracking-tight text-foreground leading-none">
+    <div className="mt-1 flex min-w-0 items-center gap-3 md:gap-4">
+      <BrandLogo
+        brand={displayData.brand}
+        className="h-10 w-14 shrink-0 object-contain md:h-12 md:w-16"
+      />
+
+      <h1 className="min-w-0 text-3xl md:text-5xl font-black tracking-tight text-foreground leading-none">
       {
         displayData.brand &&
         displayData.modelName &&
@@ -478,6 +503,7 @@ export default function FicheClient({
           : displayData.modelName
       }
     </h1>
+    </div>
 
     {!embedded && (
       <div className="mt-4">

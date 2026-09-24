@@ -24,7 +24,6 @@ import { collection, getDocs, query, limit, doc, getDoc, getFirestore, where } f
 import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import locationsData from '@/data/locations.json';
-import brandLogos from '@/data/brand-logos';
 import {
   professionalMatchesCategory,
   type ProfessionalCategorySlug,

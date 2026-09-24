@@ -21,7 +21,7 @@ import {
 } from '@/app/lib/departments';
 
 import {
-  loadSeoPros,
+  loadMetierSeoPros,
 } from '@/lib/seo-pros';
 
 import ProfessionalCategoryBrowser, {
@@ -209,7 +209,7 @@ async function getCategoryPros(
   CategoryProInternal[]
 > {
   const allPros =
-    await loadSeoPros();
+    await loadMetierSeoPros();
 
   return allPros
     .filter(

@@ -314,6 +314,28 @@ export default function ArticleClient({
   const isBudgetCarouselArticle =
     id === 'combien-coute-vraiment-une-moto-par-mois';
 
+  const isChineseMotoArticle =
+    id === 'motos-chinoises-france-2026';
+
+  const chineseMotoArticleImages: Record<string, string> = {
+    'cfmoto-450mt':
+      '/images/motorcycles/cfmoto-450MT.webp',
+    'cfmoto-675sr-r':
+      '/images/motorcycles/cfmoto-675sr-r.webp',
+    'cfmoto-800mt':
+      '/images/motorcycles/cfmoto-800MT-explore.webp',
+    'voge-ds625x':
+      '/images/motorcycles/voge-DS625X-2.webp',
+    'voge-ds900x':
+      '/images/motorcycles/voge-DS900X(4).webp',
+    'zontes-703f':
+      '/images/motorcycles/Zontes-703-F-Adventure.webp',
+    'qj-motor-srt-450':
+      '/images/motorcycles/QJmotor-SRT-450-RX.webp',
+    'kove-800x':
+      '/images/motorcycles/Kove-800X-Pro.webp',
+  };
+
   const budgetCarouselRef = React.useRef<HTMLDivElement | null>(null);
   const previousBudgetSlideRef = React.useRef(0);
   const budgetCarouselScrollTimerRef = React.useRef<number | null>(null);
@@ -404,6 +426,108 @@ export default function ArticleClient({
 
         window.scrollTo({
           top: Math.max(0, contentTop - stickyOffset - 12),
+          behavior: 'smooth',
+        });
+      });
+    }, 160);
+  };
+
+  const chineseModelsCarouselRef = React.useRef<HTMLDivElement | null>(null);
+  const previousChineseModelSlideRef = React.useRef(0);
+  const chineseModelsScrollTimerRef = React.useRef<number | null>(null);
+
+  useEffect(() => {
+    previousChineseModelSlideRef.current = 0;
+
+    return () => {
+      if (chineseModelsScrollTimerRef.current !== null) {
+        window.clearTimeout(chineseModelsScrollTimerRef.current);
+      }
+    };
+  }, [id]);
+
+  const handleChineseModelsCarouselScroll = () => {
+    if (!isChineseMotoArticle || window.innerWidth >= 768) {
+      return;
+    }
+
+    const carousel = chineseModelsCarouselRef.current;
+
+    if (!carousel) {
+      return;
+    }
+
+    if (chineseModelsScrollTimerRef.current !== null) {
+      window.clearTimeout(chineseModelsScrollTimerRef.current);
+    }
+
+    chineseModelsScrollTimerRef.current = window.setTimeout(() => {
+      chineseModelsScrollTimerRef.current = null;
+
+      const slides = Array.from(carousel.children) as HTMLElement[];
+
+      if (slides.length === 0) {
+        return;
+      }
+
+      const carouselRect = carousel.getBoundingClientRect();
+      const paddingLeft =
+        Number.parseFloat(window.getComputedStyle(carousel).paddingLeft) || 0;
+
+      const snapLeft = carouselRect.left + paddingLeft;
+
+      let activeIndex = 0;
+      let smallestDistance = Number.POSITIVE_INFINITY;
+
+      slides.forEach((slide, index) => {
+        const distance = Math.abs(
+          slide.getBoundingClientRect().left - snapLeft
+        );
+
+        if (distance < smallestDistance) {
+          smallestDistance = distance;
+          activeIndex = index;
+        }
+      });
+
+      if (previousChineseModelSlideRef.current === activeIndex) {
+        return;
+      }
+
+      previousChineseModelSlideRef.current = activeIndex;
+
+      window.requestAnimationFrame(() => {
+        const currentCarousel = chineseModelsCarouselRef.current;
+
+        if (!currentCarousel) {
+          return;
+        }
+
+        const header = document.querySelector('header');
+        let stickyOffset = 0;
+
+        if (header instanceof HTMLElement) {
+          const headerPosition =
+            window.getComputedStyle(header).position;
+
+          if (
+            headerPosition === 'fixed' ||
+            headerPosition === 'sticky'
+          ) {
+            stickyOffset =
+              header.getBoundingClientRect().height;
+          }
+        }
+
+        const contentTop =
+          window.scrollY +
+          currentCarousel.getBoundingClientRect().top;
+
+        window.scrollTo({
+          top: Math.max(
+            0,
+            contentTop - stickyOffset - 12
+          ),
           behavior: 'smooth',
         });
       });
@@ -911,8 +1035,22 @@ export default function ArticleClient({
     );
   };
 
-  const renderSection = (section: any, idx: number, key?: string) => {
+  const renderSection = (
+    section: any,
+    idx: number,
+    key?: string,
+    isChineseModelSlide = false
+  ) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
+
+    const isChineseModelsSection =
+      isChineseMotoArticle &&
+      sectionId === 'les-meilleures-motos-chinoises';
+
+    const renderedSectionImage =
+      isChineseModelSlide
+        ? chineseMotoArticleImages[sectionId] || section.image
+        : section.image;
     let bodyText = section.content || section.text || section.description || section.intro || section.body;
     const fixText = (text: string) => typeof text === 'string' ? text.replace(/Mais en réalité/g, 'Car en réalité') : text;
     if (typeof bodyText === 'string') { bodyText = fixText(bodyText); } else if (Array.isArray(bodyText)) { bodyText = bodyText.map(p => fixText(p)); }
@@ -938,6 +1076,8 @@ export default function ArticleClient({
           "mb-12 scroll-mt-28",
           isBudgetCarouselArticle &&
             !key &&
+            "max-md:mb-0 max-md:w-[88vw] max-md:max-w-[88vw] max-md:flex-none max-md:snap-start max-md:rounded-[2rem] max-md:border max-md:border-border/70 max-md:bg-card max-md:p-5 max-md:shadow-sm",
+          isChineseModelSlide &&
             "max-md:mb-0 max-md:w-[88vw] max-md:max-w-[88vw] max-md:flex-none max-md:snap-start max-md:rounded-[2rem] max-md:border max-md:border-border/70 max-md:bg-card max-md:p-5 max-md:shadow-sm"
         )}
       >
@@ -945,15 +1085,37 @@ export default function ArticleClient({
           <h2
             className={cn(
               "text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2",
-              isBudgetCarouselArticle && !key && "max-md:mt-0 max-md:text-2xl"
+              isBudgetCarouselArticle && !key && "max-md:mt-0 max-md:text-2xl",
+              isChineseModelSlide && "max-md:mt-0 max-md:text-2xl"
             )}
           >
             {section.title}
           </h2>
         )}
-        {section.image && (
-          <div className="relative w-full overflow-hidden rounded-[2rem] mb-6 bg-[#f8f7f5] shadow-md" style={{ aspectRatio: '4/5' }}>
-            <img src={section.image} alt={section.title || ''} className="w-full h-full object-cover" loading="lazy" />
+        {renderedSectionImage && (
+          <div
+            className={cn(
+              "relative w-full overflow-hidden rounded-[2rem] mb-6 bg-[#f8f7f5] shadow-md",
+              isChineseModelSlide &&
+                "mx-auto md:max-w-[560px] bg-white"
+            )}
+            style={{
+              aspectRatio: isChineseModelSlide
+                ? '16/9'
+                : '4/5'
+            }}
+          >
+            <img
+              src={renderedSectionImage}
+              alt={section.title || ''}
+              className={cn(
+                "w-full h-full",
+                isChineseModelSlide
+                  ? "object-contain p-3 md:p-5"
+                  : "object-cover"
+              )}
+              loading="lazy"
+            />
           </div>
         )}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
@@ -978,7 +1140,51 @@ export default function ArticleClient({
         {cta && renderCta(cta, `cta-${sectionId}`, sectionId)}
         {section.list && Array.isArray(section.list) && (<ul className="list-disc list-inside space-y-3 mb-8 pl-4">{section.list.map((item: string, li: number) => (<li key={`li-${sectionId}-${li}`} className="text-lg text-foreground font-medium">{item}</li>))}</ul>)}
         {section.ordered_list && Array.isArray(section.ordered_list) && (<ol className="list-decimal list-inside space-y-4 mb-8 pl-4">{section.ordered_list.map((item: string, oi: number) => (<li key={`ol-${sectionId}-${oi}`} className="text-lg text-foreground font-medium leading-relaxed pl-2">{item}</li>))}</ol>)}
-        {section.subsections && Array.isArray(section.subsections) && (<div className={cn("space-y-10", section.subsections.length === 2 && "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0")}>{section.subsections.map((sub: any, si: number) => renderSection(sub, si, `sub-${sectionId}-${si}`))}</div>)}
+        {section.subsections && Array.isArray(section.subsections) && (
+          isChineseModelsSection ? (
+            <>
+              <div className="mb-3 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground md:hidden">
+                <span>{section.subsections.length} motos</span>
+                <span className="text-brand">
+                  {'Glisse pour voir \u2192'}
+                </span>
+              </div>
+
+              <div
+                ref={chineseModelsCarouselRef}
+                onScroll={handleChineseModelsCarouselScroll}
+                className="md:space-y-10 max-md:-mx-4 max-md:flex max-md:items-start max-md:gap-4 max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-mandatory max-md:scroll-smooth max-md:px-4 max-md:pb-4"
+              >
+                {section.subsections.map(
+                  (sub: any, si: number) =>
+                    renderSection(
+                      sub,
+                      si,
+                      `sub-${sectionId}-${si}`,
+                      true
+                    )
+                )}
+              </div>
+            </>
+          ) : (
+            <div
+              className={cn(
+                "space-y-10",
+                section.subsections.length === 2 &&
+                  "grid grid-cols-1 md:grid-cols-2 gap-8 space-y-0"
+              )}
+            >
+              {section.subsections.map(
+                (sub: any, si: number) =>
+                  renderSection(
+                    sub,
+                    si,
+                    `sub-${sectionId}-${si}`
+                  )
+              )}
+            </div>
+          )
+        )}
         
         {(section.note || isBudgetNote || isAssuranceNote || isGabaritNote) && (
           <>
@@ -1216,7 +1422,8 @@ export default function ArticleClient({
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <article className="lg:col-span-8">
-              <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted">
+              {id !== 'entretien-moto-intervalles-prix-conseils-par-modele' && (
+                <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted">
                   <Image 
                     src={imageUrl} 
                     alt={article.display_title || article.title} 
@@ -1225,7 +1432,8 @@ export default function ArticleClient({
                     priority 
                     sizes="(max-width: 1024px) 100vw, 800px"
                   />
-              </div>
+                </div>
+              )}
 
               {children && (<div className="mb-8">{children}</div>)}
 

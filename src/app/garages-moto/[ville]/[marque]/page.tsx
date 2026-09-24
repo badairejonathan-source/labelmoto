@@ -1,7 +1,12 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { loadSeoPros } from '@/lib/seo-pros';
+import { getCityBySlug } from '@/app/lib/cities';
+import { getAllBrandSlugs, getBrandBySlug } from '@/app/lib/brands';
+import { professionalMatchesCategory } from '@/app/lib/professional-categories';
+import fsNode from 'fs';
+import pathNode from 'path';
+import { loadSeoPros, type SeoPro } from '@/lib/seo-pros';
 
 interface PageProps {
   params: Promise<{ ville: string; marque: string }>;
@@ -35,6 +40,455 @@ const BRAND_SLUGS: Record<string, string> = {
   'moto-axxe': 'Moto Axxe', 'dafy-moto': 'Dafy Moto', 'speedway': 'Speedway',
   'docbiker': "Doc'Biker", 'teamaxe': 'TeamAxe', 'cardy': 'Cardy',
 };
+
+type GarageCity =
+  NonNullable<ReturnType<typeof getCityBySlug>>;
+
+interface GeoPoint {
+  id: string;
+  lat: number;
+  lng: number;
+  t: string;
+  s: string;
+  a: string;
+  c: string;
+  r?: string;
+  d?: string;
+  b?: string[];
+}
+
+let _cachedPoints: GeoPoint[] | null = null;
+
+let _cachedCoords:
+  Record<
+    string,
+    { lat: number; lng: number }
+  > | null = null;
+
+function loadPointsData(): GeoPoint[] {
+  if (!_cachedPoints) {
+    const filePath =
+      pathNode.join(
+        process.cwd(),
+        'public',
+        'points.json'
+      );
+
+    _cachedPoints =
+      JSON.parse(
+        fsNode.readFileSync(
+          filePath,
+          'utf8'
+        )
+      );
+  }
+
+  return _cachedPoints!;
+}
+
+function loadCityCoordsData():
+  Record<
+    string,
+    { lat: number; lng: number }
+  > {
+  if (!_cachedCoords) {
+    const filePath =
+      pathNode.join(
+        process.cwd(),
+        'src',
+        'app',
+        'lib',
+        'cities-coords.json'
+      );
+
+    _cachedCoords =
+      JSON.parse(
+        fsNode.readFileSync(
+          filePath,
+          'utf8'
+        )
+      );
+  }
+
+  return _cachedCoords!;
+}
+
+function haversineKm(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number {
+  const R = 6371;
+
+  const dLat =
+    (lat2 - lat1) *
+    Math.PI /
+    180;
+
+  const dLng =
+    (lng2 - lng1) *
+    Math.PI /
+    180;
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) *
+      Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng / 2) ** 2;
+
+  return (
+    R *
+    2 *
+    Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    )
+  );
+}
+
+const RADIUS_KM_DEFAULT = 25;
+const RADIUS_KM_FALLBACK = 50;
+const MIN_RESULTS_BEFORE_FALLBACK = 5;
+
+function normalizeParisSeoText(
+  value: unknown
+): string {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function isParisGarageSeoPoint(
+  p: GeoPoint
+): boolean {
+  const source = {
+    title: p.t,
+    category: p.c,
+    appSection: p.a,
+    collection: 'concessions' as const,
+  };
+
+  if (
+    professionalMatchesCategory(
+      source,
+      'ateliers-mecaniciens'
+    ) ||
+    professionalMatchesCategory(
+      source,
+      'concessionnaires-revendeurs'
+    )
+  ) {
+    return true;
+  }
+
+  const category =
+    normalizeParisSeoText(p.c);
+
+  const title =
+    normalizeParisSeoText(p.t);
+
+  const brands =
+    Array.isArray(p.b)
+      ? p.b.filter(Boolean)
+      : [];
+
+  if (
+    category === 'concession' &&
+    (
+      brands.length > 0 ||
+      /(moto|scoot|2 roues|deux roues)/.test(title)
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    category === 'magasin' &&
+    /(moto|scoot)/.test(title)
+  ) {
+    return true;
+  }
+
+  if (
+    category ===
+      'atelier de mecanique automobile' &&
+    brands.length > 0 &&
+    /(moto|scoot|harley|workshop|2 roues|deux roues)/.test(title)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function getPointsNearCity(
+  city: GarageCity
+): GeoPoint[] {
+  const coordsMap =
+    loadCityCoordsData();
+
+  const cityCoord =
+    coordsMap[city.slug];
+
+  const points =
+    loadPointsData();
+
+  /*
+   * Paris garde exactement le perimetre SEO
+   * valide aujourd'hui : departement 75 +
+   * garages / ateliers / concessions pertinents.
+   */
+  if (city.slug === 'paris') {
+    const parisPoints =
+      points.filter(
+        p =>
+          p.d === city.departement &&
+          isParisGarageSeoPoint(p)
+      );
+
+    if (!cityCoord) {
+      return parisPoints;
+    }
+
+    return parisPoints.sort(
+      (a, b) =>
+        haversineKm(
+          cityCoord.lat,
+          cityCoord.lng,
+          a.lat,
+          a.lng
+        ) -
+        haversineKm(
+          cityCoord.lat,
+          cityCoord.lng,
+          b.lat,
+          b.lng
+        )
+    );
+  }
+
+  /*
+   * Comportement historique de secours :
+   * si la ville n'a pas de coordonnees,
+   * garder le departement.
+   */
+  if (!cityCoord) {
+    return points.filter(
+      p =>
+        p.d === city.departement
+    );
+  }
+
+  let radius =
+    RADIUS_KM_DEFAULT;
+
+  let nearby =
+    points.filter(
+      p =>
+        haversineKm(
+          cityCoord.lat,
+          cityCoord.lng,
+          p.lat,
+          p.lng
+        ) <= radius
+    );
+
+  if (
+    nearby.length <
+    MIN_RESULTS_BEFORE_FALLBACK
+  ) {
+    radius =
+      RADIUS_KM_FALLBACK;
+
+    nearby =
+      points.filter(
+        p =>
+          haversineKm(
+            cityCoord.lat,
+            cityCoord.lng,
+            p.lat,
+            p.lng
+          ) <= radius
+      );
+  }
+
+  return nearby.sort(
+    (a, b) =>
+      haversineKm(
+        cityCoord.lat,
+        cityCoord.lng,
+        a.lat,
+        a.lng
+      ) -
+      haversineKm(
+        cityCoord.lat,
+        cityCoord.lng,
+        b.lat,
+        b.lng
+      )
+  );
+}
+
+function collectionForPoint(
+  p: GeoPoint
+): SeoPro['collection'] {
+  if (p.a === 'association') {
+    return 'associations';
+  }
+
+  if (p.a === 'relais') {
+    return 'relais';
+  }
+
+  if (p.a === 'creator') {
+    return 'creators';
+  }
+
+  return 'concessions';
+}
+
+async function getCityScopedPros(
+  ville: string
+): Promise<SeoPro[]> {
+  const allPros =
+    await loadSeoPros();
+
+  const city =
+    getCityBySlug(ville);
+
+  /*
+   * Important :
+   * les anciennes pages ville+marque de communes
+   * qui n'ont pas de page ville dediee continuent
+   * de fonctionner avec leur logique historique.
+   */
+  if (!city) {
+    return allPros.filter(
+      pro =>
+        pro.collection === 'concessions' &&
+        extractCity(
+          pro.address || ''
+        ).slug === ville
+    );
+  }
+
+  const nearby =
+    getPointsNearCity(city);
+
+  if (nearby.length === 0) {
+    return [];
+  }
+
+  const byKey =
+    new Map(
+      allPros.map(
+        pro => [
+          pro.collection +
+            '/' +
+            pro.id,
+          pro,
+        ]
+      )
+    );
+
+  return nearby
+    .map(
+      point =>
+        byKey.get(
+          collectionForPoint(point) +
+            '/' +
+            point.id
+        )
+    )
+    .filter(
+      (pro): pro is SeoPro =>
+        Boolean(pro)
+    );
+}
+
+function resolveBrandName(
+  pros: SeoPro[],
+  brandSlug: string
+): string | null {
+  for (const pro of pros) {
+    if (
+      pro.collection !==
+      'concessions'
+    ) {
+      continue;
+    }
+
+    const match =
+      pro.brands.find(
+        brand =>
+          toSlug(brand) ===
+          brandSlug
+      );
+
+    if (match) {
+      return match;
+    }
+  }
+
+  return (
+    BRAND_SLUGS[brandSlug] ||
+    null
+  );
+}
+
+function resolveNationalBrandSlug(
+  brandName: string,
+  requestedSlug: string
+): string | null {
+  const direct =
+    getBrandBySlug(
+      requestedSlug
+    );
+
+  if (direct) {
+    return direct.slug;
+  }
+
+  const target =
+    toSlug(brandName);
+
+  for (
+    const slug
+    of getAllBrandSlugs()
+  ) {
+    const brand =
+      getBrandBySlug(slug);
+
+    if (!brand) {
+      continue;
+    }
+
+    const values = [
+      brand.slug,
+      brand.name,
+      brand.displayName,
+      brand.firestoreValue,
+    ];
+
+    if (
+      values.some(
+        value =>
+          value &&
+          toSlug(
+            String(value)
+          ) === target
+      )
+    ) {
+      return brand.slug;
+    }
+  }
+
+  return null;
+}
+
 
 export async function generateStaticParams() {
   const pros = await loadSeoPros();
@@ -80,27 +534,55 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function MarqueVillePage({ params }: PageProps) {
   const { ville, marque } = await params;
-  const brandName = BRAND_SLUGS[marque];
+
+  const city = getCityBySlug(ville);
+
+  const scopedPros =
+    await getCityScopedPros(ville);
+
+  const brandName =
+    resolveBrandName(
+      scopedPros,
+      marque
+    );
+
   if (!brandName) notFound();
 
-  const villeDisplay = ville
-    .split('-')
-    .map(
-      (w: string) =>
-        w.charAt(0).toUpperCase() + w.slice(1)
-    )
-    .join(' ');
+  const canonicalBrandSlug =
+    toSlug(brandName);
 
-  const allPros = await loadSeoPros();
+  const nationalBrandSlug =
+    resolveNationalBrandSlug(
+      brandName,
+      marque
+    );
 
-  const pros = allPros.filter(pro => {
-    if (pro.collection !== 'concessions') return false;
-    if (!pro.brands.includes(brandName)) return false;
+  const villeDisplay =
+    city?.name ||
+    ville
+      .split('-')
+      .map(
+        (w: string) =>
+          w.charAt(0).toUpperCase() +
+          w.slice(1)
+      )
+      .join(' ');
 
-    const city = extractCity(pro.address || '');
+  const pros =
+    scopedPros.filter(pro => {
+      if (
+        pro.collection !==
+        'concessions'
+      ) {
+        return false;
+      }
 
-    return city.slug === ville;
-  });
+      return pro.brands.some(
+        brand =>
+          toSlug(brand) ===
+          canonicalBrandSlug
+      );
+    });
 
   if (pros.length === 0) notFound();
 
@@ -161,7 +643,7 @@ export default async function MarqueVillePage({ params }: PageProps) {
         </div>
         <div>
           <h3 className="font-black uppercase text-xs tracking-widest mb-3 text-muted-foreground">Tous les {brandName} en France</h3>
-          <Link href={`/marque/${marque}`} className="text-brand font-black text-sm hover:underline">
+          <Link href={nationalBrandSlug ? `/marque/${nationalBrandSlug}` : `/map?search=${encodeURIComponent(brandName)}`} className="text-brand font-black text-sm hover:underline">
             → Voir tous les concessionnaires {brandName}
           </Link>
         </div>

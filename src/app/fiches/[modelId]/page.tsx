@@ -119,6 +119,12 @@ export default async function Page({
   const { modelId } = await params;
   const query = await searchParams;
 
+  if (modelId === 'cfmoto-800mt-touring-2025-plus') {
+    permanentRedirect(
+      '/fiches/cfmoto-800mt-sport-explore-2023-plus'
+    );
+  }
+
   // Les anciennes URLs ?from= ont désormais une URL canonique unique.
   // Les nouveaux liens internes n'utilisent plus ce paramètre.
   if (query.from !== undefined) {

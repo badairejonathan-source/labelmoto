@@ -83,6 +83,10 @@ const AddListing = dynamic(
   { ssr: false, loading: AdminModuleLoader }
 );
 
+const AdminListingArchive = dynamic(
+  () => import('@/components/app/admin-listing-archive'),
+  { ssr: false, loading: AdminModuleLoader }
+);
 const ModificationRequests = dynamic(
   () => import('@/components/app/modification-requests'),
   { ssr: false, loading: AdminModuleLoader }
@@ -1383,6 +1387,62 @@ export default function AdminPage() {
           address:
             data.addressRaw,
 
+          departement:
+            (() => {
+              const explicitDepartment =
+                String(
+                  data.departement ||
+                  ''
+                )
+                  .trim()
+                  .toUpperCase();
+
+              if (explicitDepartment) {
+                return explicitDepartment;
+              }
+
+              const postalCodeMatch =
+                String(
+                  data.addressRaw ||
+                  ''
+                ).match(/\b(\d{5})\b/);
+
+              if (!postalCodeMatch) {
+                return '';
+              }
+
+              const postalCode =
+                postalCodeMatch[1];
+
+              if (
+                postalCode.startsWith('200') ||
+                postalCode.startsWith('201')
+              ) {
+                return '2A';
+              }
+
+              const postalNumber =
+                Number.parseInt(
+                  postalCode,
+                  10
+                );
+
+              if (
+                postalNumber >= 20200 &&
+                postalNumber <= 20620
+              ) {
+                return '2B';
+              }
+
+              if (postalCode.startsWith('971')) return '971';
+              if (postalCode.startsWith('972')) return '972';
+              if (postalCode.startsWith('973')) return '973';
+              if (postalCode.startsWith('974')) return '974';
+              if (postalCode.startsWith('976')) return '976';
+
+              return postalCode.slice(0, 2);
+            })(),
+
           phoneNumber:
             data.phone,
 
@@ -2463,88 +2523,15 @@ export default function AdminPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="history">
-             <Card className="rounded-3xl shadow-lg overflow-hidden bg-background border-none">
-               <CardContent className="p-0">
-                 <ScrollArea className="h-[600px]">
-                   {processedSubs.map(sub => (
-                     <div key={sub.id} className="p-6 border-b last:border-0 flex items-center justify-between group hover:bg-muted/30 transition-colors">
-                        <div className="space-y-1">
-                          <p className="font-black text-base uppercase tracking-tight">{sub.businessName}</p>
-                          <div className="flex items-center gap-3">
-                            <p className="text-[10px] text-muted-foreground font-bold">{sub.addressRaw}</p>
-                            <Badge variant="outline" className="text-[8px] font-black uppercase">{sub.publishedCollection || 'Soumission'}</Badge>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                           <Badge variant={sub.status === 'published' ? 'brand' : 'destructive'} className="text-[9px] uppercase tracking-widest font-black px-4">{sub.status}</Badge>
-                           {sub.status === 'published' && sub.publishedDocId && sub.publishedCollection && (
-                             <Button
-                               type="button"
-                               variant="outline"
-                               size="sm"
-                               className="rounded-full h-9 px-4 font-black uppercase text-[9px] tracking-widest"
-                               onClick={(event) => {
-                                 event.stopPropagation();
-                                 setListingEditTarget({
-                                   collection: String(sub.publishedCollection),
-                                   id: String(sub.publishedDocId),
-                                 });
-                               }}
-                             >
-                               <Pencil className="mr-2 h-3.5 w-3.5" />
-                               Modifier
-                             </Button>
-                           )}
-                           <Button
-  variant="ghost"
-  size="icon"
-  aria-label="Ouvrir la fiche publique"
-  title="Ouvrir la fiche publique"
-  onClick={(event) => {
-    event.stopPropagation();
-
-    const publishedId =
-      String(
-        sub.publishedDocId ||
-        ''
-      ).trim();
-
-    if (!publishedId) {
-      toast({
-        variant: 'destructive',
-        title: 'Fiche publique introuvable',
-        description: 'Aucun identifiant de publication disponible pour cette archive.',
-      });
-
-      return;
-    }
-
-    const publicHref =
-      sub.publishedCollection === 'creators'
-        ? `/creators/${publishedId}`
-        : sub.publishedCollection === 'associations'
-          ? `/map?selectedId=${encodeURIComponent(publishedId)}`
-          : sub.publishedCollection === 'relais'
-            ? `/map?selectedId=${encodeURIComponent(publishedId)}`
-            : `/concessions/${publishedId}`;
-
-    window.open(
-      publicHref,
-      '_blank',
-      'noopener,noreferrer'
-    );
-  }}
-  className="rounded-full hover:bg-white transition-all hover:scale-110"
->
-  <ExternalLink className="h-4 w-4" />
-</Button>
-                        </div>
-                     </div>
-                   ))}
-                 </ScrollArea>
-               </CardContent>
-             </Card>
+                    <TabsContent value="history">
+            <AdminListingArchive
+              onModify={(collectionName, id) =>
+                setListingEditTarget({
+                  collection: collectionName,
+                  id,
+                })
+              }
+            />
           </TabsContent>
           
           <TabsContent value="comments">

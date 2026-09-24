@@ -13,8 +13,8 @@ export interface CityData {
 export const CITIES: CityData[] = [
   {
     slug: 'paris', name: 'Paris', departement: '75', region: 'Île-de-France',
-    metaTitle: "Garage moto Paris : 250+ concessions et ateliers vérifiés | LabelMoto",
-    metaDescription: "Trouvez votre garage moto à Paris parmi 252 professionnels vérifiés : concessions, ateliers et réparateurs. Avis, horaires et contacts directs sur LabelMoto.",
+    metaTitle: "Garage moto Paris : concessions et ateliers vérifiés | LabelMoto",
+    metaDescription: "Trouvez votre garage moto à Paris : concessions, ateliers et réparateurs vérifiés. Avis, horaires et contacts directs sur LabelMoto.",
     h1: 'Garages moto et concessionnaires à Paris : trouvez le bon pro en un clic',
     intro: [
       "Paris concentre plus de 300 000 deux-roues motorisés, ce qui en fait la ville la plus dense de France pour les motards. Trouver un garage moto fiable à Paris devrait être simple — en réalité, entre les ateliers surchargés, les délais interminables et les tarifs opaques, beaucoup de motards parisiens perdent un temps précieux.",

@@ -836,7 +836,7 @@ const Footer = () => {
               </span>
 
               <Link
-                href="https://www.instagram.com/labelmoto.fr/"
+                href="https://www.instagram.com/label.moto/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Suivez Label Moto sur Instagram"

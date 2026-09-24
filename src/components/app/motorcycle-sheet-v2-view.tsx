@@ -34,7 +34,8 @@ export default function MotorcycleSheetV2View({
   onLeaveReview,
 }: MotorcycleSheetV2ViewProps) {
   return (
-    <MotorcycleSheetV2TabbedUniversal
+    <>
+<MotorcycleSheetV2TabbedUniversal
       modelId={modelId}
       displayData={displayData}
       v2={v2}
@@ -46,5 +47,6 @@ export default function MotorcycleSheetV2View({
       reviewsLoading={reviewsLoading}
       onLeaveReview={onLeaveReview}
     />
+    </>
   );
 }

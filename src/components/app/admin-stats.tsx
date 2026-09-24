@@ -1,5 +1,7 @@
 'use client';
 
+import AdminFavoritesStats from '@/components/app/admin-favorites-stats';
+
 import { useEffect, useState } from 'react';
 import { useFirebase } from '@/firebase/client';
 import {
@@ -1564,6 +1566,8 @@ useEffect(() => {
             />
 
           </div>
+
+          <AdminFavoritesStats />
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
 

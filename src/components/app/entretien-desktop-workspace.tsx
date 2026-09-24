@@ -1,5 +1,6 @@
 'use client';
 
+import BrandLogo from '@/components/app/brand-logo';
 import React, {
   type ReactNode,
   useEffect,
@@ -1089,25 +1090,10 @@ const closeSheet =
                         hover:bg-black/[0.018]
                       "
                     >
-                      <span
-                        className="
-                          flex
-                          h-9
-                          w-9
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-full
-                          bg-[#f5f5f5]
-                          text-[12px]
-                          font-bold
-                          text-brand
-                        "
-                      >
-                        {group.name
-                          .charAt(0)
-                          .toUpperCase()}
-                      </span>
+                      <BrandLogo
+          brand={group.name}
+          className="h-8 w-10 shrink-0 object-contain"
+        />
 
                       <span
                         className="
@@ -1209,7 +1195,15 @@ const closeSheet =
                                     font-semibold
                                   "
                                 >
-                                  {model.label}
+                                  <span className="inline-flex min-w-0 items-center gap-2">
+                                    <BrandLogo
+                                      brand={group.name}
+                                      className="h-5 w-7 shrink-0 object-contain"
+                                    />
+                                    <span className="truncate">
+                                      {model.label}
+                                    </span>
+                                  </span>
                                 </span>
 
                                 <ChevronRight

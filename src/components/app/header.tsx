@@ -15,7 +15,7 @@ const UserMenuLazy = dynamic(() => import('@/components/app/user-menu'), {
 });
 import { useRouter, usePathname } from 'next/navigation';
 import locationsData from '@/data/locations.json';
-import brandLogos from '@/data/brand-logos';
+import { getAllBrandSlugs, getBrandBySlug } from '@/app/lib/brands';
 import { cn } from '@/lib/utils';
 import { loadPublicMapPoints } from '@/lib/public-map-points';
 import { initializeFirebaseClient } from '@/firebase/config-client';
@@ -27,7 +27,9 @@ import {
   where,
 } from 'firebase/firestore';
 
-const brandsList = Object.keys(brandLogos);
+const brandsList = getAllBrandSlugs()
+  .map(slug => getBrandBySlug(slug)?.displayName)
+  .filter((brand): brand is string => Boolean(brand));
 
 function normalizeStr(str: string): string {
   return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9\s]/g, '').trim();

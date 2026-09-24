@@ -174,6 +174,15 @@ const entries: MotorcycleProductImageEntry[] = [
     aliases: ['qj motor srk 600 rs', 'qjmotor srk600rs'],
   },
   {
+    imageUrl: '/images/motorcycles/QJmotor-SRT-450-RX.webp',
+    aliases: [
+      'qj motor srt 450 rx',
+      'qjmotor srt 450 rx',
+      'qj motor srt 450',
+      'qjmotor srt 450',
+    ],
+  },
+  {
     imageUrl: '/images/motorcycles/QJmotor-SRT-700-SX-Touring.webp',
     exactIds: ['qjmotor-srt700sx-touring-2024-plus'],
     aliases: ['qj motor srt 700 sx touring', 'qj motor srt 700 sx', 'qjmotor srt700sx'],
@@ -279,6 +288,17 @@ const entries: MotorcycleProductImageEntry[] = [
     exactIds: ['kove-450-rally-2024-plus'],
     aliases: ['kove 450 rally', 'kove 450rally'],
   },
+  {
+    imageUrl: '/images/motorcycles/kove-350rr-final.webp',
+    exactIds: ['kove-350rr-2026-plus'],
+    aliases: ['kove 350rr', 'kove 350 rr'],
+  },
+  {
+    imageUrl: '/images/motorcycles/kove-450rr-final.webp',
+    exactIds: ['kove-450rr-2026-plus'],
+    aliases: ['kove 450rr', 'kove 450 rr'],
+  },
+
 
   // VOGE
   {
@@ -577,6 +597,11 @@ const entries: MotorcycleProductImageEntry[] = [
     exactIds: ["cfmoto-700clx-2021-plus"],
     aliases: ["cfmoto 700 cl x", "cfmoto 700 clx", "cfmoto 700clx"],
   },
+  {
+    imageUrl: '/images/motorcycles/cfmoto-800MT-X.webp',
+    exactIds: ['cfmoto-800mt-x-2025-plus'],
+    aliases: ['cfmoto 800mt x', 'cfmoto 800 mt x', 'cfmoto 800mt-x'],
+  },
 ];
 
 export const MOTORCYCLE_PRODUCT_IMAGE_ENTRIES = entries;
@@ -622,13 +647,26 @@ export function getMotorcycleProductImage(
     context.slug,
   ].join(' '));
 
-  if (cfmoto800mtHaystack.includes('cfmoto800mt')) {
+  if (normalizedId === normalize('cfmoto-800mt-sport-explore-2023-plus')) {
     if (variant.includes('sport')) {
       return '/images/motorcycles/cfmoto-800MT-sport.webp';
     }
 
     // Explore est le premier variant actuel et le repli de la fiche combinée.
     return '/images/motorcycles/cfmoto-800MT-explore.webp';
+  }
+
+  // LABELMOTO_KOVE_800X_VARIANT_IMAGES
+  if (normalizedId === normalize('kove-800x-pro-2024-plus')) {
+    if (variant.includes('gt')) {
+      return '/images/motorcycles/kove-800x-gt-final.webp';
+    }
+
+    if (variant.includes('rally')) {
+      return '/images/motorcycles/kove-800x-rally-final.webp';
+    }
+
+    return '/images/motorcycles/kove-800x-pro-final.webp';
   }
 
   const exact = entries.find(entry =>

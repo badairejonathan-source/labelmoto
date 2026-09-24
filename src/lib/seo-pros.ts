@@ -1,6 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import { getAdminFirestore } from '@/lib/firebase-admin';
+import { getStorage } from 'firebase-admin/storage';
+import {
+  getAdminApp,
+  getAdminFirestore,
+} from '@/lib/firebase-admin';
 
 export interface SeoPro {
   id: string;
@@ -27,6 +31,17 @@ const SEO_PROS_URL =
   'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/seo-pros.json';
 
 let seoProsPromise: Promise<SeoPro[]> | null = null;
+
+let metierSeoProsPromise: Promise<SeoPro[]> | null = null;
+let metierSeoProsExpiresAt = 0;
+
+const METIER_SEO_PROS_CACHE_MS = 60_000;
+
+const SEO_PROS_BUCKET =
+  'studio-4801889514-40ebd.firebasestorage.app';
+
+const SEO_PROS_OBJECT =
+  'public/seo-pros.json';
 
 function numberOrNull(value: unknown): number | null {
   if (value === null || value === undefined || value === '') return null;
@@ -158,6 +173,85 @@ function loadFromLocalPoints(): SeoPro[] {
       isMultibrand: brands.length >= 2,
     };
   });
+}
+
+async function loadMetierSeoProsFromStorage(): Promise<SeoPro[]> {
+  const bucket =
+    getStorage(
+      getAdminApp()
+    ).bucket(
+      SEO_PROS_BUCKET
+    );
+
+  const [buffer] =
+    await bucket
+      .file(
+        SEO_PROS_OBJECT
+      )
+      .download();
+
+  const data =
+    JSON.parse(
+      buffer.toString(
+        'utf8'
+      )
+    );
+
+  if (!Array.isArray(data)) {
+    throw new Error(
+      'Format seo-pros.json invalide'
+    );
+  }
+
+  return data as SeoPro[];
+}
+
+export async function loadMetierSeoPros(): Promise<SeoPro[]> {
+  const now =
+    Date.now();
+
+  if (
+    !metierSeoProsPromise ||
+    now >= metierSeoProsExpiresAt
+  ) {
+    metierSeoProsExpiresAt =
+      now +
+      METIER_SEO_PROS_CACHE_MS;
+
+    metierSeoProsPromise =
+      loadMetierSeoProsFromStorage()
+        .catch(
+          async storageError => {
+            console.warn(
+              '[METIERS] index Storage prive indisponible, fallback Firestore:',
+              storageError
+            );
+
+            try {
+              return await loadFromFirestore();
+            }
+            catch (firestoreError) {
+              console.error(
+                '[METIERS] fallback Firestore impossible:',
+                firestoreError
+              );
+
+              return loadFromLocalPoints();
+            }
+          }
+        )
+        .catch(error => {
+          metierSeoProsPromise =
+            null;
+
+          metierSeoProsExpiresAt =
+            0;
+
+          throw error;
+        });
+  }
+
+  return metierSeoProsPromise;
 }
 
 export async function loadSeoPros(): Promise<SeoPro[]> {

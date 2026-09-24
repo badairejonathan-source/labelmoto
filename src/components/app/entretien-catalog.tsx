@@ -1,4 +1,5 @@
 'use client';
+import BrandLogo from '@/components/app/brand-logo';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronRight, Plus, Minus } from 'lucide-react';
@@ -141,7 +142,15 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
                   "text-2xl font-black uppercase tracking-tighter",
                   isExpanded ? "text-brand" : "text-foreground"
                 )}>
+                  <span className="inline-flex min-w-0 items-center gap-2">
+                <BrandLogo
+                  brand={brand.name}
+                  className="h-7 w-9 shrink-0 object-contain"
+                />
+                <span className="truncate">
                   {brand.name}
+                </span>
+              </span>
                 </h2>
               </div>
               <div className="flex items-center gap-3">
@@ -188,7 +197,15 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
                       className="flex items-center justify-between p-4 bg-background border rounded-xl hover:border-brand hover:shadow-lg transition-all group"
                     >
                       <span className="font-black text-sm group-hover:text-brand transition-colors">
-                        {model.label}
+                        <span className="inline-flex min-w-0 items-center gap-2">
+                          <BrandLogo
+                            brand={brand.name}
+                            className="h-5 w-7 shrink-0 object-contain"
+                          />
+                          <span className="truncate">
+                            {model.label}
+                          </span>
+                        </span>
                       </span>
                       <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
                     </Link>

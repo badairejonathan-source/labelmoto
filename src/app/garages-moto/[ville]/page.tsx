@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getCityBySlug, getAllCitySlugs, CITIES } from '@/app/lib/cities';
+import { professionalMatchesCategory } from '@/app/lib/professional-categories';
 
 function toSlug(str: string): string {
   return str.toLowerCase()
@@ -38,7 +39,7 @@ export async function generateStaticParams() {
 // ── Filtrage géographique par rayon (nouveau, remplace le filtrage par département) ──
 interface GeoPoint {
   id: string; lat: number; lng: number; t: string; s: string;
-  a: string; c: string; r?: string; d?: string;
+  a: string; c: string; r?: string; d?: string; b?: string[];
 }
 let _cachedPoints: GeoPoint[] | null = null;
 let _cachedCoords: Record<string, { lat: number; lng: number }> | null = null;
@@ -71,10 +72,82 @@ const RADIUS_KM_DEFAULT = 25;
 const RADIUS_KM_FALLBACK = 50;
 const MIN_RESULTS_BEFORE_FALLBACK = 5;
 
+function normalizeParisSeoText(value: unknown): string {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+function isParisGarageSeoPoint(p: GeoPoint): boolean {
+  const source = {
+    title: p.t,
+    category: p.c,
+    appSection: p.a,
+    collection: 'concessions' as const,
+  };
+
+  if (
+    professionalMatchesCategory(source, 'ateliers-mecaniciens') ||
+    professionalMatchesCategory(source, 'concessionnaires-revendeurs')
+  ) {
+    return true;
+  }
+
+  const category = normalizeParisSeoText(p.c);
+  const title = normalizeParisSeoText(p.t);
+  const brands = Array.isArray(p.b) ? p.b.filter(Boolean) : [];
+
+  // Compatibilite limitee avec les anciennes categories points.json.
+  if (
+    category === 'concession' &&
+    (
+      brands.length > 0 ||
+      /(moto|scoot|2 roues|deux roues)/.test(title)
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    category === 'magasin' &&
+    /(moto|scoot)/.test(title)
+  ) {
+    return true;
+  }
+
+  if (
+    category === 'atelier de mecanique automobile' &&
+    brands.length > 0 &&
+    /(moto|scoot|harley|workshop|2 roues|deux roues)/.test(title)
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 function getPointsNearCity(city: { slug: string; departement: string }): GeoPoint[] {
   const coordsMap = loadCityCoordsData();
   const cityCoord = coordsMap[city.slug];
   const points = loadPointsData();
+
+  // Paris SEO only: keep /garages-moto/paris inside department 75.
+  // Other cities keep the radius logic below.
+  if (city.slug === 'paris') {
+    const parisPoints = points.filter(
+      p =>
+        p.d === city.departement &&
+        isParisGarageSeoPoint(p)
+    );
+    if (!cityCoord) return parisPoints;
+    return parisPoints.sort((a, b) =>
+      haversineKm(cityCoord.lat, cityCoord.lng, a.lat, a.lng) -
+      haversineKm(cityCoord.lat, cityCoord.lng, b.lat, b.lng)
+    );
+  }
+
   if (!cityCoord) {
     // Filet de sécurité : comportement historique par département si coordonnée manquante
     return points.filter(p => p.d === city.departement);
@@ -264,7 +337,14 @@ export default async function GaragesMotoParsVille({ params }: PageProps) {
   if (!city) notFound();
   const pros = await getProsForCityNearby(city);
   const otherCities = CITIES.filter(c => c.slug !== ville).slice(0, 9);
-  const cityBrands = Array.from(new Set(pros.flatMap(p => (p as any).brands || []))).sort() as string[];
+  const cityBrands = Array.from(
+    new Set(
+      pros
+        .filter(p => p.collection === 'concessions')
+        .flatMap(p => (p as any).brands || [])
+        .filter(Boolean)
+    )
+  ).sort() as string[];
   const cityCoordForMap = loadCityCoordsData()[city.slug] || null;
 
   return (

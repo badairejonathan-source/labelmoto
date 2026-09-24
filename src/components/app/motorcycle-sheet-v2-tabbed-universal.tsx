@@ -83,14 +83,22 @@ export default function MotorcycleSheetV2TabbedUniversal({
   reviewsLoading,
   onLeaveReview,
 }: Props) {
-  const quickFacts = v2.quick_facts?.length
-    ? v2.quick_facts
-    : [
-        { label: 'PUISSANCE', value: displayData.engine.power },
-        { label: 'POIDS', value: displayData.dimensions.wetWeight },
-        { label: 'SELLE', value: displayData.dimensions.seatHeight },
-        { label: 'PERMIS', value: displayData.engine.bridage },
-      ];
+  const selectedVariantQuickFacts =
+    displayData.hasVariants && Array.isArray(displayData.variants)
+      ? displayData.variants[selectedVariantIndex]?.quick_facts
+      : null;
+
+  const quickFacts =
+    Array.isArray(selectedVariantQuickFacts) && selectedVariantQuickFacts.length > 0
+      ? selectedVariantQuickFacts
+      : v2.quick_facts?.length
+        ? v2.quick_facts
+        : [
+            { label: 'PUISSANCE', value: displayData.engine.power },
+            { label: 'POIDS', value: displayData.dimensions.wetWeight },
+            { label: 'SELLE', value: displayData.dimensions.seatHeight },
+            { label: 'PERMIS', value: displayData.engine.bridage },
+          ];
 
   const schedule = v2.service_schedule_v2?.length
     ? v2.service_schedule_v2

@@ -25,6 +25,10 @@ async function getCatalog(): Promise<BrandGroup[]> {
     const brands: Record<string, SheetModel[]> = {};
 
     snap.docs.forEach(doc => {
+      if (doc.id === 'cfmoto-800mt-touring-2025-plus') {
+        return;
+      }
+
       const d = doc.data();
 
       // Les brouillons ne doivent jamais apparaitre dans le catalogue public.

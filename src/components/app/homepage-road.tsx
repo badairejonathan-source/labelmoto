@@ -1,5 +1,6 @@
 'use client';
 
+import BrandLogo from '@/components/app/brand-logo';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -132,6 +133,57 @@ const HOME_BRAND_SLUGS:
   "yamaha": "yamaha",
   "zontes": "zontes",
   };
+
+
+const HOME_FEATURED_MANUFACTURERS = [
+  'Honda',
+  'Yamaha',
+  'BMW',
+  'Kawasaki',
+  'CFMOTO',
+  'VOGE',
+  'QJ Motor',
+  'Kove',
+];
+
+const HOME_MANUFACTURERS = [
+  ...HOME_FEATURED_MANUFACTURERS,
+  'Suzuki',
+  'Harley-Davidson',
+  'Triumph',
+  'Kymco',
+  'Ducati',
+  'Royal Enfield',
+  'Piaggio',
+  'KTM',
+  'Aprilia',
+  'Vespa',
+  'Peugeot Motocycles',
+  'Moto Guzzi',
+  'Indian Motorcycle',
+  'Zontes',
+  'Mash',
+  'Husqvarna Motorcycles',
+  'Benelli',
+  'Rieju',
+  'Sherco',
+  'Fantic',
+  'Beta',
+];
+
+const HOME_FEATURED_EQUIPMENT_BRANDS = [
+  'Maxxess',
+  'Cardy',
+  'Speedway',
+];
+
+const HOME_EQUIPMENT_BRANDS = [
+  ...HOME_FEATURED_EQUIPMENT_BRANDS,
+  'Dafy Moto',
+  "Doc'Biker",
+  'TEAMAXE',
+  'Moto Axxe',
+];
 
 function homeBrandHref(
   brand: string
@@ -2453,22 +2505,24 @@ function HeroSearch() {
 }
 
 function MobileBrandsSection() {
-  const manufacturers = [
-    'Honda',
-    'Yamaha',
-    'BMW',
-    'Kawasaki',
-    'CFMOTO',
-    'VOGE',
-    'QJ Motor',
-    'KOVE',
-  ];
+  const [showAllBrands, setShowAllBrands] =
+    useState(false);
 
-  const equipmentBrands = [
-    'Maxxess',
-    'Cardy',
-    'Speedway',
-  ];
+  const manufacturers = showAllBrands
+    ? HOME_MANUFACTURERS
+    : HOME_FEATURED_MANUFACTURERS;
+
+  const equipmentBrands = showAllBrands
+    ? HOME_EQUIPMENT_BRANDS
+    : HOME_FEATURED_EQUIPMENT_BRANDS;
+
+  const listClassName = showAllBrands
+    ? 'mt-3 grid grid-cols-2 gap-2'
+    : 'mt-3 flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden';
+
+  const cardClassName = showAllBrands
+    ? 'flex min-h-[56px] w-full items-center justify-between gap-2 rounded-[1rem] border border-border/60 bg-white px-3'
+    : 'flex min-h-[56px] w-[145px] shrink-0 snap-start items-center justify-between gap-2 rounded-[1rem] border border-border/60 bg-white px-3';
 
   return (
     <Card
@@ -2487,48 +2541,35 @@ function MobileBrandsSection() {
           Constructeurs
         </span>
 
-        <div
-          className="
-            mt-3
-            flex
-            snap-x
-            snap-mandatory
-            gap-2
-            overflow-x-auto
-            pb-2
-            [scrollbar-width:none]
-            [&::-webkit-scrollbar]:hidden
-          "
-        >
+        <div className={listClassName}>
           {manufacturers.map(
             brand => (
               <Link
                 key={brand}
                 href={homeBrandHref(brand)}
-                className="
-                  flex
-                  min-h-[56px]
-                  w-[145px]
-                  shrink-0
-                  snap-start
-                  items-center
-                  justify-between
-                  gap-2
-                  rounded-[1rem]
-                  border
-                  border-border/60
-                  bg-white
-                  px-3
-                "
+                className={cardClassName}
               >
                 <strong
                   className="
+                    inline-flex
                     min-w-0
+                    items-center
+                    gap-2
                     text-[10px]
                     font-black
                   "
                 >
-                  {brand}
+                  <BrandLogo
+                    brand={brand}
+                    className={
+                      brand === 'Kawasaki'
+                        ? 'h-5 w-8 shrink-0 object-contain'
+                        : 'h-5 w-5 shrink-0 object-contain'
+                    }
+                  />
+                  <span className="min-w-0 truncate">
+                    {brand}
+                  </span>
                 </strong>
 
                 <ArrowRight
@@ -2562,48 +2603,35 @@ function MobileBrandsSection() {
           Équipementiers & enseignes
         </span>
 
-        <div
-          className="
-            mt-3
-            flex
-            snap-x
-            snap-mandatory
-            gap-2
-            overflow-x-auto
-            pb-2
-            [scrollbar-width:none]
-            [&::-webkit-scrollbar]:hidden
-          "
-        >
+        <div className={listClassName}>
           {equipmentBrands.map(
             brand => (
               <Link
                 key={brand}
                 href={homeBrandHref(brand)}
-                className="
-                  flex
-                  min-h-[56px]
-                  w-[145px]
-                  shrink-0
-                  snap-start
-                  items-center
-                  justify-between
-                  gap-2
-                  rounded-[1rem]
-                  border
-                  border-border/60
-                  bg-white
-                  px-3
-                "
+                className={cardClassName}
               >
                 <strong
                   className="
+                    inline-flex
                     min-w-0
+                    items-center
+                    gap-2
                     text-[10px]
                     font-black
                   "
                 >
-                  {brand}
+                  <BrandLogo
+                    brand={brand}
+                    className={
+                      brand === 'Kawasaki'
+                        ? 'h-5 w-8 shrink-0 object-contain'
+                        : 'h-5 w-5 shrink-0 object-contain'
+                    }
+                  />
+                  <span className="min-w-0 truncate">
+                    {brand}
+                  </span>
                 </strong>
 
                 <ArrowRight
@@ -2620,8 +2648,12 @@ function MobileBrandsSection() {
         </div>
       </div>
 
-      <Link
-        href="/map"
+      <button
+        type="button"
+        onClick={() =>
+          setShowAllBrands(current => !current)
+        }
+        aria-expanded={showAllBrands}
         className="
           mt-3
           inline-flex
@@ -2633,15 +2665,17 @@ function MobileBrandsSection() {
           text-brand
         "
       >
-        Voir toutes
+        {showAllBrands ? 'Réduire' : 'Voir toutes'}
 
         <ArrowRight
-          className="
+          className={`
             h-3
             w-3
-          "
+            transition-transform
+            ${showAllBrands ? '-rotate-90' : 'rotate-90'}
+          `}
         />
-      </Link>
+      </button>
     </Card>
   );
 }
@@ -3485,8 +3519,8 @@ function DesktopMaintenanceSheetsSection() {
     container?.scrollBy({
       left:
         direction === 'right'
-          ? 520
-          : -520,
+          ? 650
+          : -650,
       behavior: 'smooth',
     });
   };
@@ -3518,7 +3552,6 @@ function DesktopMaintenanceSheetsSection() {
       >
         <div
           className="
-            mb-9
             flex
             items-end
             justify-between
@@ -3541,388 +3574,216 @@ function DesktopMaintenanceSheetsSection() {
             <h2
               className="
                 mt-2
-                text-[36px]
+                text-[38px]
                 font-bold
-                leading-[1.05]
-                tracking-[-0.035em]
-                xl:text-[42px]
+                tracking-[-0.04em]
+                xl:text-[44px]
               "
             >
               Entretenir et mieux connaître
               votre moto
             </h2>
-          </div>
 
-          <Link
-            href="/entretien#fiches-par-modele"
-            className="
-              flex
-              items-center
-              gap-1.5
-              text-[12px]
-              font-semibold
-              text-brand
-              hover:underline
-            "
-          >
-            Voir toutes les fiches
-
-            <ArrowRight
+            <p
               className="
-                h-4
-                w-4
-              "
-            />
-          </Link>
-        </div>
-
-        <div
-          className="
-            grid
-            grid-cols-[minmax(330px,0.78fr)_minmax(0,1.6fr)]
-            gap-7
-            xl:grid-cols-[minmax(380px,0.8fr)_minmax(0,1.65fr)]
-          "
-        >
-          {/* ===============================================
-              ENTRETIEN
-          ================================================ */}
-
-          <Link
-            href="/entretien"
-            className="
-              group
-              relative
-              min-h-[440px]
-              overflow-hidden
-              rounded-[1.8rem]
-              bg-black
-            "
-          >
-            <img
-              src="/images/motard-entretien-page.webp"
-              alt="Entretien moto"
-              loading="lazy"
-              className="
-                absolute
-                inset-0
-                h-full
-                w-full
-                object-cover
-                transition-transform
-                duration-500
-                group-hover:scale-[1.025]
-              "
-            />
-
-            <div
-              className="
-                absolute
-                inset-0
-                bg-gradient-to-t
-                from-black/80
-                via-black/20
-                to-black/[0.02]
-              "
-            />
-
-            <div
-              className="
-                absolute
-                inset-x-0
-                bottom-0
-                p-7
-                text-white
-                xl:p-8
+                mt-3
+                max-w-[640px]
+                text-[15px]
+                text-muted-foreground
               "
             >
-              <span
-                className="
-                  text-[10px]
-                  font-bold
-                  uppercase
-                  tracking-[0.16em]
-                  text-white/75
-                "
-              >
-                Votre moto au quotidien
-              </span>
-
-              <h3
-                className="
-                  mt-2
-                  text-[31px]
-                  font-bold
-                  tracking-[-0.035em]
-                "
-              >
-                Entretien moto
-              </h3>
-
-              <p
-                className="
-                  mt-3
-                  max-w-[360px]
-                  text-[13px]
-                  leading-[1.5]
-                  text-white/80
-                "
-              >
-                Révisions, maintenance et coûts
-                d’entretien par modèle.
-              </p>
-
-              <span
-                className="
-                  mt-6
-                  inline-flex
-                  items-center
-                  gap-2
-                  rounded-full
-                  bg-white
-                  px-5
-                  py-3
-                  text-[12px]
-                  font-semibold
-                  text-black
-                "
-              >
-                Voir l’entretien
-
-                <ArrowRight
-                  className="
-                    h-4
-                    w-4
-                  "
-                />
-              </span>
-            </div>
-          </Link>
-
-          {/* ===============================================
-              FICHES MOTO
-          ================================================ */}
+              Fiches techniques, révisions et repères
+              pour mieux connaître et entretenir votre moto.
+            </p>
+          </div>
 
           <div
             className="
-              min-w-0
-              rounded-[1.8rem]
-              bg-[#f4f5f6]
-              p-6
-              xl:p-7
+              flex
+              items-center
+              gap-3
             "
           >
-            <div
+            <Link
+              href="/entretien#fiches-par-modele"
               className="
-                flex
-                items-center
-                justify-between
-                gap-6
+                mr-3
+                text-[12px]
+                font-semibold
+                text-brand
+                hover:underline
               "
             >
-              <div>
+              Voir toutes les fiches
+            </Link>
+
+            <button
+              type="button"
+              onClick={() =>
+                scrollSheets('left')
+              }
+              aria-label="Fiches précédentes"
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-black/[0.07]
+                bg-white
+                text-lg
+              "
+            >
+              ←
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                scrollSheets('right')
+              }
+              aria-label="Fiches suivantes"
+              className="
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                border
+                border-black/[0.07]
+                bg-white
+                text-lg
+              "
+            >
+              →
+            </button>
+          </div>
+        </div>
+
+        <div
+          id="desktop-tech-sheets-scroll"
+          className="
+            mt-9
+            flex
+            snap-x
+            snap-mandatory
+            gap-5
+            overflow-x-auto
+            pb-3
+            [scrollbar-width:none]
+            [&::-webkit-scrollbar]:hidden
+          "
+        >
+          {TECH_SHEETS.map(sheet => (
+            <Link
+              key={sheet.href}
+              href={sheet.href}
+              className="
+                group
+                w-[300px]
+                shrink-0
+                snap-start
+                xl:w-[315px]
+              "
+            >
+              <div
+                className="
+                  flex
+                  h-[205px]
+                  items-center
+                  justify-center
+                  overflow-hidden
+                  rounded-[1.35rem]
+                  bg-[#f1f2f3]
+                "
+              >
+                {sheet.image ? (
+                  <img
+                    src={sheet.image}
+                    alt={`${sheet.brand} ${sheet.model}`}
+                    loading="lazy"
+                    className="
+                      h-full
+                      w-full
+                      object-contain
+                      p-3
+                      transition-transform
+                      duration-300
+                      group-hover:scale-[1.025]
+                    "
+                  />
+                ) : (
+                  <Bike
+                    className="
+                      h-16
+                      w-16
+                      text-foreground/25
+                    "
+                  />
+                )}
+              </div>
+
+              <div
+                className="
+                  pt-4
+                "
+              >
                 <span
                   className="
                     text-[10px]
                     font-bold
                     uppercase
-                    tracking-[0.16em]
+                    tracking-[0.12em]
                     text-brand
                   "
                 >
-                  Par modèle
+                  {sheet.brand}
                 </span>
 
-                <h3
+                <div
                   className="
-                    mt-2
-                    text-[27px]
-                    font-bold
-                    tracking-[-0.03em]
-                  "
-                >
-                  Fiches techniques moto
-                </h3>
-              </div>
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-2
-                "
-              >
-                <button
-                  type="button"
-                  onClick={() =>
-                    scrollSheets('left')
-                  }
-                  aria-label="Fiches précédentes"
-                  className="
+                    mt-1
                     flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-black/[0.07]
-                    bg-white
-                    text-lg
-                    transition-colors
-                    hover:border-brand/30
+                    items-start
+                    justify-between
+                    gap-3
                   "
                 >
-                  ←
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    scrollSheets('right')
-                  }
-                  aria-label="Fiches suivantes"
-                  className="
-                    flex
-                    h-10
-                    w-10
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-black/[0.07]
-                    bg-white
-                    text-lg
-                    transition-colors
-                    hover:border-brand/30
-                  "
-                >
-                  →
-                </button>
-              </div>
-            </div>
-
-            <div
-              id="desktop-tech-sheets-scroll"
-              className="
-                mt-7
-                flex
-                snap-x
-                snap-mandatory
-                gap-4
-                overflow-x-auto
-                pb-2
-                [scrollbar-width:none]
-                [&::-webkit-scrollbar]:hidden
-              "
-            >
-              {TECH_SHEETS.map(sheet => (
-                <Link
-                  key={sheet.href}
-                  href={sheet.href}
-                  className="
-                    group
-                    w-[225px]
-                    shrink-0
-                    snap-start
-                  "
-                >
-                  <div
+                  <strong
                     className="
-                      flex
-                      h-[255px]
-                      items-center
-                      justify-center
-                      overflow-hidden
-                      rounded-[1.35rem]
-                      bg-white
+                      text-[17px]
+                      font-bold
+                      leading-tight
+                      tracking-[-0.02em]
                     "
                   >
-                    {sheet.image ? (
-                      <img
-                        src={sheet.image}
-                        alt={`${sheet.brand} ${sheet.model}`}
-                        loading="lazy"
-                        className="
-                          h-full
-                          w-full
-                          object-contain
-                          p-3
-                          transition-transform
-                          duration-300
-                          group-hover:scale-[1.025]
-                        "
-                      />
-                    ) : (
-                      <Bike
-                        className="
-                          h-16
-                          w-16
-                          text-foreground/25
-                        "
-                      />
-                    )}
-                  </div>
+                    {sheet.model}
+                  </strong>
 
-                  <div
+                  <ArrowRight
                     className="
-                      pt-4
+                      mt-1
+                      h-4
+                      w-4
+                      shrink-0
+                      text-brand
+                      transition-transform
+                      group-hover:translate-x-1
                     "
-                  >
-                    <span
-                      className="
-                        text-[10px]
-                        font-bold
-                        uppercase
-                        tracking-[0.12em]
-                        text-brand
-                      "
-                    >
-                      {sheet.brand}
-                    </span>
-
-                    <div
-                      className="
-                        mt-1
-                        flex
-                        items-start
-                        justify-between
-                        gap-3
-                      "
-                    >
-                      <strong
-                        className="
-                          text-[17px]
-                          font-bold
-                          leading-tight
-                          tracking-[-0.02em]
-                        "
-                      >
-                        {sheet.model}
-                      </strong>
-
-                      <ArrowRight
-                        className="
-                          mt-1
-                          h-4
-                          w-4
-                          shrink-0
-                          text-brand
-                          transition-transform
-                          group-hover:translate-x-1
-                        "
-                      />
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
+                  />
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </section>
   );
 }
+
 
 function DesktopGuidesSection() {
   const articles = [
@@ -4501,22 +4362,16 @@ function DesktopProSection() {
   );
 }
 function DesktopUniverseSection() {
-  const manufacturers = [
-    'Honda',
-    'Yamaha',
-    'BMW',
-    'Kawasaki',
-    'CFMOTO',
-    'VOGE',
-    'QJ Motor',
-    'KOVE',
-  ];
+  const [showAllBrands, setShowAllBrands] =
+    useState(false);
 
-  const equipmentBrands = [
-    'Maxxess',
-    'Cardy',
-    'Speedway',
-  ];
+  const manufacturers = showAllBrands
+    ? HOME_MANUFACTURERS
+    : HOME_FEATURED_MANUFACTURERS;
+
+  const equipmentBrands = showAllBrands
+    ? HOME_EQUIPMENT_BRANDS
+    : HOME_FEATURED_EQUIPMENT_BRANDS;
 
   return (
     <section
@@ -4963,8 +4818,12 @@ function DesktopUniverseSection() {
               </h3>
             </div>
 
-            <Link
-              href="/map"
+            <button
+              type="button"
+              onClick={() =>
+                setShowAllBrands(current => !current)
+              }
+              aria-expanded={showAllBrands}
               className="
                 flex
                 items-center
@@ -4975,15 +4834,17 @@ function DesktopUniverseSection() {
                 hover:underline
               "
             >
-              Voir toutes
+              {showAllBrands ? 'Réduire' : 'Voir toutes'}
 
               <ArrowRight
-                className="
+                className={`
                   h-3.5
                   w-3.5
-                "
+                  transition-transform
+                  ${showAllBrands ? '-rotate-90' : 'rotate-90'}
+                `}
               />
-            </Link>
+            </button>
           </div>
 
           {/* ===============================================
@@ -5038,12 +4899,27 @@ function DesktopUniverseSection() {
                 >
                   <span
                     className="
+                      inline-flex
+                      min-w-0
+                      items-center
+                      justify-center
+                      gap-2
                       text-[14px]
                       font-bold
                       tracking-[-0.015em]
                     "
                   >
-                    {brand}
+                    <BrandLogo
+                      brand={brand}
+                      className={
+                        brand === 'Kawasaki'
+                          ? 'h-6 w-10 shrink-0 object-contain'
+                          : 'h-6 w-6 shrink-0 object-contain'
+                      }
+                    />
+                    <span className="min-w-0 truncate">
+                      {brand}
+                    </span>
                   </span>
                 </Link>
               ))}
@@ -5103,12 +4979,27 @@ function DesktopUniverseSection() {
                 >
                   <span
                     className="
+                      inline-flex
+                      min-w-0
+                      items-center
+                      justify-center
+                      gap-2
                       text-[14px]
                       font-bold
                       tracking-[-0.015em]
                     "
                   >
-                    {brand}
+                    <BrandLogo
+                      brand={brand}
+                      className={
+                        brand === 'Kawasaki'
+                          ? 'h-6 w-10 shrink-0 object-contain'
+                          : 'h-6 w-6 shrink-0 object-contain'
+                      }
+                    />
+                    <span className="min-w-0 truncate">
+                      {brand}
+                    </span>
                   </span>
                 </Link>
               ))}
