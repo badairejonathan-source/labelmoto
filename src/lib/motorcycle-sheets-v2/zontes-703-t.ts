@@ -348,6 +348,52 @@ export const zontes703tV2: MotorcycleSheetV2 = {
     ],
   },
 
+  // Budget V2 obligatoire : total limité aux cinq révisions chiffrées à 20 000 km.
+  // Estimations LabelMoto TTC, France, septembre 2026 ; aucun forfait officiel Zontes T.
+  budget: {
+    title: 'Budget d’entretien jusqu’à 20 000 km',
+    summary: {
+      horizon_km: 20000,
+      total_cost: '1 020–1 680 €',
+      cost_per_km: '0,051–0,084 €/km',
+      interval_rule: 'Rodage à 1 000 km, puis huile à 5 / 10 / 15 / 20 000 km (manuel 703 T)',
+      note: 'Somme des cinq fourchettes du tableau Révisions : 140–210 + 120–190 + 190–300 + 170–280 + 400–700 € TTC. Estimation LabelMoto sur les opérations programmées, non tarif officiel ni devis. Hors pneus, freins, chaîne, usure imprévue et opérations déclenchées par l’âge.',
+    },
+    cards: [
+      {
+        label: 'Rodage · 1 000 km',
+        value: '140–210 € TTC',
+        note: 'Huile 10W-50, filtre à huile, main-d’œuvre et contrôles.',
+      },
+      {
+        label: 'Périodiques · 5 000 + 15 000 km',
+        value: '290–470 € TTC',
+        note: 'Somme des deux visites : vidanges, inspections et graissages prévus à 15 000 km.',
+      },
+      {
+        label: 'Intermédiaire · 10 000 km',
+        value: '190–300 € TTC',
+        note: 'Huile, filtres à huile et à air, contrôle des trois bougies.',
+      },
+      {
+        label: 'Majeure · 20 000 km',
+        value: '400–700 € TTC',
+        note: 'Huile, filtres, trois bougies et entretien de fourche suivant le manuel.',
+      },
+      {
+        label: 'À prévoir ensuite · 30 000 km / 3 ans',
+        value: '90–170 € TTC',
+        note: 'Liquide de refroidissement uniquement : ce montant ne représente pas une révision complète. Patin de bras oscillant et autres travaux en supplément.',
+      },
+      {
+        label: 'À prévoir ensuite · 40 000 km',
+        value: '200–380 € TTC',
+        note: 'Contrôle du jeu aux soupapes uniquement ; éventuel réglage et autres opérations en supplément.',
+      },
+    ],
+    note: 'Estimation de coût d’entretien, et non coût total de possession : consommables d’usure, liquide de frein à 2 ans, pneus, kit chaîne et interventions non prévues exclus. Les prix peuvent varier selon l’atelier, la région et le millésime ; solliciter un devis Zontes France.',
+  },
+
   warranty: {
     duration: '3 ans pièces / 2 ans main-d’œuvre',
     coverage: 'Garantie commerciale annoncée par Zontes France pour la 703 T dans son réseau, selon conditions contractuelles.',
