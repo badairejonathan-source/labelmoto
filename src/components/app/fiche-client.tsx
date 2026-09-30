@@ -1,6 +1,5 @@
 'use client';
 
-import { cfmoto800mtSportExploreVariants } from '@/lib/motorcycle-sheets-v2/cfmoto-800mt-sport-explore';
 
 import BrandLogo from '@/components/app/brand-logo';
 import React, { useState, useMemo, useEffect } from 'react';
@@ -12,7 +11,6 @@ import { pickRelatedModels } from '@/lib/related-models-pool';
 import { getMotorcycleProductImage, isMotorcycleProductImage } from '@/data/motorcycle-product-images';
 import MotorcycleSheetV2View from '@/components/app/motorcycle-sheet-v2-view';
 import { getMotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
-import { kove800xVariants } from '@/lib/motorcycle-sheets-v2/kove-800x-pro';
 import { getLocalMotorcycleSheetV2 } from '@/lib/motorcycle-sheets-v2/registry';
 import { 
   ArrowLeft, 
@@ -75,7 +73,7 @@ const reviewSchema = z.object({
 
 type ReviewFormValues = z.infer<typeof reviewSchema>;
 
-const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "—") => {
+const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string = "—", allowGenericFallback: boolean = true) => {
   if (!obj || typeof obj !== 'object') return defaultValue;
   for (const key of preferredKeys) {
     if (obj[key] !== undefined && obj[key] !== null && obj[key] !== "") {
@@ -98,6 +96,7 @@ const getRobustValue = (obj: any, preferredKeys: string[], defaultValue: string 
       }
     }
   }
+  if (!allowGenericFallback) return defaultValue;
   const firstString = Object.values(obj).find(v => (typeof v === 'string' || typeof v === 'number') && String(v).length > 0);
   if (firstString) return String(firstString);
   return defaultValue;
@@ -148,17 +147,12 @@ export default function FicheClient({
     return {
       ...firestoreFiche,
       display_title:
-        modelId === 'cfmoto-800mt-sport-explore-2023-plus'
-          ? 'CFMOTO 800 MT'
-          : modelId === 'kove-800x-pro-2024-plus'
-            ? 'KOVE 800X'
-            : firestoreFiche.display_title,
+        localV2.display_title ??
+        firestoreFiche.display_title,
       variants:
-        modelId === 'cfmoto-800mt-sport-explore-2023-plus'
-          ? cfmoto800mtSportExploreVariants
-          : modelId === 'kove-800x-pro-2024-plus'
-            ? kove800xVariants
-            : firestoreFiche.variants,
+        Array.isArray(localV2.variants) && localV2.variants.length > 0
+          ? localV2.variants
+          : firestoreFiche.variants,
       service_guide: {
         ...(firestoreFiche.service_guide || {}),
         ...localV2,
@@ -226,13 +220,13 @@ export default function FicheClient({
         alimentation: activeVariant.fuel_system || ts.fuel_system || "Injection électronique"
       },
       cycleParts: {
-        frame: getRobustValue(cp, ['frame', 'cadre', 'chassis']),
-        frontBrake: getRobustValue(cp, ['front_brake', 'frein_avant']),
-        rearBrake: getRobustValue(cp, ['rear_brake', 'frein_arriere']),
-        frontSuspension: getRobustValue(cp, ['front_suspension', 'suspension_avant', 'fourche']),
-        rearSuspension: getRobustValue(cp, ['rear_suspension', 'suspension_arriere', 'amortisseur']),
-        frontTire: getRobustValue(cp, ['front_tire', 'pneu_avant']),
-        rearTire: getRobustValue(cp, ['rear_tire', 'pneu_arriere']),
+        frame: getRobustValue(cp, ['frame', 'cadre', 'chassis'], "—", false),
+        frontBrake: getRobustValue(cp, ['front_brake', 'frontBrake', 'frein_avant'], "—", false),
+        rearBrake: getRobustValue(cp, ['rear_brake', 'rearBrake', 'frein_arriere'], "—", false),
+        frontSuspension: getRobustValue(cp, ['front_suspension', 'frontSuspension', 'suspension_avant', 'fourche'], "—", false),
+        rearSuspension: getRobustValue(cp, ['rear_suspension', 'rearSuspension', 'suspension_arriere', 'amortisseur'], "—", false),
+        frontTire: getRobustValue(cp, ['front_tire', 'frontTire', 'pneu_avant'], "—", false),
+        rearTire: getRobustValue(cp, ['rear_tire', 'rearTire', 'pneu_arriere'], "—", false),
       },
       dimensions: {
         wetWeight: (activeVariant.weight_tpf_kg || ts.weight_tpf_kg) ? `${activeVariant.weight_tpf_kg || ts.weight_tpf_kg} kg` : "N/A",

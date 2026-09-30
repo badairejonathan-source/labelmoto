@@ -26,6 +26,62 @@ export interface MotorcycleSourceReference {
   note?: string;
 }
 
+
+/**
+ * HOMOLOGATION FRANCE — CONTRAT V2
+ *
+ * Champ à renseigner pour toute nouvelle fiche ou révision.
+ *
+ * A1              : moto homologuée A1.
+ * A2              : moto directement homologuée A2.
+ * A_ET_A2         : versions A et A2 distinctes homologuées.
+ * A_BRIDABLE_A2   : bridage A2 officiellement disponible.
+ * A               : permis A uniquement, après vérification.
+ * TO_CONFIRM      : homologation France non encore vérifiée.
+ *
+ * Ne jamais déduire un bridage A2 de la seule puissance.
+ * Le modèle, le millésime et le marché doivent être vérifiés.
+ *
+ * Une même information PERMIS doit être utilisée dans
+ * les chiffres clés et dans la fiche technique complète.
+ */
+export type MotorcycleLicenseFranceV2 =
+  | 'A1'
+  | 'A2'
+  | 'A_ET_A2'
+  | 'A_BRIDABLE_A2'
+  | 'A'
+  | 'TO_CONFIRM';
+
+export const MOTORCYCLE_LICENSE_FR_LABELS:
+  Record<MotorcycleLicenseFranceV2, string> = {
+    A1: 'A1 · B sous conditions',
+    A2: 'A2',
+    A_ET_A2: 'A / A2 homologuée',
+    A_BRIDABLE_A2: 'A · bridable A2',
+    A: 'A',
+    TO_CONFIRM: 'À vérifier',
+  };
+
+export function formatMotorcycleLicenseFranceV2(
+  value: unknown
+): string | undefined {
+  if (typeof value !== 'string') return undefined;
+
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      MOTORCYCLE_LICENSE_FR_LABELS,
+      value
+    )
+  ) {
+    return undefined;
+  }
+
+  return MOTORCYCLE_LICENSE_FR_LABELS[
+    value as MotorcycleLicenseFranceV2
+  ];
+}
+
 export interface MotorcycleQuickFact {
   label: string;
   value: string;
@@ -195,8 +251,33 @@ export interface MotorcycleEquivalentV2 {
   reason?: string;
 }
 
+export interface MotorcycleFaqV2 {
+  question: string;
+  answer: string;
+}
+
+export interface MotorcycleVariantV2 {
+  license_fr?: MotorcycleLicenseFranceV2;
+  license_fr_source?: string;
+  license_fr_verified_at?: string;
+  label?: string;
+  name?: string;
+  title?: string;
+  [key: string]: unknown;
+}
+
 export interface MotorcycleSheetV2 {
   layout_version: 2;
+
+  /**
+   * Titre public de famille lorsqu'il diffère du titre Firestore.
+   */
+  display_title?: string;
+
+  /**
+   * Introduction éditoriale courte propre à la V2.
+   */
+  intro?: string;
 
   /**
    * Petit texte affiché dans le Hero.
@@ -206,6 +287,15 @@ export interface MotorcycleSheetV2 {
   /**
    * Informations visibles immédiatement sous le Hero.
    */
+  /**
+   * Homologation France normalisée.
+   * Obligatoire dans les nouvelles fiches éditoriales.
+   * La variante active reste prioritaire sur la famille.
+   */
+  license_fr?: MotorcycleLicenseFranceV2;
+  license_fr_source?: string;
+  license_fr_verified_at?: string;
+
   quick_facts?: MotorcycleQuickFact[];
 
   /**
@@ -252,6 +342,26 @@ export interface MotorcycleSheetV2 {
    * Fiabilité et points à surveiller.
    */
   known_issues_v2?: MotorcycleKnownIssueV2[];
+
+  /**
+   * Questions / réponses visibles dans l'onglet FAQ.
+   */
+  faq?: MotorcycleFaqV2[];
+
+  /**
+   * Conseils pratiques pour préserver la moto dans le temps.
+   */
+  longevity_tips?: string[];
+
+  /**
+   * Conseil LabelMoto final, distinct du verdict éditorial.
+   */
+  conclusion?: string;
+
+  /**
+   * Variantes d'une même famille de modèles.
+   */
+  variants?: MotorcycleVariantV2[];
 
   /**
    * Budget entretien.
@@ -313,6 +423,14 @@ export function getMotorcycleSheetV2(
   return {
     layout_version: 2,
 
+    display_title:
+      sg.display_title ??
+      fiche.display_title,
+
+    intro:
+      sg.intro ??
+      fiche.intro,
+
     hero_subtitle:
       sg.hero_subtitle ??
       fiche.hero_subtitle,
@@ -321,6 +439,9 @@ export function getMotorcycleSheetV2(
       sg.quick_facts ??
       fiche.quick_facts ??
       [],
+    license_fr: (sg as any).license_fr ?? (fiche as any).license_fr,
+    license_fr_source: (sg as any).license_fr_source ?? (fiche as any).license_fr_source,
+    license_fr_verified_at: (sg as any).license_fr_verified_at ?? (fiche as any).license_fr_verified_at,
 
     quick_maintenance:
       sg.quick_maintenance ??
@@ -345,6 +466,27 @@ export function getMotorcycleSheetV2(
     known_issues_v2:
       sg.known_issues_v2 ??
       fiche.known_issues_v2 ??
+      [],
+
+    faq:
+      sg.faq ??
+      fiche.faq ??
+      [],
+
+    longevity_tips:
+      sg.longevity_tips ??
+      sg.longevityTips ??
+      fiche.longevity_tips ??
+      fiche.longevityTips ??
+      [],
+
+    conclusion:
+      sg.conclusion ??
+      fiche.conclusion,
+
+    variants:
+      sg.variants ??
+      fiche.variants ??
       [],
 
     budget:
