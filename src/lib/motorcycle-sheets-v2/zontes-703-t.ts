@@ -67,7 +67,11 @@ export const zontes703tDisplayData = {
     },
     {
       question: 'Quelle chaîne commander pour la 703 T ?',
-      answer: 'Le pas 525 est documenté, mais les indications de longueur du manuel et du catalogue de pièces diffèrent. Le concessionnaire doit confirmer le kit compatible avec le VIN avant commande ; les détails figurent dans Chaîne et transmission.',
+      answer: 'Le pas 525 est confirmé. Pour la longueur du kit, les documents constructeur ne concordent pas : faites identifier la bonne référence avec le numéro VIN. Le détail est indiqué dans Chaîne et transmission.',
+    },
+    {
+      question: 'Dispose-t-on de retours sur la fiabilité à long terme ?',
+      answer: 'Pas encore assez pour dresser un bilan propre à la 703 T : les retours à fort kilométrage restent trop peu nombreux. Cela ne prouve ni une panne récurrente ni une fiabilité exceptionnelle.',
     },
     {
       question: 'Quels points essayer avant l’achat ?',
@@ -82,7 +86,7 @@ export const zontes703tDisplayData = {
     'Si la moto reste immobilisée longtemps, utilisez un maintien de charge compatible avec sa batterie et contrôlez pneus, freins et niveaux avant de repartir.',
   ],
   conclusion:
-    'La 703 T est avant tout une routière dynamique à position haute. Pour choisir votre configuration, un essai sur voie rapide puis sur route sinueuse est plus utile qu’une simple comparaison d’équipements. Demandez au concessionnaire le carnet d’entretien français et un devis pour les révisions prévues.',
+    'Essayez la 703 T sur voie rapide autant que sur petite route : vous jugerez rapidement le régime moteur en sixième, la protection de la bulle et le confort de sa position haute. Pour l’entretien, demandez le calendrier propre à la 703 T, différent de ceux des RR et F.',
 } as const;
 
 export const zontes703tV2: MotorcycleSheetV2 = {
@@ -116,50 +120,54 @@ export const zontes703tV2: MotorcycleSheetV2 = {
     { label: 'Soupapes', value: 'Contrôle / réglage à 40 000 km', confidence: 'technical_documentation' },
   ],
 
+  // FOURCHETTES PRIX : estimations LabelMoto TTC (France, septembre 2026)
+  // à partir des opérations T p. 30–31, consommables et tarifs affichés en
+  // atelier français. Aucune grille nationale officielle 703 T publiée.
+  // Ces montants ne sont ni des devis ni des prix observés pour cette moto.
   // Les cinq révisions initiales figurent au tableau constructeur T p. 30.
   // Les jalons 30 000 et 40 000 km reprennent uniquement les opérations
   // expressément annoncées au-delà de ce tableau, pas une révision extrapolée.
   service_schedule_v2: [
     {
-      km: 1000, title: 'Révision de rodage', price_estimate: 'Sur devis',
+      km: 1000, title: 'Révision de rodage', price_estimate: '140–210 €',
       operations: [
         { label: 'Vidange d’huile moteur 10W-50', source_type: 'technical_documentation' },
         { label: 'Remplacement du filtre à huile', source_type: 'technical_documentation' },
         { label: 'Contrôle des niveaux, des fixations et des organes de sécurité', source_type: 'technical_documentation' },
       ],
-      note: 'Première échéance du manuel ZT703-T, p. 30. Tarif atelier variable.',
+      note: 'Estimation LabelMoto TTC en atelier français : huile 3,4 L, filtre, main-d’œuvre et contrôles ; ce n’est pas un forfait officiel Zontes.',
     },
     {
-      km: 5000, title: 'Entretien périodique', price_estimate: 'Sur devis',
+      km: 5000, title: 'Entretien périodique', price_estimate: '120–190 €',
       operations: [
         { label: 'Vidange d’huile moteur', source_type: 'technical_documentation' },
         { label: 'Inspection du filtre à air', source_type: 'technical_documentation' },
         { label: 'Contrôle des freins, pneus, transmission et niveaux', source_type: 'technical_documentation' },
       ],
-      note: 'Le filtre à huile n’est pas indiqué en remplacement systématique à 5 000 km (p. 30).',
+      note: 'Estimation TTC huile 3,0 L, main-d’œuvre et vérifications. Pas de filtre à huile systématique à 5 000 km (manuel T, p. 30).',
     },
     {
-      km: 10000, title: 'Entretien intermédiaire', price_estimate: 'Sur devis',
+      km: 10000, title: 'Entretien intermédiaire', price_estimate: '190–300 €',
       operations: [
         { label: 'Vidange et remplacement du filtre à huile', source_type: 'technical_documentation' },
         { label: 'Remplacement du filtre à air', source_type: 'technical_documentation' },
         { label: 'Contrôle des trois bougies', source_type: 'technical_documentation' },
         { label: 'Contrôle des freins, suspensions et transmission', source_type: 'technical_documentation' },
       ],
-      note: 'Manuel T, p. 30–31. Adapter le contrôle du filtre à air à l’environnement.',
+      note: 'Estimation TTC pour huile, filtre à huile, filtre à air et contrôles (manuel T, p. 30–31). Hors remplacement anticipé de pièces usées.',
     },
     {
-      km: 15000, title: 'Entretien périodique', price_estimate: 'Sur devis',
+      km: 15000, title: 'Entretien périodique', price_estimate: '170–280 €',
       operations: [
         { label: 'Vidange d’huile moteur', source_type: 'technical_documentation' },
         { label: 'Inspection du filtre à air', source_type: 'technical_documentation' },
         { label: 'Graissage des roulements de direction et des articulations arrière', source_type: 'technical_documentation' },
         { label: 'Contrôle général : pneus, freins et chaîne', source_type: 'technical_documentation' },
       ],
-      note: 'Manuel T, p. 30–31.',
+      note: 'Estimation TTC avec vidange, contrôle du filtre à air et graissages prescrits (manuel T, p. 30–31).',
     },
     {
-      km: 20000, title: 'Entretien majeur', price_estimate: 'Sur devis',
+      km: 20000, title: 'Entretien majeur', price_estimate: '400–700 €',
       operations: [
         { label: 'Vidange et remplacement du filtre à huile', source_type: 'technical_documentation' },
         { label: 'Remplacement du filtre à air', source_type: 'technical_documentation' },
@@ -167,22 +175,22 @@ export const zontes703tV2: MotorcycleSheetV2 = {
         { label: 'Entretien de la fourche selon la note du manuel', source_type: 'technical_documentation' },
         { label: 'Contrôle général des freins et de la transmission', source_type: 'technical_documentation' },
       ],
-      note: 'Opérations du manuel constructeur ZT703-T, p. 30–31.',
+      note: 'Estimation TTC incluant huile, filtres, trois bougies et entretien de la fourche prévu par le manuel T p. 30–31 ; hors pièces usées non programmées.',
     },
     {
-      km: 30000, title: 'Liquide de refroidissement', price_estimate: 'Sur devis',
+      km: 30000, title: 'Liquide de refroidissement (poste seul)', price_estimate: '90–170 €',
       operations: [
         { label: 'Remplacement du liquide de refroidissement à 30 000 km ou 3 ans, au premier terme atteint', source_type: 'technical_documentation' },
-        { label: 'Remplacement du patin de bras oscillant selon la note du manuel', source_type: 'technical_documentation' },
+        { label: 'Patin de bras oscillant : remplacement prévu par le manuel, à chiffrer en supplément', source_type: 'technical_documentation' },
       ],
-      note: 'Échéances ponctuelles indiquées par le constructeur : cette ligne ne prétend pas décrire toute la révision des 30 000 km.',
+      note: '90–170 € TTC : liquide de refroidissement et main-d’œuvre uniquement. Cette ligne ne chiffre PAS la révision complète des 30 000 km ; patin de bras oscillant et autres opérations en supplément.',
     },
     {
-      km: 40000, title: 'Contrôle du jeu aux soupapes', price_estimate: 'Sur devis',
+      km: 40000, title: 'Contrôle du jeu aux soupapes (poste seul)', price_estimate: '200–380 €',
       operations: [
-        { label: 'Mesure du jeu aux soupapes moteur froid ; réglage si nécessaire', source_type: 'technical_documentation' },
+        { label: 'Mesure du jeu aux soupapes moteur froid ; réglage éventuel facturé en supplément', source_type: 'technical_documentation' },
       ],
-      note: 'Échéance spécifique p. 30–31 ; autres opérations à confirmer avec le carnet de la moto.',
+      note: '200–380 € TTC : contrôle du jeu uniquement. Réglage par pastilles, joints et entretien périodique des 40 000 km non compris (manuel T p. 30–31).',
     },
   ],
 
@@ -299,45 +307,44 @@ export const zontes703tV2: MotorcycleSheetV2 = {
 
   known_issues_v2: [
     {
-      title: 'Protection de la bulle à essayer à votre taille',
-      description: 'Les essais Motofichas et SoyMotero sur la 703 T ETC espagnole ne donnent pas la même appréciation du bruit aérodynamique. Essayez les positions de la bulle à vitesse stabilisée.',
+      title: 'Bulle : protection à essayer à votre taille',
+      description: 'Le bruit et la protection varient avec la position de conduite. Lors de l’essai, testez plusieurs hauteurs de bulle sur voie rapide.',
       type: 'usage_limitation', confidence: 'multiple_sources',
-      source_note: 'Motofichas et SoyMotero, essais 703 T ETC de septembre 2026.',
+      source_note: 'Motofichas et SoyMotero, essais de la 703 T ETC espagnole en septembre 2026.',
     },
     {
-      title: 'Sixième assez courte pour les longs trajets rapides',
-      description: 'Motofichas souligne les reprises agréables, mais juge le régime moteur présent à 120 km/h. À vérifier sur route rapide si vous voyagez beaucoup sur autoroute.',
+      title: 'Sixième courte à vitesse autoroutière',
+      description: 'Le moteur conserve de la disponibilité en reprise, mais tourne assez haut sur autoroute. C’est un point à essayer si vous roulez souvent à vitesse stabilisée.',
       type: 'usage_limitation', confidence: 'observed',
-      source_note: 'Motofichas, essai 703 T ETC, septembre 2026.',
+      source_note: 'Motofichas, essai de la 703 T ETC, septembre 2026.',
     },
     {
-      title: 'Suspensions à régler selon la charge',
-      description: 'L’essayeur de Motofichas a amélioré le comportement avec un léger ajustement de compression. Demandez un réglage adapté à votre poids et à l’utilisation en duo.',
+      title: 'Suspensions : adapter le réglage à la charge',
+      description: 'Seul, en duo ou avec des bagages, prenez le temps de régler les suspensions. Un ajustement de compression a notamment amélioré la tenue de route lors de l’essai Motofichas.',
       type: 'usage_limitation', confidence: 'observed',
       source_note: 'Motofichas, essai 703 T ETC.',
     },
     {
-      title: 'Équipement exact de la moto française à confirmer',
-      description: 'Certaines fonctions évoquées dans les essais de la 703 T ETC espagnole ne doivent pas être supposées présentes sur toutes les versions françaises. Faites démontrer l’équipement réellement livré.',
+      title: 'Équipement de la version française',
+      description: 'Ne vous fiez pas à une vidéo d’une version ETC espagnole pour établir la liste des options françaises. Comparez-la avec la fiche commerciale du modèle commandé.',
       type: 'manufacturer_monitoring', confidence: 'to_confirm',
-      source_note: 'Comparaison de Zontes France et des essais espagnols 703 T ETC.',
+      source_note: 'Comparaison entre la fiche Zontes France et les essais espagnols.',
     },
   ],
 
   verdict: {
-    title: 'Une routière à guidon haut qui aime les virages',
+    title: 'Une voyageuse qui ne boude pas les virages',
     text:
-      'La 703 T associe un trois-cylindres de 95 ch à une partie-cycle orientée route : roues de 17 pouces, guidon haut et réservoir de 20 L. Les premiers essais de la version ETC espagnole décrivent un moteur souple à bas régime et plus expressif en montant dans les tours, avec une tenue de route vive. Son tempérament reste sportif pour une moto de voyage : les rapports rapprochés se remarquent sur autoroute et la protection de la bulle dépend de la taille du pilote. La configuration française doit être vérifiée chez le concessionnaire. Le modèle étant récent, le recul propriétaire à fort kilométrage est encore limité.',
+      'Guidon haut, selle à 805 mm et réservoir de 20 L : la 703 T possède les attributs d’une routière pour voyager. Elle conserve pourtant un côté joueur, notamment grâce à ses roues de 17 pouces et à son trois-cylindres de 95 ch. Lors de l’essai de la version ETC espagnole, Motofichas a apprécié sa souplesse à bas régime et son comportement dans les virages. À vitesse autoroutière, la sixième relativement courte laisse davantage entendre le moteur. La bulle doit aussi être essayée selon votre taille. C’est sur ces deux derniers points que se jouera surtout le confort des longues étapes.',
     strengths: [
-      'Trois-cylindres de 95 ch et châssis routier dynamique',
-      'Position haute et roues de 17 pouces',
-      'Réservoir de 20 L et selle de 805 mm',
-      'Version accessible au permis A2 après bridage homologué',
+      'Trois-cylindres souple et vivant dans les tours',
+      'Partie-cycle routière et roues de 17 pouces',
+      'Position haute et réservoir de 20 L',
+      'Bridage A2 homologué en France',
     ],
     weaknesses: [
-      'Régime moteur présent sur autoroute dans l’essai Motofichas',
-      'Protection aérodynamique sensible au gabarit',
-      'Recul propriétaire encore limité sur ce nouveau modèle',
+      'Sixième courte sur autoroute',
+      'Protection de la bulle variable selon le gabarit',
     ],
   },
 
@@ -358,11 +365,16 @@ export const zontes703tV2: MotorcycleSheetV2 = {
     technical_documentation_verified: true, // Manuel T p. 14, 30–31, 37, 41, 47 et 54 recoupé avec le catalogue pièces.
     consumables_verified: false, // Certaines références / intervalles restent liés au VIN.
     recall_checked: false,
-    pricing_type: 'observed',
+    pricing_type: 'mixed',
     last_verified: '30/09/2026',
     sources: [
       { label: 'Zontes France · 703 T', type: 'official_fr', market: 'France', model_year: '2026', url: 'https://www.zontes.fr/moto-700cc/703-t/', note: '95 ch/70 kW à 11 200 tr/min, 74 Nm, 206 kg, selle 805 mm, réservoir 20 L, prix conseillé à partir de 7 599 €, éligibilité A2 après bridage, dimensions pneus et équipements commerciaux France.' },
       { label: 'Zontes France · conseils entretien', type: 'official_fr', market: 'France', model_year: '2026', url: 'https://www.zontes.fr/entretien/', note: 'Le tableau propre au manuel de chaque modèle fait autorité. La page donne explicitement les intervalles 703 F, mais pas de grille 703 T : ne pas les transposer.' },
+      { label: 'West Coast Moto’s · tarifs atelier', type: 'observed', market: 'France · Santeny', model_year: 'Consulté le 30/09/2026', url: 'https://www.westcoastmotos.com/prestations.php', note: 'Référence de calcul, pas un devis 703 T : main-d’œuvre affichée 65 €/h, contrôle du jeu aux soupapes 195 €, forfait joint spi de fourche inversée 195 €.' },
+      { label: 'Atelier Koenig · tarifs 2025', type: 'observed', market: 'France · Alsace', model_year: '2025', url: 'https://www.atelierkoenig.com/maintenance', note: 'Main-d’œuvre moto annoncée 70 € TTC/h ; base indicative de calcul, sans tarif spécifique 703 T.' },
+      { label: 'GMH Performance · tarifs 2026', type: 'observed', market: 'France', model_year: '2026', url: 'https://gmhperformance.fr/tarifs/', note: 'Main-d’œuvre 60 €/h et prestation de fourche ; comparable atelier, non tarif Zontes 703 T.' },
+      { label: 'L’Atelier du 2 Roues · tarifs de fourche', type: 'observed', market: 'France · La Teste-de-Buch', model_year: 'Consulté le 30/09/2026', url: 'https://latelierdu2roues.fr/services', note: 'Entretien de fourche inversée annoncé à partir de 160 € ; base indicative pour estimation du jalon 20 000 km.' },
+
       { label: 'Zontes · index officiel des manuels', type: 'technical_documentation', market: 'International', model_year: '2026', url: 'https://www.zontes.com/EN/AboutUs/Download.aspx', note: 'Manuel ZT703-T Euro V+ du 11/05/2026 (fichier AnnZT20260511090352560.pdf transmis par l’utilisateur). Tableau d’entretien p. 30–31 ; spécifications p. 14 ; bougies p. 37 ; huile p. 41 ; chaîne p. 47 ; freinage p. 54.' },
       { label: 'Zontes · catalogue pièces 703 T 2026', type: 'official_other_market', market: 'International / Chine', model_year: '2026', url: 'https://www.zontes.com/en/Products/Part9BomZB.aspx?Cid=786D1D72961D8A1F', note: 'Références techniques constructeur ; contradiction longueur de chaîne 525/120 catalogue vs 525/114 dans la recherche manuel.' },
       { label: 'Recherche technique mutualisée Zontes 703', type: 'technical_documentation', market: 'Multi-marchés', model_year: '2025–2026', url: 'https://www.zontes.com/EN/AboutUs/Download.aspx', note: 'Données moteur communes vérifiées dans zontes-703-shared.ts : huile, filtre, trois bougies, refroidissement. Les exceptions T priment sur la RR et la F.' },
