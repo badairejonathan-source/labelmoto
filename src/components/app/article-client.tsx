@@ -23,6 +23,7 @@ import Link from 'next/link';
 import Script from 'next/script';
 
 import Header from '@/components/app/header';
+import ArticleAccordionV1 from '@/components/app/article-accordion-v1';
 import GuidesDesktopSidebar from '@/components/app/guides-desktop-sidebar';
 import {
   Table,
@@ -1437,6 +1438,10 @@ export default function ArticleClient({
 
               {children && (<div className="mb-8">{children}</div>)}
 
+              {article.presentation === 'accordion_v1' && <ArticleAccordionV1 article={article} />}
+
+              {article.presentation !== 'accordion_v1' && (
+                <>
               {article.intro && Array.isArray(article.intro) && (
                 <div className="my-8 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-lg leading-relaxed text-foreground font-medium">{p}</p>))}</div>
               )}
@@ -1484,6 +1489,8 @@ export default function ArticleClient({
                       <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-medium leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-medium leading-relaxed">{article.conclusion}</p>)}</div>
                       <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={110} height={110} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-10" loading="lazy"/></div>
                   </div>
+              )}
+                </>
               )}
             </article>
 
