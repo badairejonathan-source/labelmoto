@@ -4119,12 +4119,12 @@ function DesktopProSection() {
           "
         >
           {/* =================================================
-              GAUCHE : TEXTE
+              GAUCHE : MESSAGE PRO
           ================================================== */}
 
           <div
             className="
-              max-w-[580px]
+              max-w-[590px]
             "
           >
             <span
@@ -4142,7 +4142,7 @@ function DesktopProSection() {
             <h2
               className="
                 mt-4
-                max-w-[570px]
+                max-w-[590px]
                 text-[43px]
                 font-bold
                 leading-[1.04]
@@ -4151,14 +4151,13 @@ function DesktopProSection() {
                 xl:text-[50px]
               "
             >
-              Développez votre visibilité
-              auprès des motards
+              Donnez plus de visibilité à votre activité
             </h2>
 
             <p
               className="
                 mt-6
-                max-w-[540px]
+                max-w-[550px]
                 text-[16px]
                 font-normal
                 leading-[1.6]
@@ -4166,12 +4165,11 @@ function DesktopProSection() {
                 xl:text-[17px]
               "
             >
-              Créez ou prenez le contrôle de votre fiche
-              professionnelle et mettez votre activité en avant
-              auprès des motards partout en France.
+              Créez ou revendiquez votre fiche LabelMoto pour
+              présenter votre activité, apparaître dans les
+              recherches locales et permettre aux motards de vous
+              contacter directement.
             </p>
-
-            {/* PETITES PREUVES */}
 
             <div
               className="
@@ -4202,7 +4200,7 @@ function DesktopProSection() {
                   "
                 />
 
-                Visibilité nationale
+                Présence sur la carte
               </span>
 
               <span
@@ -4221,7 +4219,7 @@ function DesktopProSection() {
                   "
                 />
 
-                Recherche locale
+                Fiche professionnelle
               </span>
 
               <span
@@ -4240,11 +4238,9 @@ function DesktopProSection() {
                   "
                 />
 
-                Tous les métiers moto
+                Contacts directs
               </span>
             </div>
-
-            {/* CTA */}
 
             <div
               className="
@@ -4315,45 +4311,316 @@ function DesktopProSection() {
                 />
               </Link>
             </div>
+
+            <div
+              className="
+                mt-5
+                max-w-[550px]
+              "
+            >
+              <p
+                className="
+                  text-[11px]
+                  font-medium
+                  leading-[1.55]
+                  text-foreground/65
+                "
+              >
+                Après création ou revendication, gérez
+                vous-même votre fiche depuis votre espace
+                professionnel.
+                <span
+                  className="
+                    ml-0.5
+                    font-bold
+                    text-brand
+                  "
+                >
+                  *
+                </span>
+              </p>
+
+              <p
+                className="
+                  mt-1
+                  text-[10px]
+                  font-medium
+                  leading-[1.5]
+                  text-muted-foreground
+                "
+              >
+                <span
+                  className="
+                    font-bold
+                    text-brand
+                  "
+                >
+                  *
+                </span>
+                {' '}
+                Les créations et modifications restent soumises
+                à validation finale par LabelMoto avant publication.
+              </p>
+            </div>
           </div>
 
           {/* =================================================
-              DROITE : APERCU INTERFACE PRO
+              DROITE : VISUEL EDITORIAL PRO
           ================================================== */}
 
           <div
             className="
               relative
-              overflow-hidden
-              rounded-[1.7rem]
-              bg-[#f2f3f4]
-              shadow-[0_18px_55px_rgba(0,0,0,0.08)]
+              mt-7
+              min-h-[470px]
+              xl:min-h-[500px]
             "
           >
             <div
               className="
-                relative
-                aspect-[1.38/1]
-                w-full
+                absolute
+                inset-0
                 overflow-hidden
+                rounded-[2rem]
+                border
+                border-transparent
+                bg-transparent
+                px-9
+                pt-7
+                pb-9
+                shadow-none
+                xl:px-11
+                xl:pt-8
+                xl:pb-10
               "
             >
-              <img
-                src="/images/apercufiche.webp"
-                alt="Aperçu de l'interface professionnelle LabelMoto"
-                loading="lazy"
+              {/* INTRO */}
+
+              <div
                 className="
-                  absolute
-                  inset-0
-                  h-full
-                  w-full
-                  object-cover
-                  object-center
-                  transition-transform
-                  duration-500
-                  hover:scale-[1.015]
+                  relative
+                  z-10
+                  max-w-[500px]
                 "
-              />
+              >
+                <span
+                  className="
+                    text-[9px]
+                    font-bold
+                    uppercase
+                    tracking-[0.18em]
+                    text-brand
+                  "
+                >
+                  Votre présence sur LabelMoto
+                </span>
+
+                <h3
+                  className="
+                    mt-3
+                    max-w-[500px]
+                    text-[25px]
+                    font-bold
+                    leading-[1.15]
+                    tracking-[-0.035em]
+                    text-foreground
+                    xl:text-[29px]
+                  "
+                >
+                  Une fiche claire.
+                  <br />
+                  Des motards qui vous trouvent.
+                </h3>
+              </div>
+
+              {/* PARCOURS */}
+
+              <div
+                className="
+                  relative
+                  z-10
+                  mt-7
+                  border-t
+                  border-black/[0.07]
+                "
+              >
+                {/* 01 */}
+
+                <div
+                  className="
+                    grid
+                    grid-cols-[64px_minmax(0,1fr)_32px]
+                    items-center
+                    gap-4
+                    border-b
+                    border-black/[0.06]
+                    py-6
+                  "
+                >
+                  <span
+                    className="
+                      text-[30px]
+                      font-bold
+                      tracking-[-0.05em]
+                      text-brand
+                    "
+                  >
+                    01
+                  </span>
+
+                  <div>
+                    <p
+                      className="
+                        text-[15px]
+                        font-bold
+                        tracking-[-0.015em]
+                        text-foreground
+                      "
+                    >
+                      Créez ou revendiquez votre fiche
+                    </p>
+
+                    <p
+                      className="
+                        mt-1
+                        text-[12px]
+                        font-medium
+                        leading-[1.55]
+                        text-muted-foreground
+                      "
+                    >
+                      Présentez votre activité, vos services
+                      et vos coordonnées.
+                    </p>
+                  </div>
+
+                  <Store
+                    className="
+                      h-5
+                      w-5
+                      text-brand
+                    "
+                  />
+                </div>
+
+                {/* 02 */}
+
+                <div
+                  className="
+                    grid
+                    grid-cols-[64px_minmax(0,1fr)_32px]
+                    items-center
+                    gap-4
+                    border-b
+                    border-black/[0.06]
+                    py-6
+                  "
+                >
+                  <span
+                    className="
+                      text-[30px]
+                      font-bold
+                      tracking-[-0.05em]
+                      text-brand
+                    "
+                  >
+                    02
+                  </span>
+
+                  <div>
+                    <p
+                      className="
+                        text-[15px]
+                        font-bold
+                        tracking-[-0.015em]
+                        text-foreground
+                      "
+                    >
+                      Soyez trouvé dans les recherches
+                    </p>
+
+                    <p
+                      className="
+                        mt-1
+                        text-[12px]
+                        font-medium
+                        leading-[1.55]
+                        text-muted-foreground
+                      "
+                    >
+                      Carte, annuaire, métier, marque ou
+                      localisation : votre activité reste visible.
+                    </p>
+                  </div>
+
+                  <Search
+                    className="
+                      h-5
+                      w-5
+                      text-brand
+                    "
+                  />
+                </div>
+
+                {/* 03 */}
+
+                <div
+                  className="
+                    grid
+                    grid-cols-[64px_minmax(0,1fr)_32px]
+                    items-center
+                    gap-4
+                    py-6
+                  "
+                >
+                  <span
+                    className="
+                      text-[30px]
+                      font-bold
+                      tracking-[-0.05em]
+                      text-brand
+                    "
+                  >
+                    03
+                  </span>
+
+                  <div>
+                    <p
+                      className="
+                        text-[15px]
+                        font-bold
+                        tracking-[-0.015em]
+                        text-foreground
+                      "
+                    >
+                      Facilitez le contact
+                    </p>
+
+                    <p
+                      className="
+                        mt-1
+                        text-[12px]
+                        font-medium
+                        leading-[1.55]
+                        text-muted-foreground
+                      "
+                    >
+                      Téléphone, site web et itinéraire
+                      sont accessibles directement depuis votre fiche.
+                    </p>
+                  </div>
+
+                  <ArrowRight
+                    className="
+                      h-5
+                      w-5
+                      text-brand
+                    "
+                  />
+                </div>
+              </div>
+
+
             </div>
           </div>
         </div>
@@ -4361,6 +4628,7 @@ function DesktopProSection() {
     </section>
   );
 }
+
 function DesktopUniverseSection() {
   const [showAllBrands, setShowAllBrands] =
     useState(false);
