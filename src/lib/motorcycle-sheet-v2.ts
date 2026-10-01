@@ -185,7 +185,11 @@ export interface MotorcycleMaintenanceBudgetSummaryV2 {
 export interface MotorcycleMaintenanceBudgetV2 {
   title?: string;
   summary?: MotorcycleMaintenanceBudgetSummaryV2;
-  cards: MotorcycleMaintenanceBudgetCardV2[];
+  /**
+   * @deprecated Detailed budget cards are no longer rendered.
+   * Revision prices belong in service_schedule_v2.
+   */
+  cards?: MotorcycleMaintenanceBudgetCardV2[];
   note?: string;
 }
 

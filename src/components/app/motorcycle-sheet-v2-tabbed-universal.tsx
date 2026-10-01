@@ -228,7 +228,9 @@ export default function MotorcycleSheetV2TabbedUniversal({
       return matched ? { ...model, id: matched.id } : model;
     });
   })();
-  const budgetCards = v2.budget?.cards || [];
+  // Budget V2 compact: revision details remain in the REVISIONS tab.
+  // Legacy cards can remain in data temporarily but are never rendered.
+  const budgetCards = (v2.budget?.cards || []).filter(() => false);
   const longevityTips = v2.longevity_tips?.length
     ? v2.longevity_tips
     : displayData.longevityTips || [];
