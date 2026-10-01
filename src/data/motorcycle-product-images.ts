@@ -602,6 +602,11 @@ const entries: MotorcycleProductImageEntry[] = [
     exactIds: ['cfmoto-800mt-x-2025-plus'],
     aliases: ['cfmoto 800mt x', 'cfmoto 800 mt x', 'cfmoto 800mt-x'],
   },
+  {
+    imageUrl: '/images/motorcycles/kove-625x-pro.webp',
+    exactIds: ['kove-625x-pro-2026-plus'],
+    aliases: ['kove 625x pro', '625x pro'],
+  },
 ];
 
 export const MOTORCYCLE_PRODUCT_IMAGE_ENTRIES = entries;
@@ -667,6 +672,29 @@ export function getMotorcycleProductImage(
     }
 
     return '/images/motorcycles/kove-800x-pro-final.webp';
+  }
+
+  // LABELMOTO_ZONTES_703F_VARIANT_IMAGES
+  const zontes703fFamily =
+    normalizedId === normalize('zontes-703-f-2025-plus') ||
+    normalizedId === normalize('zontes-703-f-2026-plus') ||
+    normalizedId === normalize('zontes-703-f-adventure-2025-plus') ||
+    normalizedId === normalize('zontes-703-f-adventure-2026-plus');
+
+  if (zontes703fFamily) {
+    if (variant.includes('touringadventure')) {
+      return '/images/motorcycles/Zontes-703-F-Touring-Adventure.webp';
+    }
+
+    if (variant.includes('trailadventure')) {
+      return '/images/motorcycles/Zontes-703-F-Trail-Adventure.webp';
+    }
+
+    if (variant.includes('touring')) {
+      return '/images/motorcycles/Zontes-703-F-Touring.webp';
+    }
+
+    return '/images/motorcycles/Zontes-703-F-Adventure.webp';
   }
 
   const exact = entries.find(entry =>

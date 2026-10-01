@@ -24,6 +24,7 @@ import { kove510xV2 } from '@/lib/motorcycle-sheets-v2/kove-510x';
 import { kove625xProV2 } from '@/lib/motorcycle-sheets-v2/kove-625x-pro';
 import { kove800xV2 } from '@/lib/motorcycle-sheets-v2/kove-800x-pro';
 import { zontes703rrV2 } from '@/lib/motorcycle-sheets-v2/zontes-703-rr';
+import { zontes703fV2 } from '@/lib/motorcycle-sheets-v2/zontes-703-f';
 import { zontes703tV2 } from '@/lib/motorcycle-sheets-v2/zontes-703-t';
 
 /**
@@ -42,6 +43,7 @@ const motorcycleSheetV2Registry: Record<string, MotorcycleSheetV2> = {
   'kove-625x-pro-2026-plus': kove625xProV2,
   'kove-800x-pro-2024-plus': kove800xV2,
   'zontes-703-rr-2025-plus': zontes703rrV2,
+  'zontes-703-f-2025-plus': zontes703fV2,
   'zontes-703-t-2026-plus': zontes703tV2,
   'cfmoto-675sr-r-2025-plus': cfmoto675srrV2,
   'cfmoto-450sr-2023-plus': cfmoto450srV2,

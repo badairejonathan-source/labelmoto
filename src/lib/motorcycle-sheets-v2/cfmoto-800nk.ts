@@ -40,7 +40,7 @@ export const cfmoto800nkDisplayData = {
     },
     {
       "question": "Quand remplacer le filtre à air ?",
-      "answer": "Pour la fiche 2024+, le manuel 800NK 2024 est prioritaire : 15 000 km ou 12 mois, à la première échéance atteinte. Les intervalles sont réduits de 50 % en usage sévère."
+      "answer": "Pour les millésimes 2024, le manuel 800NK 2024 indique 15 000 km ou 12 mois, à la première échéance atteinte. Les intervalles sont réduits de 50 % en usage sévère."
     },
     {
       "question": "Quand remplacer les bougies ?",
@@ -69,12 +69,12 @@ export const cfmoto800nkDisplayData = {
   ],
   "longevityTips": [
     "Respecter 1 000 km puis le cycle France de 15 000 km / 1 an.",
-    "Sur la fiche 2024+, retenir le filtre à air à 15 000 km / 12 mois selon le manuel 2024.",
+    "Sur les millésimes 2024, retenir le filtre à air à 15 000 km / 12 mois selon le manuel correspondant.",
     "Ne pas repousser les bougies et le contrôle des soupapes au-delà de 30 000 km.",
     "Maintenir la chaîne entre 30 et 40 mm de flèche et la contrôler régulièrement.",
     "Identifier la version et le millésime avant d’utiliser un régime de puissance/couple ou une référence de pièce."
   ],
-  "conclusion": "La 800NK combine un cycle principal espacé de 15 000 km / 1 an avec une grande échéance à 30 000 km pour les bougies et les soupapes. Le point essentiel de cette V2 est de séparer les variantes : les premières homologations européennes et les versions France actuelles n’emploient pas exactement les mêmes chiffres de puissance, couple, selle et masse."
+  "conclusion": "La 800NK combine un cycle principal espacé de 15 000 km / 1 an avec une grande échéance à 30 000 km pour les bougies et le contrôle du jeu aux soupapes. Les valeurs de puissance, couple, hauteur de selle et masse peuvent varier selon la version et le millésime ; il faut donc identifier précisément la variante avant d’appliquer ces données."
 };
 
 export const cfmoto800nkVariants = [
@@ -131,7 +131,10 @@ export const cfmoto800nkVariants = [
 
 export const cfmoto800nkV2: MotorcycleSheetV2 = {
   "layout_version": 2,
-  "hero_subtitle": "Guide LabelMoto CFMOTO 800NK : variantes séparées · 15 000 km / 1 an · 2,8 L · filtre air 15k · bougies et soupapes 30k.",
+  "faq": cfmoto800nkDisplayData.faq,
+  "longevity_tips": cfmoto800nkDisplayData.longevityTips,
+  "conclusion": cfmoto800nkDisplayData.conclusion,
+  "hero_subtitle": "Guide LabelMoto CFMOTO 800NK : Advanced 2024 / Sport / Advanced TC · 15 000 km / 1 an · 2,8 L · filtre air 15k · bougies et soupapes 30k.",
   "quick_facts": [
     {
       "label": "PUISSANCE",
@@ -255,6 +258,8 @@ export const cfmoto800nkV2: MotorcycleSheetV2 = {
     {
       "km": 45000,
       "title": "Périodique",
+      "price_estimate": "≈250–350 €",
+      "price_type": "estimate",
       "operations": [
         {
           "label": "Huile moteur + filtre",
@@ -273,6 +278,8 @@ export const cfmoto800nkV2: MotorcycleSheetV2 = {
     {
       "km": 60000,
       "title": "Majeure",
+      "price_estimate": "≈520–680 €",
+      "price_type": "estimate",
       "operations": [
         {
           "label": "Répéter le cycle 30 000 km",
@@ -295,6 +302,8 @@ export const cfmoto800nkV2: MotorcycleSheetV2 = {
     {
       "km": 75000,
       "title": "Périodique",
+      "price_estimate": "≈250–350 €",
+      "price_type": "estimate",
       "operations": [
         {
           "label": "Huile moteur + filtre",
@@ -628,8 +637,8 @@ export const cfmoto800nkV2: MotorcycleSheetV2 = {
     }
   ],
   "verdict": {
-    "title": "Un cycle 15 000 km solide, avec variantes enfin séparées",
-    "text": "La 800NK profite d’un entretien principal tous les 15 000 km / 1 an. Pour la fiche 2024+, le manuel 2024 place aussi le filtre à air à 15 000 km / 12 mois, tandis que bougies et soupapes sont à 30 000 km. La difficulté n’est pas le calendrier : ce sont les différences d’homologation entre Advanced 2024, Sport et Advanced TC, désormais affichées au lieu d’être mélangées.",
+    "title": "Un cycle de 15 000 km, avec une grande échéance à 30 000 km",
+    "text": "La 800NK profite d’un entretien principal tous les 15 000 km / 1 an. Sur les millésimes 2024, le filtre à air suit également cette échéance, tandis que les bougies et le contrôle du jeu aux soupapes arrivent à 30 000 km. Les versions Advanced 2024, Sport et Advanced TC présentent des différences d’homologation et d’équipement qu’il faut prendre en compte.",
     "strengths": [
       "Révision principale 15 000 km / 1 an",
       "2,8 L et 10W-50 clairement documentés",

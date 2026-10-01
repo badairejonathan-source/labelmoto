@@ -350,6 +350,11 @@ function auditStrictSheet(file) {
     horizonMatch[1]
   );
 
+  if (horizon !== 30000) {
+    fail(file + ':BUDGET_HORIZON_MUST_BE_30000');
+    return;
+  }
+
   const total = euroRange(
     totalMatch[1]
   );

@@ -177,13 +177,29 @@ export const zontes703tV2: MotorcycleSheetV2 = {
       ],
       note: 'Estimation TTC incluant huile, filtres, trois bougies et entretien de la fourche prévu par le manuel T p. 30–31 ; hors pièces usées non programmées.',
     },
-    {
-      km: 30000, title: 'Liquide de refroidissement (poste seul)', price_estimate: '90–170 €',
+        {
+      km: 25000,
+      title: 'Entretien périodique projeté',
+      price_estimate: '120–190 €',
+      price_type: 'estimate',
       operations: [
-        { label: 'Remplacement du liquide de refroidissement à 30 000 km ou 3 ans, au premier terme atteint', source_type: 'technical_documentation' },
-        { label: 'Patin de bras oscillant : remplacement prévu par le manuel, à chiffrer en supplément', source_type: 'technical_documentation' },
+        { label: 'Vidange moteur sur prolongement du rythme de 5 000 km', source_type: 'estimate' },
+        { label: 'Contrôles de sécurité et d’usure', source_type: 'estimate' },
       ],
-      note: '90–170 € TTC : liquide de refroidissement et main-d’œuvre uniquement. Cette ligne ne chiffre PAS la révision complète des 30 000 km ; patin de bras oscillant et autres opérations en supplément.',
+      note: 'Projection LabelMoto au-delà du dernier jalon 20 000 km imprimé dans le manuel ZT703-T.',
+    },
+    {
+      km: 30000,
+      title: 'Entretien projeté + liquide de refroidissement',
+      price_estimate: '280–470 €',
+      price_type: 'estimate',
+      operations: [
+        { label: 'Huile moteur et filtre à huile : prolongement de la périodicité', source_type: 'estimate' },
+        { label: 'Filtre à air : prolongement de la périodicité', source_type: 'estimate' },
+        { label: 'Liquide de refroidissement à 30 000 km ou 3 ans', source_type: 'technical_documentation' },
+        { label: 'Contrôle du patin de bras oscillant à 30 000 km', source_type: 'technical_documentation' },
+      ],
+      note: 'Estimation LabelMoto : 190–300 € pour l’entretien périodique projeté + 90–170 € pour le remplacement du liquide de refroidissement.',
     },
     {
       km: 40000, title: 'Contrôle du jeu aux soupapes (poste seul)', price_estimate: '200–380 €',
@@ -351,13 +367,13 @@ export const zontes703tV2: MotorcycleSheetV2 = {
   // Budget V2 obligatoire : total limité aux cinq révisions chiffrées à 20 000 km.
   // Estimations LabelMoto TTC, France, septembre 2026 ; aucun forfait officiel Zontes T.
   budget: {
-    title: 'Budget d’entretien jusqu’à 20 000 km',
+    title: 'Budget d’entretien jusqu’à 30 000 km',
     summary: {
-      horizon_km: 20000,
-      total_cost: '1 020–1 680 €',
-      cost_per_km: '0,051–0,084 €/km',
-      interval_rule: 'Rodage à 1 000 km, puis huile à 5 / 10 / 15 / 20 000 km (manuel 703 T)',
-      note: 'Somme des cinq fourchettes du tableau Révisions : 140–210 + 120–190 + 190–300 + 170–280 + 400–700 € TTC. Estimation LabelMoto sur les opérations programmées, non tarif officiel ni devis. Hors pneus, freins, chaîne, usure imprévue et opérations déclenchées par l’âge.',
+      horizon_km: 30000,
+      total_cost: '1 420–2 340 €',
+      cost_per_km: '0,047–0,078 €/km',
+      interval_rule: '1 000 km puis tous les 5 000 km jusqu’à 30 000 km',
+      note: 'Calcul LabelMoto basé sur les révisions chiffrées affichées jusqu’à 30 000 km. Les échéances 25 000 et 30 000 km sont des projections identifiées au-delà du tableau constructeur imprimé jusqu’à 20 000 km. Pneus, freins, kit chaîne, batterie et usure imprévue sont exclus.',
     },
     cards: [
       {

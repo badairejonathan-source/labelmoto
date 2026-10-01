@@ -45,6 +45,9 @@ export const cfmoto450nkDisplayData = {
 
 export const cfmoto450nkV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": cfmoto450nkDisplayData.faq,
+  "longevity_tips": cfmoto450nkDisplayData.longevityTips,
+  "conclusion": cfmoto450nkDisplayData.conclusion,
   "hero_subtitle": "Guide LabelMoto CFMOTO 450 NK : 5 000 km, 2,5 L, BN8RTI, soupapes 40 000 km et consommables.",
   "quick_facts": [
     {
@@ -241,7 +244,7 @@ export const cfmoto450nkV2: MotorcycleSheetV2 = {
     {
       "km": 40000,
       "title": "Révision majeure",
-      "price_estimate": "≈420–750 €",
+      "price_estimate": "≈340–490 €",
       "price_type": "estimate",
       "operations": [
         {
@@ -511,6 +514,7 @@ export const cfmoto450nkV2: MotorcycleSheetV2 = {
     "duration": "2 ans",
     "coverage": "2 ans pièces et main-d’œuvre",
     "market": "France",
+    source_label: 'CFMOTO France · garantie moto',
     "maintenance_requirement": "Entretien selon le programme CFMOTO France dans le réseau agréé et carnet renseigné après chaque passage.",
     "legal_warranty_note": "Le contrat et le carnet remis avec la moto restent prioritaires."
   },

@@ -37,7 +37,7 @@ export const kove450rrDisplayData = {
     },
     {
       "question": "La 450RR est-elle A2 ?",
-      "answer": "La version actuelle vérifiée est annoncée à 49 kW ; aucune homologation A2 France n’est intégrée à cette fiche sans source KOVE France spécifique."
+      "answer": "La version actuelle vérifiée est annoncée à 49 kW. Aucune homologation A2 France spécifique n’a été identifiée pour cette version ; vérifiez le certificat d’immatriculation et l’offre KOVE France correspondante avant achat."
     },
     {
       "question": "Quelle huile et quelles bougies utilise la 450RR ?",
@@ -56,6 +56,9 @@ export const kove450rrDisplayData = {
 
 export const kove450rrV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": kove450rrDisplayData.faq,
+  "longevity_tips": kove450rrDisplayData.longevityTips,
+  "conclusion": kove450rrDisplayData.conclusion,
   "hero_subtitle": "Guide KOVE 450RR 2026 : calendrier constructeur, huile 10W-40, bougies LMARAI-10, soupapes, liquides, pneus, chaîne et budget atelier.",
   "quick_facts": [
     { "label": "PUISSANCE", "value": "66,6 ch" },
@@ -242,6 +245,27 @@ export const kove450rrV2: MotorcycleSheetV2 = {
         }
       ],
       "note": "Planning KOVE Service Schedule 2026. À partir de 26 000 km, le cycle reprend sur la base de l’échéance 6 000 km."
+    },
+    {
+      "km": 36000,
+      "title": "Révision périodique",
+      "price_estimate": "≈169 €",
+      "price_type": "observed",
+      "operations": [
+        {
+          "label": "Remplacement huile moteur + filtre à huile",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Inspection filtre à air ; remplacement selon état / tableau constructeur",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Contrôle transmission finale, freinage, pneumatiques et fixations",
+          "source_type": "official_other_market"
+        }
+      ],
+      "note": "Suite du cycle constructeur repris à partir de 26 000 km ; 36 000 km correspond à la répétition de l’échéance 16 000 km."
     }
   ],
   "maintenance_details": [
@@ -399,10 +423,10 @@ export const kove450rrV2: MotorcycleSheetV2 = {
   ],
   "consumables_v2": [
     {
-      "part": "Huile moteur & filtre",
+      "part": "Huile moteur",
       "specification": "SAE 10W-40 · API SL ou supérieur · JASO MA · environ 2,6 L avec filtre",
       "replacement_interval": "À chaque échéance du planning KOVE",
-      "observed_price": "≈67,49 € / 4 L · filtre en supplément",
+      "observed_price": "≈67,49 € / 4 L",
       "source_type": "observed"
     },
     {
@@ -413,20 +437,6 @@ export const kove450rrV2: MotorcycleSheetV2 = {
       "source_type": "observed"
     },
     {
-      "part": "Bougies",
-      "specification": "LMARAI-10 · écartement 0,9 à 1,0 mm",
-      "replacement_interval": "Selon planning constructeur",
-      "observed_price": "Sur devis réseau KOVE · 4 unités",
-      "source_type": "observed"
-    },
-    {
-      "part": "Jeu aux soupapes",
-      "specification": "0,09 à 0,12 mm",
-      "replacement_interval": "Contrôle à l’échéance majeure de 21 000 km",
-      "observed_price": "Sur devis atelier",
-      "source_type": "observed"
-    },
-    {
       "part": "Liquide de refroidissement",
       "specification": "Liquide moto compatible aluminium",
       "replacement_interval": "24 mois",
@@ -434,10 +444,10 @@ export const kove450rrV2: MotorcycleSheetV2 = {
       "source_type": "observed"
     },
     {
-      "part": "Freinage & liquide",
+      "part": "Liquide de frein",
       "specification": "Liquide de frein selon préconisation constructeur",
       "replacement_interval": "Contrôle régulier · remplacement selon planning",
-      "observed_price": "≈7,49 à 20,99 € le liquide · plaquettes sur devis",
+      "observed_price": "≈7,49 à 20,99 €",
       "source_type": "observed"
     },
     {
@@ -447,23 +457,16 @@ export const kove450rrV2: MotorcycleSheetV2 = {
       "observed_price": "≈191,50 € le train",
       "source_type": "observed",
       "note": "Exemple de prix observé pour un train Metzeler aux dimensions correspondantes ; montage non compris."
-    },
-    {
-      "part": "Chaîne & transmission",
-      "specification": "Transmission secondaire selon démultiplication du modèle",
-      "replacement_interval": "Inspection, tension et lubrification régulières",
-      "observed_price": "Sur devis selon kit",
-      "source_type": "observed"
     }
   ],
   "budget": {
-    "title": "Repères de coût d'entretien",
+    "title": "Budget entretien autour de 30 000 km",
     "summary": {
       "horizon_km": 30000,
-      "total_cost": "≈1 450–1 650 €",
-      "cost_per_km": "≈0,048–0,055 €/km",
-      "interval_rule": "1 000 km puis tous les 5 000 km",
-      "note": "Calcul LabelMoto basé sur l’addition des révisions programmées jusqu’à 30 000 km et des consommables courants documentés. La révision de 31 000 km reste visible dans le calendrier mais n’entre pas dans ce total. Pneus, kit chaîne, plaquettes, batterie et autres pièces d’usure sont exclus du total principal afin de conserver une comparaison cohérente entre motos."
+      "total_cost": "≈1 620–1 820 €",
+      "cost_per_km": "≈0,054–0,061 €/km",
+      "interval_rule": "1 000 km puis tous les 5 000 km · échéance 31 000 km incluse",
+      "note": "Le total couvre les révisions programmées de 1 000 à 31 000 km et les consommables courants documentés. La révision de 31 000 km est incluse car elle suit immédiatement le seuil de 30 000 km. Pneus, kit chaîne, plaquettes, batterie et autres pièces d’usure sont exclus du total principal."
     },
     "cards": [
       {
@@ -506,8 +509,8 @@ export const kove450rrV2: MotorcycleSheetV2 = {
   ],
 
   "warranty": {
-    "duration": "2 ans à compter du début de garantie, sans limitation de kilométrage (garantie constructeur KOVE France, sauf stipulation contraire).",
-    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles.",
+    "duration": "2 ans",
+    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles. Garantie constructeur sans limitation de kilométrage, sauf stipulation contraire.",
     "maintenance_requirement": "Respecter le plan d'entretien applicable au modèle, au millésime et au VIN, et conserver les justificatifs d'entretien.",
     "claim_requirement": "Pour une demande de prise en charge, se rapprocher d'un revendeur / réparateur agréé KOVE France avec les justificatifs demandés.",
     "legal_warranty_note": "Les CGV KOVE Moto France distinguent la garantie constructeur de 2 ans des garanties légales françaises. Les exclusions et la procédure de prise en charge restent celles du contrat remis avec la moto.",
@@ -526,7 +529,7 @@ export const kove450rrV2: MotorcycleSheetV2 = {
     ],
     "weaknesses": [
       "Position de conduite plus exigeante qu’un roadster",
-      "Données huile et bougies encore à verrouiller pour le millésime 2026",
+      "Révision majeure de 21 000 km à anticiper",
       "Prix des pièces variables selon fournisseur"
     ]
   },
@@ -537,7 +540,7 @@ export const kove450rrV2: MotorcycleSheetV2 = {
     "manufacturer_fr_verified": false,
     "european_manual_verified": false,
     "technical_documentation_verified": true,
-    "consumables_verified": true,
+    "consumables_verified": false,
     "recall_checked": false,
     "pricing_type": "observed",
     "last_verified": "23/09/2026",

@@ -140,6 +140,9 @@ export const cfmoto450srDisplayData = {
 
 export const cfmoto450srV2: MotorcycleSheetV2 = {
   layout_version: 2,
+  "faq": cfmoto450srDisplayData.faq,
+  "longevity_tips": cfmoto450srDisplayData.longevityTips,
+  "conclusion": cfmoto450srDisplayData.conclusion,
 
   hero_subtitle:
     "Le guide LabelMoto de la CFMOTO 450SR : révisions, huile, filtres, bougies, soupapes, transmission, coûts et rappel constructeur.",
@@ -834,6 +837,7 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
       "2 ans annoncés pièces & main-d’œuvre",
     market:
       'France',
+    source_label: 'CFMOTO France · garantie moto',
     maintenance_requirement:
       "CFMOTO France demande que l'entretien soit effectué dans le réseau agréé et que le carnet soit renseigné après chaque passage.",
     legal_warranty_note:

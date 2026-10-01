@@ -134,13 +134,10 @@ export const kove800xVariants = [
   }
 ];
 
-export const kove800xV2: MotorcycleSheetV2 & {
-  intro: string;
-  conclusion: string;
-  longevity_tips: string[];
-  faq: { question: string; answer: string }[];
-} = {
+export const kove800xV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "display_title": "KOVE 800X",
+  "variants": kove800xVariants,
   "hero_subtitle": "KOVE 800X Pro, GT et Rally : caractéristiques, entretien, consommables, budget et conseils pratiques.",
   "intro": "Trois versions, un même bicylindre de 799 cm³ et trois usages très différents. La Pro vise la polyvalence, la GT le voyage et la Rally le hors route.",
   "conclusion": "La Pro constitue le choix le plus polyvalent. La GT convient davantage au voyage grâce à son ergonomie plus accessible et son réservoir de 22 L. La Rally est la plus légère et la plus spécialisée pour le hors route. Le choix dépend donc surtout de l’usage et de l’ergonomie recherchés.",
@@ -290,7 +287,7 @@ export const kove800xV2: MotorcycleSheetV2 & {
     {
       "km": 21000,
       "title": "Révision majeure",
-      "price_estimate": "≈169 à 239 € + opérations additionnelles",
+      "price_estimate": "≈239 €",
       "price_type": "observed",
       "operations": [
         {
@@ -314,7 +311,7 @@ export const kove800xV2: MotorcycleSheetV2 & {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Planning KOVE Service Schedule 2026 publié par le constructeur."
+      "note": "Planning KOVE Service Schedule 2026. Repère atelier observé : forfait complet à 239 € incluant le contrôle du jeu aux soupapes ; consommables en supplément."
     },
     {
       "km": 26000,
@@ -357,6 +354,27 @@ export const kove800xV2: MotorcycleSheetV2 & {
         }
       ],
       "note": "Suite du cycle constructeur après la reprise à 26 000 km."
+    },
+    {
+      "km": 36000,
+      "title": "Révision périodique",
+      "price_estimate": "≈149 à 239 €",
+      "price_type": "observed",
+      "operations": [
+        {
+          "label": "Remplacement huile moteur + filtre à huile",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Inspection filtre à air ; remplacement selon état / tableau constructeur",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Contrôle transmission finale, freinage, pneumatiques et fixations",
+          "source_type": "official_other_market"
+        }
+      ],
+      "note": "Suite du cycle constructeur répété tous les 5 000 km."
     }
   ],
   "maintenance_details": [
@@ -542,9 +560,9 @@ export const kove800xV2: MotorcycleSheetV2 & {
       "part": "Jeu aux soupapes",
       "specification": "Contrôle à l’échéance majeure",
       "replacement_interval": "21 000 km selon le planning 2026",
-      "observed_price": "Sur devis",
+      "observed_price": "≈239 € le forfait",
       "source_type": "observed",
-      "note": "Le coût dépend du temps de main-d’œuvre et d’un éventuel réglage. Aucun tarif national KOVE n’est publié."
+      "note": "Repère atelier observé chez Vulka Motor : forfait 2 roues complet à 239 € incluant le contrôle du jeu aux soupapes. Ce n’est pas un tarif national KOVE ; les consommables sont facturés en supplément."
     },
     {
       "part": "Liquide de refroidissement",
@@ -580,35 +598,37 @@ export const kove800xV2: MotorcycleSheetV2 & {
     }
   ],
   "budget": {
-    "title": "Budget entretien jusqu’à 31 000 km",
+    "title": "Budget entretien autour de 30 000 km",
+    "summary": {
+      "horizon_km": 30000,
+      "total_cost": "≈1 530–2 070 €",
+      "cost_per_km": "≈0,051–0,069 €/km",
+      "interval_rule": "1 000 km puis tous les 5 000 km · échéance 31 000 km incluse",
+      "note": "Calcul LabelMoto autour de 30 000 km en incluant la révision de 31 000 km, première échéance immédiatement suivante. Le total additionne les forfaits atelier observés ainsi que 21 L d’huile et sept filtres à huile aux prix documentés. Les autres consommables et pièces d’usure sont exclus."
+    },
     "cards": [
       {
-        "label": "Budget de base jusqu’à 31 000 km",
-        "value": "environ 1 530 €",
-        "note": "Estimation LabelMoto fondée sur sept passages jusqu’à 31 000 km, six forfaits courants à 149 €, un forfait complet à 239 €, environ 21 L d’huile et sept filtres à huile aux tarifs observés."
-      },
-      {
-        "label": "Révisions jusqu’à 31 000 km",
+        "label": "Révisions incluses",
         "value": "7 passages",
-        "note": "1 000, 6 000, 11 000, 16 000, 21 000, 26 000 et 31 000 km."
+        "note": "Le calendrier constructeur se poursuit ensuite à 36 000 km, mais cette échéance n’entre pas dans le budget autour de 30 000 km."
       },
       {
         "label": "Forfait courant observé",
-        "value": "149 €",
-        "note": "Tarif atelier deux roues observé. Les consommables sont facturés en supplément."
+        "value": "149–239 €",
+        "note": "Repères atelier deux roues observés chez Vulka Motor. Les consommables sont facturés en supplément."
       },
       {
         "label": "Forfait complet observé",
         "value": "239 €",
-        "note": "Tarif atelier observé pour un forfait plus complet. Les consommables restent facturés en supplément."
+        "note": "Forfait atelier observé incluant notamment le contrôle du jeu aux soupapes. Les consommables restent facturés en supplément."
       },
       {
         "label": "Usure non comprise",
         "value": "Selon usage",
-        "note": "Pneus, kit chaîne, plaquettes, filtre à air et pièces d’usure ne sont pas inclus dans les 1 530 €."
+        "note": "Pneus, kit chaîne, plaquettes, filtre à air et autres pièces d’usure ne sont pas inclus dans le total principal."
       }
     ],
-    "note": "Ce montant est une estimation documentée, pas un barème KOVE France. Il sert à donner un ordre de grandeur du coût de base jusqu’à 31 000 km."
+    "note": "Estimations indicatives et non contractuelles. Les tarifs varient selon l’atelier, la région, l’état de la moto et les opérations réellement nécessaires."
   },
   "warranty": {
     "duration": "2 ans",

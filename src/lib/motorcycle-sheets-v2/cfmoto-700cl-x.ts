@@ -87,7 +87,7 @@ export const cfmoto700clXDisplayData = {
     "Contrôler la chaîne régulièrement ; les manuels donnent 20–30 mm pour Heritage/Adventure et 30–40 mm pour Sport.",
     "Faire vérifier les campagnes de rappel par VIN dans le réseau."
   ],
-  "conclusion": "La 700 CL-X partage une base moteur cohérente entre ses variantes, mais une fiche fiable ne doit pas écraser leurs différences. Les quantités d’huile, l’admission, les pneus, le freinage et plusieurs échéances sont à lire par version et millésime."
+  "conclusion": "La 700 CL-X existe en plusieurs variantes qui ne doivent pas être confondues. Avant une intervention ou une commande de pièces, il faut identifier précisément la version et le millésime, notamment pour les quantités d’huile, l’admission, les pneus, le freinage et certaines échéances."
 };
 
 export const cfmoto700clXVariants = [
@@ -161,6 +161,9 @@ export const cfmoto700clXVariants = [
 
 export const cfmoto700clXV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": cfmoto700clXDisplayData.faq,
+  "longevity_tips": cfmoto700clXDisplayData.longevityTips,
+  "conclusion": cfmoto700clXDisplayData.conclusion,
   "hero_subtitle": "Guide LabelMoto 700 CL-X : Heritage, Sport et Adventure · entretien France 5 000 km / 1 an · huile et partie-cycle selon variante.",
   "quick_facts": [
     {
@@ -755,10 +758,10 @@ export const cfmoto700clXV2: MotorcycleSheetV2 = {
     }
   ],
   "warranty": {
-    "duration": "À vérifier selon date de première immatriculation et contrat",
+    "duration": "Extension jusqu’à 5 ans documentée en France en 2023 pour Heritage / Sport / Adventure · contrat de la moto prioritaire",
     "market": "France",
     "maintenance_requirement": "Respecter le carnet et les exigences du contrat correspondant à la moto ; conserver les justificatifs d’entretien.",
-    "claim_requirement": "La liste CFMOTO France 2026 ne mentionne pas la 700CL-X parmi les modèles à garantie étendue 5 ans. Le contrat et le carnet remis avec la moto prévalent.",
+    "claim_requirement": "Une extension de garantie jusqu’à 5 ans a été annoncée en France en 2023 pour les 700CL-X Heritage, Sport et Adventure. La liste CFMOTO France 2026 ne mentionne plus la 700CL-X parmi les modèles actuellement annoncés à 5 ans. La couverture exacte dépend donc de la date de vente ou d’immatriculation et du contrat remis avec la moto.",
     "source_label": "CFMOTO France · garantie moto"
   },
   "equivalents_v2": [

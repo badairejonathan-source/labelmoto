@@ -68,9 +68,9 @@ export const cfmoto800mtSportExploreDisplayData = {
     "Contrôler et lubrifier la chaîne tous les 1 000 km, et plus souvent après pluie, lavage ou usage intensif.",
     "Remplacer le filtre à air plus fréquemment lorsque la moto roule régulièrement sur routes poussiéreuses ou pistes.",
     "Faire contrôler les jeux aux soupapes à 30 000 km conformément à la table de maintenance européenne.",
-    "Pour une moto 2023–2025, vérifier le manuel et le carnet correspondant au VIN avant de reprendre une valeur issue d'une fiche 2026."
+    "Pour une moto 2023–2025, utiliser le manuel et le carnet correspondant au VIN plutôt que les spécifications d’un millésime plus récent."
   ],
-  "conclusion": "La 800 MT Sport / Explore constitue une base de voyage très équipée autour du bicylindre 799 cm³. Son intervalle principal de 15 000 km limite la fréquence des passages en atelier, mais la fiche couvre plusieurs millésimes et marchés : puissance, couple et équipement doivent toujours être rapprochés du VIN et du carnet de la moto. Pour la France actuelle, les valeurs de référence retenues sont 91 ch, 75 Nm, 19 L et 231 kg."
+  "conclusion": "La 800 MT Sport / Explore est une voyageuse très équipée autour du bicylindre de 799 cm³. Son intervalle principal de 15 000 km limite la fréquence des passages en atelier. Les versions France actuelles sont annoncées à 91 ch, 75 Nm, 19 L et 231 kg ; les modèles plus anciens peuvent présenter des différences d’homologation ou d’équipement selon leur millésime."
 };
 
 export const cfmoto800mtSportExploreVariants = [
@@ -139,6 +139,11 @@ export const cfmoto800mtSportExploreVariants = [
 
 export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": cfmoto800mtSportExploreDisplayData.faq,
+  "longevity_tips": cfmoto800mtSportExploreDisplayData.longevityTips,
+  "conclusion": cfmoto800mtSportExploreDisplayData.conclusion,
+  "display_title": "CFMOTO 800 MT",
+  "variants": cfmoto800mtSportExploreVariants,
   "hero_subtitle": "Le guide LabelMoto de la CFMOTO 800 MT Sport / Explore : variantes, révisions, huile, filtres, bougies, soupapes, transmission, garantie et différences de millésime.",
   "quick_facts": [
     {
@@ -263,7 +268,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
         }
       ],
       "note": "La table de maintenance CFMOTO Europe prévoit filtre à air, bougies et contrôle des soupapes à 30 000 km.",
-      "price_estimate": "≈500–850 €",
+      "price_estimate": "≈450–600 €",
       "price_type": "estimate"
     },
     {
@@ -296,7 +301,7 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
         }
       ],
       "note": "Toujours vérifier le programme correspondant au VIN et au millésime avant intervention.",
-      "price_estimate": "≈550–900 €",
+      "price_estimate": "≈500–650 €",
       "price_type": "estimate"
     },
     {
@@ -316,8 +321,8 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
     "title": "Repères de coût d'entretien",
     "summary": {
       "horizon_km": 30000,
-      "total_cost": "≈910–1 480 €",
-      "cost_per_km": "≈0,030–0,049 €/km",
+      "total_cost": "≈860–1 230 €",
+      "cost_per_km": "≈0,029–0,041 €/km",
       "interval_rule": "1 000 km puis 15 000 km / 1 an",
       "note": "Calcul LabelMoto basé sur l’addition des fourchettes des révisions programmées jusqu’à 30 000 km. Pneus, kit chaîne, plaquettes, batterie et autres consommables d’usure sont exclus du total principal afin de conserver une comparaison cohérente entre motos."
     },

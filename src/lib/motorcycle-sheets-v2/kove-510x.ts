@@ -47,12 +47,21 @@ export const kove510xDisplayData = {
       "answer": "La documentation technique KOVE du KY510X indique une CR8EI avec un écartement de 0,6 à 0,8 mm."
     }
   ],
-  "conclusion": "Le V2 remplace le calendrier legacy 5 000 km par le planning KOVE 2026 et conserve les divergences France / ancien manuel."
+  "longevityTips": [
+    "Respecter la première révision à 1 000 km puis le cycle de 6 000 km du planning KOVE 2026.",
+    "Contrôler régulièrement le niveau d’huile et respecter les quantités prévues selon le type d’intervention.",
+    "Nettoyer et lubrifier régulièrement la chaîne, surtout après pluie, lavage ou utilisation sur route sale.",
+    "Surveiller filtre à air, pneus et freinage plus fréquemment en usage chargé, poussiéreux ou soutenu."
+  ],
+  "conclusion": "Avant d’acheter une 510X d’occasion ou de commander ses pièces, relevez le VIN et le millésime : plusieurs calendriers KOVE circulent selon la génération. Sur une moto approchant 25 000 à 31 000 km, demandez la facture de la révision majeure des 25 000 km et vérifiez que l’historique correspond au bon planning. Une absence de preuve à cette échéance représente un coût à prévoir, pas un simple détail administratif."
 };
 
 export const kove510xV2: MotorcycleSheetV2 = {
   "layout_version": 2,
-  "hero_subtitle": "Guide KOVE 510X : calendrier 2026 de 7 000 km, huile 3,0 L avec filtre et divergence de puissance France documentée.",
+  "faq": kove510xDisplayData.faq,
+  "longevity_tips": kove510xDisplayData.longevityTips,
+  "conclusion": kove510xDisplayData.conclusion,
+  "hero_subtitle": "Guide KOVE 510X : 1 000 km puis tous les 6 000 km · huile 3,0 L avec filtre · divergence de puissance France documentée.",
   "quick_facts": [
     {
       "label": "CYLINDRÉE",
@@ -185,7 +194,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
     {
       "km": 25000,
       "title": "Révision majeure",
-      "price_estimate": "≈169–239 € + opérations additionnelles",
+      "price_estimate": "≈169–239 €",
       "price_type": "observed",
       "operations": [
         {
@@ -206,6 +215,48 @@ export const kove510xV2: MotorcycleSheetV2 = {
         },
         {
           "label": "Entretien majeur du filtre à air selon tableau constructeur",
+          "source_type": "official_other_market"
+        }
+      ],
+      "note": "Planning KOVE Service Schedule 2026. Le cycle recommence à 31 000 km sur la base de l’échéance 7 000 km."
+    },
+    {
+      "km": 31000,
+      "title": "Révision périodique",
+      "price_estimate": "≈149–239 €",
+      "price_type": "observed",
+      "operations": [
+        {
+          "label": "Remplacement huile moteur + filtre à huile",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Inspection filtre à air ; remplacement selon état / tableau constructeur",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Contrôle transmission finale, freinage, pneumatiques et fixations",
+          "source_type": "official_other_market"
+        }
+      ],
+      "note": "Planning KOVE Service Schedule 2026. Le cycle recommence à 31 000 km sur la base de l’échéance 7 000 km."
+    },
+    {
+      "km": 37000,
+      "title": "Révision périodique",
+      "price_estimate": "≈149–239 €",
+      "price_type": "observed",
+      "operations": [
+        {
+          "label": "Remplacement huile moteur + filtre à huile",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Inspection filtre à air ; remplacement selon état / tableau constructeur",
+          "source_type": "official_other_market"
+        },
+        {
+          "label": "Contrôle transmission finale, freinage, pneumatiques et fixations",
           "source_type": "official_other_market"
         }
       ],
@@ -367,56 +418,121 @@ export const kove510xV2: MotorcycleSheetV2 = {
   ],
   "consumables_v2": [
     {
-      "part": "Huile moteur",
-      "specification": "SAE 10W-40 · API SN",
-      "replacement_interval": "À chaque révision",
-      "observed_price": "≈35–92 € / 4 L selon huile observée en Europe",
+      "part": "Huile moteur & filtre",
+      "specification": "SAE 10W-40 · environ 3,0 L avec filtre",
+      "replacement_interval": "À chaque échéance du planning KOVE 2026",
+      "observed_price": "≈40–52 € le pack 4 L + filtre",
       "source_type": "observed",
-      "note": "La quantité avec filtre du manuel est de 3,0 L."
+      "note": "Fourchette issue de packs vidange 10W-40 avec filtre sélectionné pour la KOVE 510X 2025. Le bidon de 4 L couvre la quantité documentée de 3,0 L avec filtre."
     },
     {
-      "part": "Bougie",
-      "specification": "CR8EI · 0,6–0,8 mm",
-      "replacement_interval": "Inspection selon planning KOVE",
-      "source_type": "technical_documentation"
+      "part": "Filtre à air",
+      "specification": "DNA R-DA5E23-01 · compatible KOVE 510X 2025-2026",
+      "replacement_interval": "Inspection / remplacement selon planning et état",
+      "observed_price": "≈88–98 €",
+      "source_type": "observed",
+      "note": "Référence adaptable DNA, pas une référence OEM KOVE. Prix promotionnel et prix catalogue observés chez WRS. Référence conservée pour la future base Consommables."
+    },
+    {
+      "part": "Liquide de refroidissement",
+      "specification": "Liquide moto compatible circuit aluminium",
+      "replacement_interval": "24 mois selon planning KOVE",
+      "observed_price": "≈12–13 € / L",
+      "source_type": "observed",
+      "note": "Repère de marché observé dans le catalogue véhicule KOVE 510X."
     },
     {
       "part": "Liquide de frein",
       "specification": "DOT 4",
-      "replacement_interval": "12 mois",
+      "replacement_interval": "Selon planning constructeur",
       "observed_price": "≈8–12 € / 500 ml",
-      "source_type": "observed"
+      "source_type": "observed",
+      "note": "Fourchette resserrée observée sur plusieurs liquides DOT 4."
+    },
+    {
+      "part": "Pneus & roues",
+      "specification": "110/80 R19 avant · 150/70 R17 arrière",
+      "replacement_interval": "Selon usure",
+      "observed_price": "≈280–285 € le train Road 6",
+      "source_type": "observed",
+      "note": "Repère premium route construit sur les prix observés du Michelin Road 6 dans les deux dimensions exactes. Montage et valves non compris."
     }
   ],
   "budget": {
-    "title": "Repères de budget entretien — France / Europe",
+    "title": "Budget entretien autour de 30 000 km",
+    "summary": {
+      "horizon_km": 30000,
+      "total_cost": "≈910–1 430 €",
+      "cost_per_km": "≈0,030–0,048 €/km",
+      "interval_rule": "1 000 km puis tous les 6 000 km · échéance 31 000 km incluse",
+      "note": "Estimation LabelMoto des seuls forfaits atelier observés jusqu’à la révision de 31 000 km, première échéance immédiatement suivante après 30 000 km. Les consommables, pièces d’usure et opérations additionnelles restent exclus."
+    },
     "cards": [
       {
-        "label": "Forfait atelier KOVE observé",
-        "value": "149 €",
-        "note": "Forfait deux-roues de base affiché par un atelier KOVE français ; consommables en supplément."
+        "label": "Révisions incluses",
+        "value": "6 passages",
+        "note": "1 000, 7 000, 13 000, 19 000, 25 000 et 31 000 km."
       },
       {
-        "label": "Forfait plus complet observé",
-        "value": "169 à 239 €",
-        "note": "Tarifs atelier français observés selon contenu de l’intervention ; consommables / pièces additionnelles possibles."
+        "label": "Forfait courant observé",
+        "value": "149–239 €",
+        "note": "Repère atelier français observé ; consommables en supplément."
       },
       {
-        "label": "Statut prix",
-        "value": "Observé — non constructeur",
-        "note": "Ces montants ne sont ni un barème national KOVE ni un devis spécifique au modèle."
+        "label": "Révision majeure",
+        "value": "169–239 €",
+        "note": "Repère atelier observé à 25 000 km ; pièces et opérations additionnelles possibles."
+      },
+      {
+        "label": "Consommables non compris",
+        "value": "Selon besoin",
+        "note": "Huile, filtres, bougie, pneus, transmission et autres pièces ne sont pas intégrés au total principal."
       }
     ],
-    "note": "Toujours demander un devis : temps de main-d’œuvre, consommables, réglage des soupapes, pneus, transmission et opérations additionnelles font varier la facture."
+    "note": "Estimations indicatives et non contractuelles. Le tarif réel dépend de l’atelier, de la région et des opérations effectivement réalisées."
   },
   "warranty": {
-    "duration": "2 ans à compter du début de garantie, sans limitation de kilométrage (garantie constructeur KOVE France, sauf stipulation contraire).",
-    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles.",
+    "duration": "2 ans",
+    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles. Garantie constructeur sans limitation de kilométrage, sauf stipulation contraire.",
     "maintenance_requirement": "Respecter le plan d'entretien applicable au modèle, au millésime et au VIN, et conserver les justificatifs d'entretien.",
     "claim_requirement": "Pour une demande de prise en charge, se rapprocher d'un revendeur / réparateur agréé KOVE France avec les justificatifs demandés.",
     "legal_warranty_note": "Les CGV KOVE Moto France distinguent la garantie constructeur de 2 ans des garanties légales françaises. Les exclusions et la procédure de prise en charge restent celles du contrat remis avec la moto.",
     "market": "France",
     "source_label": "KOVE Moto France · CGV / garantie constructeur"
+  },
+  "known_issues_v2": [
+    {
+      "title": "Calendrier selon le millésime",
+      "description": "Des documents KY510X plus anciens utilisent une cadence différente. Pour une intervention, le carnet correspondant au VIN et au millésime doit rester prioritaire.",
+      "type": "manufacturer_monitoring",
+      "confidence": "official_other_market"
+    },
+    {
+      "title": "Puissance annoncée en France",
+      "description": "La documentation France consultée présente des valeurs divergentes. Vérifier les données d’homologation correspondant précisément à la moto.",
+      "type": "manufacturer_monitoring",
+      "confidence": "official_fr"
+    },
+    {
+      "title": "Révision majeure à 25 000 km",
+      "description": "Cette échéance comporte davantage d’opérations qu’une révision périodique courante et doit être anticipée dans le budget.",
+      "type": "usage_limitation",
+      "confidence": "official_other_market"
+    }
+  ],
+  "verdict": {
+    "title": "Un cycle de 6 000 km à suivre selon le millésime",
+    "text": "La 510X demande une attention particulière au calendrier applicable à son millésime. Pour la génération documentée par le planning KOVE 2026, la première révision arrive à 1 000 km puis les échéances progressent par pas de 6 000 km, avec une révision majeure à 25 000 km.",
+    "strengths": [
+      "Cycle 2026 clairement défini",
+      "Quantités d’huile documentées",
+      "Bougie et principaux contrôles techniques documentés"
+    ],
+    "weaknesses": [
+      "Anciens calendriers différents encore en circulation",
+      "Révision majeure à 25 000 km",
+      "Certaines références de consommables restent à vérifier avant commande"
+    ]
   },
   "data_quality": {
     "market": "France",
@@ -424,12 +540,12 @@ export const kove510xV2: MotorcycleSheetV2 = {
     "manufacturer_fr_verified": true,
     "european_manual_verified": true,
     "technical_documentation_verified": true,
-    "consumables_verified": true,
+    "consumables_verified": false,
     "recall_checked": false,
     "pricing_type": "observed",
-    "last_verified": "23/09/2026",
+    "last_verified": "26/09/2026",
     "sources": [
-      {
+    {
         "label": "KOVE Moto France · garantie constructeur / CGV",
         "type": "official_fr",
         "market": "France",
@@ -437,7 +553,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://kove-racing.com/conditions-generales-de-ventes/",
         "note": "Garantie constructeur de deux ans à compter du début de garantie, sans limitation de kilométrage, sauf stipulation contraire. La garantie légale de conformité française reste distincte."
       },
-      {
+    {
         "label": "KOVE · Service schedule 2026",
         "type": "official_other_market",
         "market": "International",
@@ -445,7 +561,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://www.kovemoto.com/wp-content/uploads/2026/06/Service-schedule.pdf",
         "note": "Planning constructeur commun de maintenance ; le carnet correspondant au VIN reste prioritaire."
       },
-      {
+    {
         "label": "KOVE · Service",
         "type": "official_other_market",
         "market": "International",
@@ -453,7 +569,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://www.kovemoto.com/service",
         "note": "Portail constructeur : planning, politiques de garantie et manuels par modèle."
       },
-      {
+    {
         "label": "KOVE France · conditions de garantie",
         "type": "official_fr",
         "market": "France",
@@ -461,7 +577,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://kovemotor.fr/wp-content/uploads/2025/04/KOVE-MOTO-conditions-garantie-france.pdf",
         "note": "Conditions contractuelles France ; le document remis avec la moto fait foi pour les exclusions et la procédure de prise en charge."
       },
-      {
+    {
         "label": "Vulka Motor · tarifs atelier KOVE",
         "type": "observed",
         "market": "France",
@@ -469,7 +585,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://vulkamotor.fr/atelier/tarifs/",
         "note": "Prix atelier observés ; ne constitue pas un barème constructeur national."
       },
-      {
+    {
         "label": "KOVE France · 510X",
         "type": "official_fr",
         "market": "France",
@@ -477,7 +593,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://kovemotor.fr/modele/510x/",
         "note": "Page France : 498,4 cm³, A2, 178 kg à vide, 841 mm, 20 L et divergence 32 / 35 kW."
       },
-      {
+    {
         "label": "Manuel KY510X",
         "type": "technical_documentation",
         "market": "Europe / international",
@@ -485,7 +601,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://www.manualslib.com/manual/4082659/Kove-Ky510x.html",
         "note": "Huile / liquides et ancien calendrier ; à ne pas confondre avec le planning 2026."
       },
-      {
+    {
         "label": "KOVE · paramètres techniques 510X",
         "type": "technical_documentation",
         "market": "International",
@@ -493,15 +609,47 @@ export const kove510xV2: MotorcycleSheetV2 = {
         "url": "https://www.kovemoto.com/uploadfile/202509/be3e9e5bf236996.pdf",
         "note": "CR8EI, écartement 0,6–0,8 mm, soupapes 0,10–0,15 / 0,15–0,20 mm et pneus 110/80R19–150/70R17."
       },
-      {
+    {
         "label": "Louis Europe · 510X 2026+",
         "type": "observed",
         "market": "Europe",
         "model_year": "2026+",
         "url": "https://www.louis.eu/en/bike-database/kove-510x/ko510x-26/5983",
         "note": "SAE 10W-40, API SN, DOT 4 et repères de prix européens."
-      }
-    ]
+      },
+    {
+      "label": "Tech2Roo · packs vidange KOVE 510X",
+      "type": "observed",
+      "market": "France",
+      "model_year": "2025",
+      "url": "https://www.tech2roo.com/parts/pieces-moto/kove/510x/2025/1404-packs-vidange-moto",
+      "note": "Packs 10W-40 de 4 L avec filtre sélectionné selon la moto ; prix observés utilisés pour la fourchette vidange."
+    },
+    {
+      "label": "WRS · filtre à air DNA KOVE 510X",
+      "type": "observed",
+      "market": "Europe",
+      "model_year": "2025-2026",
+      "url": "https://www.wrs.it/fr/28033355-510-x",
+      "note": "Filtre à air DNA R-DA5E23-01 annoncé compatible KOVE 510X 2025-2026 ; prix observé et référence adaptable conservée pour la future base Consommables."
+    },
+    {
+      "label": "Louis · KOVE 510X",
+      "type": "observed",
+      "market": "Europe",
+      "model_year": "2024-2026",
+      "url": "https://www.louis.eu/fr/bike-database/kove-510x/ko510x-24/5982",
+      "note": "Catalogue véhicule utilisé pour les repères de liquide de frein et liquide de refroidissement. La bougie n’est pas tarifée dans LabelMoto tant que la divergence CR8EI / CR8E / CR8EIX n’est pas résolue."
+    },
+    {
+      "label": "Oponeo · Michelin Road 6 110/80 R19 + 150/70 R17",
+      "type": "observed",
+      "market": "France",
+      "model_year": "2026",
+      "url": "https://www.oponeo.fr/pneu-moto-modele/michelin-road-6",
+      "note": "Prix observés pour les deux dimensions d’origine de la 510X ; utilisés comme repère premium route, hors montage."
+    }
+  ]
   },
   "equivalents_v2": [
     {

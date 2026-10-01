@@ -3,6 +3,9 @@ import type { MotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
 export const vogeR625DisplayData = { modelName: 'Voge R625', model: 'Voge R625', year: '2025+', category: 'Roadster A / A2', introduction: 'Roadster 581 cm³, 64 ch en A et 48 ch en A2, avec manuel France dédié.' };
 export const vogeR625V2: MotorcycleSheetV2 = {
   layout_version: 2,
+  "license_fr": "A_ET_A2",
+  "license_fr_source": "https://vogefrance.fr/product/r625/",
+  "license_fr_verified_at": "2026-09-30",
   hero_subtitle: 'Guide LabelMoto Voge R625 : révisions 5 000 km, 3,0 L de 10W-40, CPR8EA-9 et coûts atelier en fourchettes.',
   quick_facts: [{label:'PUISSANCE',value:'64 ch (A) / 48 ch (A2)'},{label:'COUPLE',value:'57 Nm (A) / 47 Nm (A2)'},{label:'CYLINDRÉE',value:'581 cm³'},{label:'SELLE',value:'785 mm'},{label:'RÉSERVOIR',value:'16,5 L'},{label:'POIDS',value:'195 kg en ordre de marche'}],
   quick_maintenance: [{label:'1ère révision',value:'1 000 km',confidence:'official_fr'},{label:'Révisions',value:'5 000 km / 1 an',confidence:'observed'},{label:'Huile',value:'10W-40 SL+ · 3,0 L',confidence:'official_fr'},{label:'Bougie',value:'CPR8EA-9',confidence:'official_fr'},{label:'Soupapes adm.',value:'0,10–0,15 mm',confidence:'official_fr'},{label:'Soupapes éch.',value:'0,15–0,20 mm',confidence:'official_fr'}],

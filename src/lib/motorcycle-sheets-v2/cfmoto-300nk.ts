@@ -91,11 +91,14 @@ export const cfmoto300nkDisplayData = {
     "Maintenir la chaîne entre 30 et 40 mm et la lubrifier environ tous les 600 km.",
     "Faire contrôler le VIN pour les trois campagnes de rappel 300NK listées par CFMOTO Europe."
   ],
-  "conclusion": "La 300NK reste une mécanique simple, mais sa V2 devait corriger plusieurs mélanges : calendrier annuel au lieu de 6 mois, filtre à air trop rapproché, bougie trop tardive et soupapes trop précoces. La fiche 2020+ conserve aussi une prudence par millésime, car certaines spécifications des premières années diffèrent selon marché."
+  "conclusion": "La 300NK reste une mécanique simple à entretenir. Certaines échéances diffèrent toutefois selon le millésime et le marché : le carnet correspondant au VIN reste prioritaire, notamment pour le filtre à air, la bougie et le contrôle du jeu aux soupapes."
 };
 
 export const cfmoto300nkV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": cfmoto300nkDisplayData.faq,
+  "longevity_tips": cfmoto300nkDisplayData.longevityTips,
+  "conclusion": cfmoto300nkDisplayData.conclusion,
   "hero_subtitle": "Guide LabelMoto CFMOTO 300NK 2020+ : 5 000 km / 6 mois · 1,4 L · CR8EI 10k · air 20k · soupapes 40k.",
   "quick_facts": [
     {
@@ -291,6 +294,8 @@ export const cfmoto300nkV2: MotorcycleSheetV2 = {
       "km": 35000,
       "months": 24,
       "title": "Échéance refroidissement",
+      "price_estimate": "≈160–250 € · estimation LabelMoto",
+      "price_type": "estimate",
       "operations": [
         {
           "label": "Liquide de refroidissement : remplacement à 35 000 km / 24 mois",
@@ -305,6 +310,8 @@ export const cfmoto300nkV2: MotorcycleSheetV2 = {
     {
       "km": 40000,
       "title": "Révision majeure",
+      "price_estimate": "≈250–400 € · estimation LabelMoto",
+      "price_type": "estimate",
       "operations": [
         {
           "label": "Jeu aux soupapes : contrôle",

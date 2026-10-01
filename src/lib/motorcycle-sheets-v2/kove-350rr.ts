@@ -54,6 +54,9 @@ export const kove350rrDisplayData = {
 
 export const kove350rrV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": kove350rrDisplayData.faq,
+  "longevity_tips": kove350rrDisplayData.longevityTips,
+  "conclusion": kove350rrDisplayData.conclusion,
   "hero_subtitle": "Guide KOVE 350RR : calendrier documenté, huile, filtre à air, soupapes, liquides, pneus, chaîne et budget atelier.",
   "quick_facts": [
     { "label": "PUISSANCE", "value": "47 ch" },
@@ -102,7 +105,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 3000,
@@ -120,7 +123,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 6000,
@@ -138,7 +141,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 9000,
@@ -156,7 +159,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 12000,
@@ -174,7 +177,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 15000,
@@ -192,7 +195,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 18000,
@@ -210,7 +213,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 21000,
@@ -228,7 +231,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 24000,
@@ -246,7 +249,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 27000,
@@ -264,7 +267,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     },
     {
       "km": 30000,
@@ -282,7 +285,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "Plan d’entretien KOVE 350RR utilisé comme base LabelMoto. Le carnet d’entretien correspondant au millésime et au VIN reste prioritaire."
+      "note": "Échéance issue de la table KOVE Colombia 350RR, adaptée aux conditions de ce marché. Pour une moto en France, le carnet correspondant au millésime et au VIN reste prioritaire."
     }
   ],
   "maintenance_details": [
@@ -433,33 +436,12 @@ export const kove350rrV2: MotorcycleSheetV2 = {
   ],
   "consumables_v2": [
     {
-      "part": "Huile moteur & filtre",
+      "part": "Huile moteur",
       "specification": "SAE 10W-40 · API SN · environ 2,4 L avec filtre",
       "replacement_interval": "Selon le plan d’entretien applicable à la moto",
-      "observed_price": "≈67,49 € / 4 L · filtre en supplément",
+      "observed_price": "≈67,49 € / 4 L",
       "source_type": "observed",
       "note": "Prix observé en France pour une huile 10W-40 premium. Le filtre dépend de la référence exacte du modèle."
-    },
-    {
-      "part": "Filtre à air",
-      "specification": "Filtre compatible KOVE 350RR",
-      "replacement_interval": "Inspection selon planning et remplacement selon état",
-      "observed_price": "Sur devis réseau KOVE",
-      "source_type": "observed"
-    },
-    {
-      "part": "Bougies",
-      "specification": "Référence selon millésime / VIN",
-      "replacement_interval": "Selon le plan d’entretien applicable",
-      "observed_price": "Sur devis réseau KOVE",
-      "source_type": "observed"
-    },
-    {
-      "part": "Jeu aux soupapes",
-      "specification": "Admission 0,10 à 0,16 mm · échappement 0,16 à 0,22 mm",
-      "replacement_interval": "Contrôle selon le plan constructeur",
-      "observed_price": "Sur devis atelier",
-      "source_type": "observed"
     },
     {
       "part": "Liquide de refroidissement",
@@ -469,10 +451,10 @@ export const kove350rrV2: MotorcycleSheetV2 = {
       "source_type": "observed"
     },
     {
-      "part": "Freinage & liquide",
+      "part": "Liquide de frein",
       "specification": "DOT 4",
       "replacement_interval": "Selon échéance constructeur et état des plaquettes",
-      "observed_price": "≈7,49 à 20,99 € le liquide · plaquettes sur devis",
+      "observed_price": "≈7,49 à 20,99 €",
       "source_type": "observed"
     },
     {
@@ -482,23 +464,16 @@ export const kove350rrV2: MotorcycleSheetV2 = {
       "observed_price": "≈165,33 à 299,18 € le train",
       "source_type": "observed",
       "note": "Prix observés sur des trains aux dimensions correspondantes ; montage non compris."
-    },
-    {
-      "part": "Chaîne & transmission",
-      "specification": "Kit chaîne selon démultiplication et millésime",
-      "replacement_interval": "Contrôle, tension et lubrification réguliers",
-      "observed_price": "Sur devis selon kit",
-      "source_type": "observed"
     }
   ],
   "budget": {
-    "title": "Repères de coût d'entretien",
+    "title": "Budget entretien autour de 30 000 km",
     "summary": {
       "horizon_km": 30000,
       "total_cost": "≈2 400–2 700 €",
       "cost_per_km": "≈0,080–0,090 €/km",
       "interval_rule": "1 000 km puis tous les 3 000 km",
-      "note": "Calcul LabelMoto basé sur l’addition des révisions programmées jusqu’à 30 000 km et des consommables courants documentés. Pneus, kit chaîne, plaquettes, batterie et autres pièces d’usure sont exclus du total principal afin de conserver une comparaison cohérente entre motos."
+      "note": "Calcul LabelMoto fondé sur les révisions de la table KOVE Colombia 350RR jusqu’à 30 000 km, explicitement adaptée à ce marché, et sur les consommables courants documentés. Pour une moto en France, le carnet correspondant au VIN et au millésime reste prioritaire. Pneus, kit chaîne, plaquettes, batterie et autres pièces d’usure sont exclus du total principal."
     },
     "cards": [
       {
@@ -522,7 +497,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
   "known_issues_v2": [
     {
       "title": "Historique des révisions",
-      "description": "Le calendrier d’entretien de la 350RR comporte des échéances rapprochées. Sur une moto d’occasion, vérifiez que les interventions sont bien tracées dans le carnet et les factures.",
+      "description": "La table KOVE Colombia utilisée comme repère prévoit des échéances rapprochées jusqu’à 30 000 km et est explicitement adaptée à ce marché. Pour une moto en France, vérifiez en priorité le carnet correspondant au VIN et au millésime ainsi que la traçabilité des interventions.",
       "type": "manufacturer_monitoring",
       "confidence": "official_other_market"
     },
@@ -541,8 +516,8 @@ export const kove350rrV2: MotorcycleSheetV2 = {
   ],
 
   "warranty": {
-    "duration": "2 ans à compter du début de garantie, sans limitation de kilométrage (garantie constructeur KOVE France, sauf stipulation contraire).",
-    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles.",
+    "duration": "2 ans",
+    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles. Garantie constructeur sans limitation de kilométrage, sauf stipulation contraire.",
     "maintenance_requirement": "Respecter le plan d'entretien applicable au modèle, au millésime et au VIN, et conserver les justificatifs d'entretien.",
     "claim_requirement": "Pour une demande de prise en charge, se rapprocher d'un revendeur / réparateur agréé KOVE France avec les justificatifs demandés.",
     "legal_warranty_note": "Les CGV KOVE Moto France distinguent la garantie constructeur de 2 ans des garanties légales françaises. Les exclusions et la procédure de prise en charge restent celles du contrat remis avec la moto.",
@@ -557,10 +532,10 @@ export const kove350rrV2: MotorcycleSheetV2 = {
       "Compatible permis A2",
       "Selle basse de 790 mm",
       "Réservoir de 15 L",
-      "Entretien détaillé déjà documenté"
+      "Bicylindre de 344 cm³ compatible permis A2"
     ],
     "weaknesses": [
-      "Calendrier d’entretien rapproché dans le module actuel",
+      "Échéances rapprochées dans la table KOVE Colombia utilisée comme repère",
       "Prix des pièces variables selon fournisseur"
     ]
   },
@@ -571,7 +546,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
     "manufacturer_fr_verified": true,
     "european_manual_verified": true,
     "technical_documentation_verified": true,
-    "consumables_verified": true,
+    "consumables_verified": false,
     "recall_checked": false,
     "pricing_type": "observed",
     "last_verified": "23/09/2026",
@@ -590,7 +565,7 @@ export const kove350rrV2: MotorcycleSheetV2 = {
       "market": "International",
       "model_year": "2026",
       "url": "https://www.kovemoto.com/service",
-      "note": "Portail constructeur : planning, politiques de garantie et manuels par modèle."
+      "note": "Portail constructeur KOVE : le manuel 350RR est publié séparément. Le Service Schedule global 2026 ne classe pas la 350RR dans ses tableaux d’intervalles ; aucune échéance au-delà de 30 000 km n’est extrapolée sans source spécifique."
     },
     {
       "label": "KOVE France · conditions de garantie",

@@ -79,6 +79,9 @@ export const cfmoto675srrDisplayData = {
 
 export const cfmoto675srrV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": cfmoto675srrDisplayData.faq,
+  "longevity_tips": cfmoto675srrDisplayData.longevityTips,
+  "conclusion": cfmoto675srrDisplayData.conclusion,
   "hero_subtitle": "Le guide LabelMoto de la CFMOTO 675SR-R : révisions, huile, filtres, bougies, soupapes, transmission, coûts et données constructeur.",
   "quick_facts": [
     {
@@ -622,9 +625,9 @@ export const cfmoto675srrV2: MotorcycleSheetV2 = {
       "part": "Bougies",
       "specification": "TORCH BN8RTI · moteur 3 cylindres",
       "replacement_interval": "30 000 km selon table CFMOTO Italie révisée 2025",
-      "observed_price": "Prix à confirmer",
-      "source_type": "to_confirm",
-      "note": "La table officielle révisée retient BN8RTI. Ne pas substituer automatiquement une référence adaptable sans validation VIN/catalogue."
+      "observed_price": "≈34,20–34,90 € / unité · ≈102,60–104,70 € les 3",
+      "source_type": "observed",
+      "note": "Référence BN8RTI documentée par CFMOTO. Prix observés le 25/09/2026 chez Motonline (34,20 €) et SK-Bikes (34,90 €). Vérifier la référence avec le VIN avant commande."
     },
     {
       "part": "Liquide de refroidissement",
@@ -699,6 +702,7 @@ export const cfmoto675srrV2: MotorcycleSheetV2 = {
     "duration": "2 ans",
     "coverage": "CFMOTO France annonce 2 ans pièces & main-d'œuvre",
     "market": "France",
+    source_label: 'CFMOTO France · garantie moto',
     "maintenance_requirement": "CFMOTO France demande que les révisions soient réalisées dans le réseau agréé et que le carnet d'entretien soit renseigné après chaque passage.",
     "legal_warranty_note": "CFMOTO France affiche 2 ans pièces et main-d'œuvre pour la 675SR-R. Les mentions légales générales de la page garantie indiquent cependant une prise en charge de la main-d'œuvre durant la première année uniquement. Le carnet ou contrat de garantie remis avec la moto reste donc la référence contractuelle."
   },

@@ -77,7 +77,7 @@ export const cfmoto125nkDisplayData = {
     },
     {
       "question": "Pourquoi certaines anciennes fiches indiquent-elles un disque avant de 292 mm ?",
-      "answer": "Des documents Europe et de lancement 2025 indiquent 292 mm, mais les pages CFMOTO France actuellement dédiées au modèle 2026 affichent 242 mm avec étrier 4 pistons. Pour cette fiche 2026+, LabelMoto retient la spécification France actuelle et signale l’écart documentaire."
+      "answer": "Des documents Europe et de lancement 2025 indiquent 292 mm, tandis que CFMOTO France affiche actuellement 242 mm avec étrier 4 pistons pour le modèle 2026. En cas d’écart selon le millésime, le VIN et le manuel correspondant restent prioritaires."
     }
   ],
   "longevityTips": [
@@ -92,6 +92,9 @@ export const cfmoto125nkDisplayData = {
 
 export const cfmoto125nkV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": cfmoto125nkDisplayData.faq,
+  "longevity_tips": cfmoto125nkDisplayData.longevityTips,
+  "conclusion": cfmoto125nkDisplayData.conclusion,
   "hero_subtitle": "Guide LabelMoto CFMOTO 125NK 2026+ : 500 / 1 500 km, puis 5 000 km / 1 an · 1,1 L · PMR9B · soupapes 20k.",
   "quick_facts": [
     {
@@ -299,6 +302,8 @@ export const cfmoto125nkV2: MotorcycleSheetV2 = {
     {
       "km": 40000,
       "title": "Révision majeure",
+      "price_estimate": "≈220–330 € · estimation LabelMoto",
+      "price_type": "estimate",
       "operations": [
         {
           "label": "Répéter le cycle 20 000 km",

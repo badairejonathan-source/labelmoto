@@ -131,15 +131,63 @@ export default async function Page({
     permanentRedirect(`/fiches/${modelId}`);
   }
 
-  const ficheData = await getFicheMetadata(modelId);
+  const firestoreFicheData = await getFicheMetadata(modelId);
+
+  // LABELMOTO_LOCAL_PREVIEW_ZONTES_703F
+  // Fallback temporaire : permet de contrôler la fiche avant création Firestore.
+  const localPreviewFiche =
+    modelId === 'zontes-703-f-2025-plus'
+      ? {
+          brand: 'ZONTES',
+          category: 'trail',
+          display_title: 'ZONTES 703 F',
+          id: 'zontes-703-f-2025-plus',
+          model: '703 F',
+          service_guide: {},
+          service_guide_mode: 'v2',
+          slug: 'zontes-703-f-2025-plus',
+          status: 'published',
+          technical_sheet: {
+            cycle_parts: {
+              frame: 'Cadre périmétrique en alliage d’aluminium',
+              front_brake: 'Double disques J.Juan',
+              rear_brake: 'Disque J.Juan',
+              front_suspension: 'Marzocchi réglable',
+              rear_suspension: 'Marzocchi réglable',
+              front_tire: '90/90 R21 · Michelin Anakee Adventure',
+              rear_tire: '150/70 R18 · Michelin Anakee Adventure',
+              wheels: 'Jantes à rayons Tubeless · 21 / 18 pouces',
+            },
+            displacement_cc: 699,
+            power: '95 ch (70 kW) à 10 000 tr/min',
+            seat_height_mm: 845,
+            tank_l: 22,
+            torque: '76 Nm à 7 500 tr/min',
+            weight_tpf_kg: 236,
+          },
+          year_range: '2025+',
+        }
+      : null;
+
+  const ficheData =
+    firestoreFicheData ??
+    localPreviewFiche;
 
   if (!ficheData) {
     notFound();
   }
 
-  const initialFiche = ficheData
-    ? JSON.parse(JSON.stringify(ficheData))
-    : null;
+  const initialFiche =
+    JSON.parse(
+      JSON.stringify(
+        ficheData
+      )
+    );
 
-  return <FicheClient modelId={modelId} initialFiche={initialFiche} />;
+  return (
+    <FicheClient
+      modelId={modelId}
+      initialFiche={initialFiche}
+    />
+  );
 }

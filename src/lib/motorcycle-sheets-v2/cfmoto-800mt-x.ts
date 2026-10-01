@@ -64,6 +64,9 @@ export const cfmoto800mtxDisplayData = {
 
 export const cfmoto800mtxV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "faq": cfmoto800mtxDisplayData.faq,
+  "longevity_tips": cfmoto800mtxDisplayData.longevityTips,
+  "conclusion": cfmoto800mtxDisplayData.conclusion,
   "hero_subtitle": "Guide LabelMoto CFMOTO 800MT-X : trail aventure 799 cm³, 91 ch, 87 Nm, roues 21/18, réservoir 22,5 L et entretien constructeur.",
   "quick_facts": [
     {
@@ -182,7 +185,7 @@ export const cfmoto800mtxV2: MotorcycleSheetV2 = {
     {
       "km": 30000,
       "title": "Grande révision",
-      "price_estimate": "≈540–900 €",
+      "price_estimate": "≈480–650 €",
       "price_type": "estimate",
       "operations": [
         {
@@ -206,7 +209,7 @@ export const cfmoto800mtxV2: MotorcycleSheetV2 = {
           "source_type": "official_other_market"
         }
       ],
-      "note": "La fourchette haute correspond notamment au cas où un réglage des soupapes est nécessaire."
+      "note": "Estimation LabelMoto pour l’entretien programmé et le contrôle du jeu aux soupapes. Un réglage hors tolérance ou des pièces supplémentaires peuvent augmenter la facture."
     },
     {
       "km": 45000,
@@ -232,7 +235,7 @@ export const cfmoto800mtxV2: MotorcycleSheetV2 = {
     {
       "km": 60000,
       "title": "Révision majeure",
-      "price_estimate": "≈540–900 €",
+      "price_estimate": "≈530–700 €",
       "price_type": "estimate",
       "operations": [
         {
@@ -259,8 +262,8 @@ export const cfmoto800mtxV2: MotorcycleSheetV2 = {
     "title": "Repères de coût d'entretien",
     "summary": {
       "horizon_km": 30000,
-      "total_cost": "≈910–1 480 €",
-      "cost_per_km": "≈0,030–0,049 €/km",
+      "total_cost": "≈850–1 230 €",
+      "cost_per_km": "≈0,028–0,041 €/km",
       "interval_rule": "1 000 km puis 15 000 km / 1 an",
       "note": "Calcul LabelMoto basé sur l’addition des fourchettes des révisions programmées jusqu’à 30 000 km. Pneus, kit chaîne, plaquettes, batterie et autres consommables d’usure sont exclus du total principal afin de conserver une comparaison cohérente entre motos."
     },

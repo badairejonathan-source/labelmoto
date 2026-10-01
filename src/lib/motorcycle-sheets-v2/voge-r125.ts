@@ -7,6 +7,9 @@ export const vogeR125DisplayData = {
 
 export const vogeR125V2: MotorcycleSheetV2 = {
   layout_version: 2,
+  "license_fr": "A1",
+  "license_fr_source": "https://vogefrance.fr/voge-r125/",
+  "license_fr_verified_at": "2026-09-30",
   hero_subtitle: 'Guide LabelMoto Voge R125 : entretien 5 000 km, consommables OEM, budget atelier en fourchettes et sources France.',
   quick_facts: [
     { label: 'PUISSANCE', value: '15 ch' }, { label: 'COUPLE', value: '11,1 Nm' }, { label: 'CYLINDRÉE', value: '124,8 cm³' },

@@ -43,11 +43,24 @@ export const kove625xProDisplayData = {
       "answer": "Le manuel 625X Pro indique NGK CPR8EA-9, écartement 0,8 à 1,0 mm."
     }
   ],
-  "conclusion": "Candidat basé sur le manuel constructeur KY600GY et les données France 2026 : vidange tous les 5 000 km après la première révision, contrôles principaux tous les 10 000 km et soupapes à 20 000 / 40 000 km."
+  "longevityTips": [
+    "Respecter la vidange et le remplacement du filtre à huile tous les 5 000 km après la première révision.",
+    "Contrôler et lubrifier la chaîne tous les 1 000 km, et plus souvent après pluie, lavage ou utilisation sur piste.",
+    "En environnement poussiéreux, inspecter le filtre à air plus souvent que le cycle normal de 10 000 km.",
+    "Ne pas repousser le contrôle du jeu aux soupapes prévu à 20 000 km puis 40 000 km.",
+    "Remplacer les liquides de frein et de refroidissement tous les deux ans selon la documentation constructeur."
+  ],
+  "conclusion": "Sur une 625X Pro d’occasion, vérifiez surtout la continuité des vidanges tous les 5 000 km et la preuve de la révision des 20 000 km lorsque la moto l’a atteinte. Cette échéance comprend le contrôle du jeu aux soupapes : en l’absence de facture ou de carnet renseigné, prévoyez cette intervention dans le budget d’achat."
 };
 
 export const kove625xProV2: MotorcycleSheetV2 = {
   "layout_version": 2,
+  "license_fr": "A_BRIDABLE_A2",
+  "license_fr_source": "https://kovemotor.fr/modele/625x-pro/",
+  "license_fr_verified_at": "2026-09-30",
+  "faq": kove625xProDisplayData.faq,
+  "longevity_tips": kove625xProDisplayData.longevityTips,
+  "conclusion": kove625xProDisplayData.conclusion,
   "hero_subtitle": "Guide KOVE 625X Pro : révision initiale 1 000 km, vidange tous les 5 000 km, contrôles principaux tous les 10 000 km, CPR8EA-9 et jeux aux soupapes chiffrés.",
   "quick_facts": [
     {
@@ -64,7 +77,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     },
     {
       "label": "POIDS",
-      "value": "221 kg ordre de marche"
+      "value": "221 kg"
     },
     {
       "label": "RÉSERVOIR",
@@ -97,7 +110,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 1000,
       "title": "Première révision",
-      "price_estimate": "≈149–239 €",
+      "price_estimate": "≈149 €",
       "price_type": "observed",
       "operations": [
         {
@@ -114,6 +127,8 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 5000,
       "title": "Révision périodique",
+      "price_estimate": "≈149 €",
+      "price_type": "observed",
       "operations": [
         {
           "label": "Remplacement huile moteur + filtre à huile",
@@ -129,7 +144,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 10000,
       "title": "Révision principale",
-      "price_estimate": "≈149–239 €",
+      "price_estimate": "≈169 €",
       "price_type": "observed",
       "operations": [
         {
@@ -150,6 +165,8 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 15000,
       "title": "Révision périodique",
+      "price_estimate": "≈149 €",
+      "price_type": "observed",
       "operations": [
         {
           "label": "Remplacement huile moteur + filtre à huile",
@@ -165,7 +182,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 20000,
       "title": "Révision majeure",
-      "price_estimate": "≈149–239 €",
+      "price_estimate": "≈239 €",
       "price_type": "observed",
       "operations": [
         {
@@ -190,6 +207,8 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 25000,
       "title": "Révision périodique",
+      "price_estimate": "≈149 €",
+      "price_type": "observed",
       "operations": [
         {
           "label": "Remplacement huile moteur + filtre à huile",
@@ -205,7 +224,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 30000,
       "title": "Révision principale",
-      "price_estimate": "≈149–239 €",
+      "price_estimate": "≈169 €",
       "price_type": "observed",
       "operations": [
         {
@@ -226,6 +245,8 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 35000,
       "title": "Révision périodique",
+      "price_estimate": "≈149 €",
+      "price_type": "observed",
       "operations": [
         {
           "label": "Remplacement huile moteur + filtre à huile",
@@ -241,7 +262,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     {
       "km": 40000,
       "title": "Révision majeure",
-      "price_estimate": "≈169–239 € + opérations additionnelles",
+      "price_estimate": "≈239 €",
       "price_type": "observed",
       "operations": [
         {
@@ -410,36 +431,131 @@ export const kove625xProV2: MotorcycleSheetV2 = {
       ]
     }
   ],
-  "consumables_v2": [],
+  "consumables_v2": [
+    {
+      "part": "Huile moteur",
+      "specification": "SAE 10W-40 · API SN ou supérieur · 3,0 L avec filtre",
+      "replacement_interval": "Tous les 5 000 km après la première révision",
+      "observed_price": "≈12–14 € / L",
+      "source_type": "observed",
+      "note": "Fourchette resserrée à partir de l’huile 10W-40 vendue dans le réseau KOVE France. Le prix concerne l’huile uniquement : aucune référence de filtre à huile 625X Pro suffisamment verrouillée n’est ajoutée ici."
+    },
+    {
+      "part": "Filtre à air",
+      "specification": "DNA R-DA5E23-01 · cross-référence OEM annoncée 320301-R100-000",
+      "replacement_interval": "Cycle 10 000 km / annuel · plus fréquent en poussière",
+      "observed_price": "≈90–115 €",
+      "source_type": "observed",
+      "note": "Filtre aftermarket DNA annoncé compatible KOVE 625X et 625X Pro 2025–2026. La référence OEM indiquée est une cross-référence publiée par DNA, pas une validation OEM KOVE indépendante."
+    },
+    {
+      "part": "Bougie",
+      "specification": "NGK CPR8EA-9 · écartement 0,8–1,0 mm",
+      "replacement_interval": "Selon tableau constructeur",
+      "observed_price": "≈14–16 € / unité",
+      "source_type": "observed",
+      "note": "Référence issue du manuel KY600GY / 625X Pro. Fourchette resserrée à partir de prix français observés pour la CPR8EA-9."
+    },
+    {
+      "part": "Liquide de refroidissement",
+      "specification": "Liquide moto prêt à l’emploi compatible alliages légers",
+      "replacement_interval": "Tous les 2 ans",
+      "observed_price": "≈12–14 € / L",
+      "source_type": "observed",
+      "note": "Repère de marché français sur Ipone Radiator Liquid et Motul Motocool Expert en conditionnement 1 L."
+    },
+    {
+      "part": "Liquide de frein",
+      "specification": "DOT 4",
+      "replacement_interval": "Tous les 2 ans",
+      "observed_price": "≈17 € / 450 ml",
+      "source_type": "observed",
+      "note": "Prix observé dans le réseau KOVE France pour le Bardahl XBF DOT 4 en 450 ml."
+    },
+    {
+      "part": "Pneus & roues",
+      "specification": "110/80 R19 avant · 150/70 R17 arrière · repère Pirelli Scorpion Rally STR",
+      "replacement_interval": "Selon usure",
+      "observed_price": "≈235–285 € le train",
+      "source_type": "observed",
+      "note": "Dimensions exactes de la 625X Pro. Fourchette hors montage construite à partir de prix européens observés sur le Pirelli Scorpion Rally STR dans les deux dimensions."
+    }
+  ],
   "budget": {
-    "title": "Repères de budget entretien — France / Europe",
+    "title": "Budget entretien autour de 30 000 km",
+    "summary": {
+      "horizon_km": 30000,
+      "total_cost": "≈1 100–1 300 €",
+      "cost_per_km": "≈0,037–0,043 €/km",
+      "interval_rule": "1 000 km puis huile + filtre tous les 5 000 km · échéance 30 000 km incluse",
+      "note": "Estimation LabelMoto construite à partir des forfaits atelier observés : 149 € pour le cycle 5 000 km, 169 € pour le forfait 10 000 km et 239 € pour l’intervention complète. Le total théorique des sept passages jusqu’à 30 000 km est de 1 173 € avant consommables ; l’affichage est volontairement arrondi."
+    },
     "cards": [
       {
-        "label": "Forfait atelier KOVE observé",
-        "value": "149 €",
-        "note": "Forfait deux-roues de base affiché par un atelier KOVE français ; consommables en supplément."
+        "label": "Révisions incluses",
+        "value": "7 passages",
+        "note": "1 000, 5 000, 10 000, 15 000, 20 000, 25 000 et 30 000 km."
       },
       {
-        "label": "Forfait plus complet observé",
-        "value": "169 à 239 €",
-        "note": "Tarifs atelier français observés selon contenu de l’intervention ; consommables / pièces additionnelles possibles."
+        "label": "Entretien 5 000 km",
+        "value": "≈149 €",
+        "note": "Repère atelier observé pour huile, filtre et contrôles courants ; consommables facturés en supplément."
       },
       {
-        "label": "Statut prix",
-        "value": "Observé — non constructeur",
-        "note": "Ces montants ne sont ni un barème national KOVE ni un devis spécifique au modèle."
+        "label": "Entretien 10 000 km",
+        "value": "≈169 €",
+        "note": "Repère atelier observé avec contrôle du filtre à air et opérations complémentaires."
+      },
+      {
+        "label": "Échéance majeure",
+        "value": "≈239 €",
+        "note": "Repère atelier complet utilisé pour l’échéance des 20 000 km ; consommables et pièces restent en supplément."
       }
     ],
-    "note": "Toujours demander un devis : temps de main-d’œuvre, consommables, réglage des soupapes, pneus, transmission et opérations additionnelles font varier la facture."
+    "note": "Estimations indicatives et non contractuelles. Les pneus, la transmission, les pièces d’usure et un éventuel réglage mécanique supplémentaire peuvent augmenter le coût réel."
   },
   "warranty": {
-    "duration": "2 ans à compter du début de garantie, sans limitation de kilométrage (garantie constructeur KOVE France, sauf stipulation contraire).",
-    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles.",
+    "duration": "2 ans",
+    "coverage": "Défauts de matériau ou de fabrication acceptés dans les conditions KOVE France, sous réserve des exclusions contractuelles. Garantie constructeur sans limitation de kilométrage, sauf stipulation contraire.",
     "maintenance_requirement": "Respecter le plan d'entretien applicable au modèle, au millésime et au VIN, et conserver les justificatifs d'entretien.",
     "claim_requirement": "Pour une demande de prise en charge, se rapprocher d'un revendeur / réparateur agréé KOVE France avec les justificatifs demandés.",
     "legal_warranty_note": "Les CGV KOVE Moto France distinguent la garantie constructeur de 2 ans des garanties légales françaises. Les exclusions et la procédure de prise en charge restent celles du contrat remis avec la moto.",
     "market": "France",
     "source_label": "KOVE Moto France · CGV / garantie constructeur"
+  },
+  "known_issues_v2": [
+    {
+      "title": "Révision des 20 000 km",
+      "description": "Le manuel prévoit à 20 000 km le contrôle du jeu aux soupapes en plus des opérations courantes. Sur une moto ayant atteint cette échéance, demandez une facture ou un carnet renseigné.",
+      "type": "manufacturer_monitoring",
+      "confidence": "technical_documentation"
+    },
+    {
+      "title": "Historique des vidanges",
+      "description": "Après la première révision, l’huile et le filtre sont prévus tous les 5 000 km. Un historique irrégulier doit être pris en compte avant l’achat.",
+      "type": "manufacturer_monitoring",
+      "confidence": "technical_documentation"
+    },
+    {
+      "title": "Filtre à air et transmission en usage poussiéreux",
+      "description": "En usage sur piste ou en environnement poussiéreux, contrôlez plus fréquemment le filtre à air et la transmission que les intervalles routiers normaux.",
+      "type": "usage_limitation",
+      "confidence": "technical_documentation"
+    }
+  ],
+  "verdict": {
+    "title": "Un cycle clair, mais des vidanges assez rapprochées",
+    "text": "La 625X Pro dispose d’un planning facile à suivre : huile et filtre tous les 5 000 km, contrôles principaux tous les 10 000 km et jeu aux soupapes à 20 000 km. Le principal point à anticiper est donc la fréquence des passages d’entretien plutôt qu’une opération technique inhabituelle.",
+    "strengths": [
+      "Calendrier spécifique KY600GY bien documenté",
+      "Quantités d’huile et référence de bougie documentées",
+      "Échéances soupapes clairement identifiées"
+    ],
+    "weaknesses": [
+      "Vidange et filtre tous les 5 000 km",
+      "Révision des 20 000 km à anticiper",
+      "Références commerciales de certaines pièces encore incomplètes"
+    ]
   },
   "data_quality": {
     "market": "France + manuel international/européen",
@@ -450,9 +566,9 @@ export const kove625xProV2: MotorcycleSheetV2 = {
     "consumables_verified": false,
     "recall_checked": false,
     "pricing_type": "observed",
-    "last_verified": "23/09/2026",
+    "last_verified": "26/09/2026",
     "sources": [
-      {
+    {
         "label": "KOVE Moto France · garantie constructeur / CGV",
         "type": "official_fr",
         "market": "France",
@@ -460,7 +576,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
         "url": "https://kove-racing.com/conditions-generales-de-ventes/",
         "note": "Garantie constructeur de deux ans à compter du début de garantie, sans limitation de kilométrage, sauf stipulation contraire. La garantie légale de conformité française reste distincte."
       },
-      {
+    {
         "label": "KOVE · Service",
         "type": "official_other_market",
         "market": "International",
@@ -468,7 +584,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
         "url": "https://www.kovemoto.com/service",
         "note": "Portail constructeur : planning, politiques de garantie et manuels par modèle."
       },
-      {
+    {
         "label": "KOVE France · conditions de garantie",
         "type": "official_fr",
         "market": "France",
@@ -476,7 +592,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
         "url": "https://kovemotor.fr/wp-content/uploads/2025/04/KOVE-MOTO-conditions-garantie-france.pdf",
         "note": "Conditions contractuelles France ; le document remis avec la moto fait foi pour les exclusions et la procédure de prise en charge."
       },
-      {
+    {
         "label": "Vulka Motor · tarifs atelier KOVE",
         "type": "observed",
         "market": "France",
@@ -484,7 +600,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
         "url": "https://vulkamotor.fr/atelier/tarifs/",
         "note": "Prix atelier observés ; ne constitue pas un barème constructeur national."
       },
-      {
+    {
         "label": "KOVE France · 625X Pro",
         "type": "official_fr",
         "market": "France",
@@ -492,7 +608,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
         "url": "https://kovemotor.fr/modele/625x-pro/",
         "note": "581 cm³, 46 kW, 56,5 Nm, A/A2, 221 kg, 21 L, 820 mm et prix France."
       },
-      {
+    {
         "label": "KOVE · manuel 625X Pro KY600GY",
         "type": "technical_documentation",
         "market": "Europe / international",
@@ -500,15 +616,79 @@ export const kove625xProV2: MotorcycleSheetV2 = {
         "url": "https://www.kovemoto.com/uploadfile/202602/2094f7d8a22026c.pdf",
         "note": "Table d’entretien constructeur : première révision 1 000 km, huile/filtre tous les 5 000 km, cycle principal 10 000 / 20 000 / 30 000 / 40 000 km, soupapes à 20 000 / 40 000 km."
       },
-      {
+    {
         "label": "KOVE Service · planning global 2026",
         "type": "official_other_market",
         "market": "International",
         "model_year": "2026",
         "url": "https://www.kovemoto.com/wp-content/uploads/2026/06/Service-schedule.pdf",
         "note": "Le PDF global consulté ne doit pas être utilisé pour déduire une cadence 625X Pro absente : priorité au manuel spécifique."
-      }
-    ]
+      },
+    {
+      "label": "KOVE France · huiles & lubrifiants",
+      "type": "observed",
+      "market": "France",
+      "model_year": "26/09/2026",
+      "url": "https://kove-racing.com/accessoires-et-pieces/entretien-consommables-moto-kove/huiles-lubrifiants-moto-kove/",
+      "note": "Huile Bardahl XTC-M 10W-40 observée à 13,95 €/L et 46 € les 4 L ; DOT 4 Bardahl XBF observé à 17 € les 450 ml."
+    },
+    {
+      "label": "DNA Filters · KOVE 625X / 625X Pro",
+      "type": "observed",
+      "market": "Europe / international",
+      "model_year": "2025–2026",
+      "url": "https://www.e-dnafilters.com/en/product/motorcycle-air-filters/kove/dna-4647/kov-625x/kove-625x-series-25-26-dna-air-filter-r-da5e23-01",
+      "note": "Filtre DNA R-DA5E23-01 compatible 625X et 625X Pro 2025–2026 ; cross-référence OEM annoncée 320301-R100-000 ; prix observé 115,50 €."
+    },
+    {
+      "label": "WRS · filtre DNA R-DA5E23-01",
+      "type": "observed",
+      "market": "Europe",
+      "model_year": "26/09/2026",
+      "url": "https://www.wrs.it/en/air-filters/494679-dna-cotton-air-filter-kove-510x-maverick-2025-2026.html",
+      "note": "Même référence DNA R-DA5E23-01 et cross-référence 320301-R100-000 ; prix observé 87,84 €."
+    },
+    {
+      "label": "Dafy Moto · NGK CPR8EA-9",
+      "type": "observed",
+      "market": "France",
+      "model_year": "26/09/2026",
+      "url": "https://www.dafy-moto.com/bougie-cpr8ea-9-ngk.html",
+      "note": "Bougie NGK CPR8EA-9 observée à 15,27 € l’unité."
+    },
+    {
+      "label": "Norauto · NGK CPR8EA-9",
+      "type": "observed",
+      "market": "France",
+      "model_year": "26/09/2026",
+      "url": "https://www.norauto.fr/p/1-bougie-d-allumage-ngk-cpr8ea-9-751810.html",
+      "note": "Bougie NGK CPR8EA-9 observée à 13,99 € l’unité."
+    },
+    {
+      "label": "Dafy Moto · liquides de refroidissement",
+      "type": "observed",
+      "market": "France",
+      "model_year": "26/09/2026",
+      "url": "https://www.dafy-moto.com/entretien-outillage/huile-lubrifiant/liquide-de-refroidissement.html",
+      "note": "Ipone Radiator Liquid observé à 12,51 €/L et Motul Motocool Expert à 14,36 €/L."
+    },
+    {
+      "label": "Idealo · Pirelli Scorpion Rally STR",
+      "type": "observed",
+      "market": "France",
+      "model_year": "26/09/2026",
+      "url": "https://www.idealo.fr/liste/123353171/pneu-pirelli-scorpion-rally-str.html",
+      "note": "Prix observés à partir de 108,12 € en 110/80 R19 et 124,99 € en 150/70 R17."
+    },
+    {
+      "label": "MotorcycleTires EU · train Pirelli Scorpion Rally STR",
+      "type": "observed",
+      "market": "Europe",
+      "model_year": "26/09/2026",
+      "url": "https://www.motorcycletires-eu.com/en/pirelli-scorpion-rally-str/30221.htm",
+      "note": "Train 110/80 R19 + 150/70 R17 observé à 285,75 €."
+    }
+  ]
   },
   "equivalents_v2": [
     {
