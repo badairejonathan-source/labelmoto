@@ -1093,12 +1093,13 @@ export default function ArticleClient({
             {section.title}
           </h2>
         )}
+        {/* LABELMOTO_CHINESE_FLOAT_V2 */}
         {renderedSectionImage && (
           <div
             className={cn(
               "relative w-full overflow-hidden rounded-[2rem] mb-6 bg-[#f8f7f5] shadow-md",
               isChineseModelSlide &&
-                "mx-auto md:max-w-[560px] bg-white"
+                "mx-auto bg-white md:float-right md:ml-8 md:mb-4 md:w-[42%] md:max-w-[460px] xl:w-[40%]"
             )}
             style={{
               aspectRatio: isChineseModelSlide
@@ -1112,7 +1113,7 @@ export default function ArticleClient({
               className={cn(
                 "w-full h-full",
                 isChineseModelSlide
-                  ? "object-contain p-3 md:p-5"
+                  ? "object-contain p-3 md:p-0 md:scale-[1.14] md:transform-gpu"
                   : "object-cover"
               )}
               loading="lazy"
@@ -1121,6 +1122,10 @@ export default function ArticleClient({
         )}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
         
+        {isChineseModelSlide && renderedSectionImage && (
+          <div className="hidden clear-both md:block" />
+        )}
+
         {schedule && renderSchedule(schedule, `schedule-${sectionId}`)}
         
         {(strengths || weaknesses) && (
@@ -1221,6 +1226,56 @@ export default function ArticleClient({
     );
   };
 
+  const relayNestedScrollToPage = (event: React.WheelEvent<HTMLElement>) => {
+    if (!showHeader || typeof window === 'undefined' || window.innerWidth < 1024) {
+      return;
+    }
+
+    const boundary = event.currentTarget;
+    let node = event.target instanceof HTMLElement ? event.target : null;
+    let scroller = null;
+
+    while (node && node !== boundary) {
+      const style = window.getComputedStyle(node);
+      const isScrollable =
+        (style.overflowY === 'auto' || style.overflowY === 'scroll') &&
+        node.scrollHeight > node.clientHeight + 2;
+
+      if (isScrollable) {
+        scroller = node;
+        break;
+      }
+
+      node = node.parentElement;
+    }
+
+    if (!scroller) {
+      return;
+    }
+
+    const tolerance = 2;
+    const atBottom =
+      scroller.scrollTop + scroller.clientHeight >=
+      scroller.scrollHeight - tolerance;
+    const atTop = scroller.scrollTop <= tolerance;
+
+    const shouldRelay =
+      (event.deltaY > 0 && atBottom) ||
+      (event.deltaY < 0 && atTop);
+
+    if (!shouldRelay) {
+      return;
+    }
+
+    event.preventDefault();
+
+    window.scrollBy({
+      top: event.deltaY,
+      left: 0,
+      behavior: 'auto',
+    });
+  };
+
   if (isArticleLoading || !article) return (
     <div className={showHeader ? "min-h-screen bg-background" : "min-h-screen bg-transparent"}>
         {showHeader && <Header searchTerm="" onSearchTermChange={() => {}} onSearch={() => {}} />}
@@ -1241,6 +1296,8 @@ export default function ArticleClient({
   );
 
   const rootSchedule = article.schedule_card || article.schedule;
+  const hasArticleIntro =
+    Array.isArray(article.intro) && article.intro.length > 0;
 
   return (
     <div className={showHeader ? "min-h-screen relative bg-background" : "min-h-screen relative bg-transparent"}>
@@ -1351,6 +1408,7 @@ export default function ArticleClient({
             showHeader &&
               "lg:max-w-none lg:mx-0 lg:ml-6 lg:mr-8 lg:pt-6 lg:grid lg:grid-cols-[394px_minmax(0,1fr)] lg:items-start lg:gap-6"
           )}
+          onWheelCapture={relayNestedScrollToPage}
         >
           {showHeader && (
             <GuidesDesktopSidebar
@@ -1364,7 +1422,7 @@ export default function ArticleClient({
             className={cn(
               "min-w-0",
               showHeader &&
-                "lg:h-[calc(100vh-104px)] lg:overflow-y-auto lg:overscroll-contain lg:pr-2 [scrollbar-width:thin]"
+                "lg:h-[calc(100vh-104px)] lg:overflow-y-auto lg:overscroll-contain lg:pr-12 xl:pr-14 2xl:pr-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             )}
           >
           <div className={showHeader ? "guides-desktop-article" : undefined}>
@@ -1421,20 +1479,8 @@ export default function ArticleClient({
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-            <article className="lg:col-span-8">
-              {id !== 'entretien-moto-intervalles-prix-conseils-par-modele' && (
-                <div className="relative w-full aspect-video rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl border-4 border-white bg-muted">
-                  <Image 
-                    src={imageUrl} 
-                    alt={article.display_title || article.title} 
-                    fill 
-                    className="object-cover" 
-                    priority 
-                    sizes="(max-width: 1024px) 100vw, 800px"
-                  />
-                </div>
-              )}
+          <div className="grid min-w-0 grid-cols-1 gap-10 lg:grid-cols-12">
+            <article className="min-w-0 lg:col-span-12">
 
               {children && (<div className="mb-8">{children}</div>)}
 
@@ -1443,18 +1489,94 @@ export default function ArticleClient({
               {article.presentation !== 'accordion_v1' && (
                 <>
               {article.intro && Array.isArray(article.intro) && (
-                <div className="my-8 space-y-4">{article.intro.map((p: string, i: number) => (<p key={`intro-${i}`} className="text-lg leading-relaxed text-foreground font-medium">{p}</p>))}</div>
+                <div className="my-8 space-y-4">
+                  {article.intro.map((p: string, i: number) => (
+                    <p
+                      key={`intro-${i}`}
+                      className="text-lg leading-relaxed text-foreground font-medium"
+                    >
+                      {p}
+                    </p>
+                  ))}
+                </div>
               )}
 
               {rootSchedule && renderSchedule(rootSchedule, "root-schedule")}
               
               {activeSections.length > 0 && activeSections.some((s: any) => s.title) && (
-                <div className="my-8 p-8 bg-brand/5 rounded-[2rem] border-2 border-dashed border-brand/20 shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none"><Image src="/images/logo-moto.webp" alt="" width={150} height={48} loading="lazy"/></div>
-                  <div className="flex items-center gap-3 mb-6"><LayoutGrid className="h-5 w-5 text-brand" /><h2 className="text-[10px] font-black uppercase tracking-[0.5em] m-0 text-muted-foreground">Au sommaire :</h2></div>
-                  <nav><ul className="space-y-4">{activeSections.map((section: any, idx: number) => { if (!section.title) return null; const sectionId = slugify(section.title); return (<li key={`toc-${idx}`} className="group/item"><a href={`#${sectionId}`} className="flex items-center gap-4 text-base font-black text-foreground hover:text-brand transition-all"><div className="h-6 w-6 rounded-full bg-brand/10 flex items-center justify-center shrink-0 group-hover/item:bg-brand group-hover/item:text-white transition-colors shadow-sm"><CheckCircle2 className="h-3.5 w-3.5" /></div><span className="border-b-2 border-transparent group-hover/item:border-brand/30 pb-0.5">{section.title}</span></a></li>); })}</ul></nav>
+                <div
+                  className={cn(
+                    "my-8 grid min-w-0 items-start gap-6 lg:gap-8",
+                    id !== 'entretien-moto-intervalles-prix-conseils-par-modele' &&
+                      "lg:grid-cols-[minmax(280px,0.82fr)_minmax(420px,1.18fr)]"
+                  )}
+                >
+                  {id !== 'entretien-moto-intervalles-prix-conseils-par-modele' && (
+                    <div className="order-1 relative w-full aspect-video overflow-hidden rounded-[2rem] border-4 border-white bg-muted shadow-xl lg:order-2 lg:max-w-[640px] lg:justify-self-end">
+                      <Image
+                        src={imageUrl}
+                        alt={article.display_title || article.title}
+                        fill
+                        className="object-cover"
+                        priority
+                        sizes="(max-width: 1024px) 100vw, 640px"
+                      />
+                    </div>
+                  )}
+
+                  <div className="order-2 relative overflow-hidden rounded-[2rem] border-2 border-dashed border-brand/20 bg-brand/5 p-6 shadow-sm lg:order-1">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                      <Image src="/images/logo-moto.webp" alt="" width={150} height={48} loading="lazy"/>
+                    </div>
+
+                    <div className="mb-5 flex items-center gap-3">
+                      <LayoutGrid className="h-5 w-5 text-brand" />
+                      <h2 className="m-0 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">
+                        Au sommaire :
+                      </h2>
+                    </div>
+
+                    <nav>
+                      <ul className="space-y-3">
+                        {activeSections.map((section: any, idx: number) => {
+                          if (!section.title) return null;
+                          const sectionId = slugify(section.title);
+
+                          return (
+                            <li key={`toc-${idx}`} className="group/item">
+                              <a
+                                href={`#${sectionId}`}
+                                className="flex items-start gap-3 text-sm font-black leading-snug text-foreground transition-all hover:text-brand xl:text-[15px]"
+                              >
+                                <div className="mt-[1px] flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 shadow-sm transition-colors group-hover/item:bg-brand group-hover/item:text-white">
+                                  <CheckCircle2 className="h-3 w-3" />
+                                </div>
+                                <span className="border-b-2 border-transparent pb-0.5 group-hover/item:border-brand/30">
+                                  {section.title}
+                                </span>
+                              </a>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </nav>
+                  </div>
                 </div>
               )}
+
+              {activeSections.length === 0 &&
+                id !== 'entretien-moto-intervalles-prix-conseils-par-modele' && (
+                  <div className="relative mx-auto my-8 w-full max-w-[760px] aspect-video overflow-hidden rounded-[2rem] border-4 border-white bg-muted shadow-xl">
+                    <Image
+                      src={imageUrl}
+                      alt={article.display_title || article.title}
+                      fill
+                      className="object-cover"
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 760px"
+                    />
+                  </div>
+                )}
 
               {isBudgetCarouselArticle && (
                 <div className="mb-3 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground md:hidden">
@@ -1494,58 +1616,7 @@ export default function ArticleClient({
               )}
             </article>
 
-            <aside className="lg:col-span-4 relative">
-              <div className="lg:sticky lg:top-24 space-y-6">
-                <Card className="overflow-hidden border-none shadow-2xl bg-card rounded-[2rem]">
-                  <CardHeader className="bg-brand text-white p-5"><CardTitle className="flex items-center gap-3 uppercase font-black tracking-widest text-sm"><Map className="h-5 w-5" /> Trouver un pro</CardTitle></CardHeader>
-                  <CardContent className="p-4 text-center space-y-3">
-                    <div className="relative aspect-video rounded-xl overflow-hidden border-4 border-muted shadow-lg group cursor-pointer" onClick={() => router.push('/map')}>
-                      <Image src="/images/apercucartezoom.webp" alt="Carte Interactive" fill className="object-cover transition-transform duration-1000 group-hover:scale-110" sizes="(max-width: 1024px) 100vw, 400px" loading="lazy"/>
-                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><ArrowRight className="h-8 w-8 text-white" /></div>
-                    </div>
-                    <p className="text-xs font-bold text-muted-foreground leading-snug italic">"Dénichez l'atelier idéal ou la concession de vos rêves en quelques secondes."</p>
-                    <Button asChild className="w-full bg-brand hover:bg-brand/90 text-white font-black uppercase tracking-widest text-[9px] py-2 h-auto rounded-full shadow-sm transition-colors">
-                      <Link href="/map">Voir la carte</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
 
-                <div className="bg-muted/30 rounded-[2.5rem] p-8 border border-border/50">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-6 flex items-center gap-2">
-                        <FileText className="h-3.5 w-3.5 text-brand" /> À LIRE AUSSI
-                    </h3>
-                    <div className="space-y-4">
-                        {isArticlesListLoading ? (
-                            Array.from({ length: 4 }).map((_, i) => (
-                                <div key={i} className="space-y-2">
-                                    <Skeleton className="h-4 w-full" />
-                                    <Skeleton className="h-3 w-2/3" />
-                                </div>
-                            ))
-                        ) : (
-                            otherArticles.map((art: any) => (
-                                <Link key={art.id} href={`/info/${art.id}`} className="group block pb-4 border-b border-border/50 last:border-0 last:pb-0">
-                                    <h4 className="text-sm font-black uppercase tracking-tight text-foreground group-hover:text-brand transition-colors line-clamp-2 leading-tight">
-                                        {art.display_title || art.title}
-                                    </h4>
-                                    <p className="text-[10px] font-bold text-muted-foreground mt-1 line-clamp-1 opacity-70">
-                                        Par {art.author || "L'équipe Label Moto"}
-                                    </p>
-                                </Link>
-                            ))
-                        )}
-                        {(!isArticlesListLoading && otherArticles.length === 0) && (
-                            <p className="text-xs italic text-muted-foreground font-medium">D'autres guides arrivent bientôt !</p>
-                        )}
-                    </div>
-                    <div className="mt-8">
-                        <Button asChild variant="ghost" className="w-full h-auto py-4 rounded-full border-2 border-dashed border-muted-foreground/20 hover:border-brand/50 hover:bg-brand/5 text-[9px] font-black uppercase tracking-widest transition-all">
-                            <Link href="/info">Voir tous les conseils <ArrowRight className="ml-2 h-3 w-3" /></Link>
-                        </Button>
-                    </div>
-                </div>
-              </div>
-            </aside>
           </div>
           </div>
         </div>

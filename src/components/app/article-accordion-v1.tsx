@@ -72,7 +72,7 @@ function ModelCard({ model }: { model: ArticleModel }) {
     });
 
   const body = (
-    <div className="min-w-[76%] sm:min-w-[280px] snap-start rounded-[1.6rem] border border-border/60 bg-background shadow-sm overflow-hidden">
+    <div className="w-[260px] shrink-0 snap-start overflow-hidden rounded-[1.6rem] border border-border/60 bg-background shadow-sm sm:w-[280px]">
       <div className="relative aspect-[4/3] bg-muted/30">
         {image ? (
           <Image
@@ -113,7 +113,7 @@ function ModelCard({ model }: { model: ArticleModel }) {
   if (!model.href) return body;
 
   return (
-    <Link href={model.href} className="block shrink-0">
+    <Link href={model.href} className="block w-[260px] shrink-0 sm:w-[280px]">
       {body}
     </Link>
   );
@@ -324,7 +324,7 @@ export default function ArticleAccordionV1({
         </div>
       ) : null}
 
-      <div className="space-y-3">
+      <div className="space-y-3 lg:hidden">
         {sections.map((section) => {
           const open = openSections.has(section.id);
 
@@ -380,8 +380,124 @@ export default function ArticleAccordionV1({
         })}
       </div>
 
+
+      {/* Desktop editorial layout: guide beside the first two sections, then full width. */}
+      <div className="hidden lg:block">
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_240px] xl:grid-cols-[minmax(0,1fr)_260px] xl:gap-10">
+          <div className="min-w-0">
+            {sections.slice(0, 2).map((section, index) => (
+              <section
+                key={section.id}
+                id={`article-section-${section.id}`}
+                className={[
+                  'scroll-mt-28 py-8',
+                  index === 0 ? 'pt-0' : 'border-t border-border/70',
+                ].join(' ')}
+              >
+                <div className="flex items-start gap-3">
+                  <div className="mt-[2px] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/10 text-[10px] font-black text-brand">
+                    {section.number || section.id}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h2 className="m-0 text-[24px] font-black leading-[1.05] tracking-[-0.035em] text-foreground xl:text-[26px]">
+                      {section.title}
+                    </h2>
+
+                    <div className="mt-5">
+                      <AccordionBody section={section} />
+                    </div>
+                  </div>
+                </div>
+              </section>
+            ))}
+          </div>
+
+          <aside className="relative">
+            <div className="sticky top-4 space-y-5">
+              <div className="rounded-2xl border border-border/60 bg-white p-5 shadow-sm">
+                <p className="mb-5 text-[10px] font-black uppercase tracking-[0.18em] text-brand">
+                  Dans ce guide
+                </p>
+
+                <nav aria-label="Sommaire de l’article">
+                  <ol className="space-y-[15px]">
+                    {sections.map((section) => (
+                      <li key={`guide-${section.id}`}>
+                        <a
+                          href={`#article-section-${section.id}`}
+                          className="group flex items-start gap-3 text-[11px] leading-[1.35] text-muted-foreground transition-colors hover:text-foreground"
+                        >
+                          <span className="shrink-0 font-black text-brand">
+                            {section.number}
+                          </span>
+                          <span>{section.title}</span>
+                        </a>
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              </div>
+
+              <div className="rounded-2xl border border-border/60 bg-white p-5 shadow-sm">
+                <p className="mb-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand">
+                  À retenir
+                </p>
+                <p className="text-[12px] leading-[1.5] text-muted-foreground">
+                  Toutes ces technologies n’automatisent pas la même chose. Certaines suppriment seulement l’usage de l’embrayage, d’autres peuvent aussi choisir les rapports.
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <div className="min-w-0">
+          {sections.slice(2).map((section) => (
+            <section
+              key={section.id}
+              id={`article-section-${section.id}`}
+              className="scroll-mt-28 border-t border-border/70 py-8"
+            >
+              <div className="flex items-start gap-3">
+                <div className="mt-[2px] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/10 text-[10px] font-black text-brand">
+                  {section.number || section.id}
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h2 className="m-0 text-[24px] font-black leading-[1.05] tracking-[-0.035em] text-foreground xl:text-[26px]">
+                    {section.title}
+                  </h2>
+
+                  <div className="mt-5">
+                    <AccordionBody section={section} />
+                  </div>
+                </div>
+              </div>
+            </section>
+          ))}
+        </div>
+
+        {article?.conclusion ? (
+          <section className="border-t border-border/70 pt-8">
+            <h2 className="text-xl font-black text-foreground">
+              Conclusion
+            </h2>
+
+            <div className="mt-4">
+              <Paragraphs
+                items={
+                  Array.isArray(article.conclusion)
+                    ? article.conclusion
+                    : [String(article.conclusion)]
+                }
+              />
+            </div>
+          </section>
+        ) : null}
+      </div>
+
       {article?.conclusion ? (
-        <div className="mt-8 rounded-[1.7rem] border border-brand/20 bg-brand/5 p-5 sm:p-6">
+        <div className="mt-8 rounded-[1.7rem] border border-brand/20 bg-brand/5 p-5 sm:p-6 lg:hidden">
           <h2 className="text-lg font-black text-foreground">
             Conclusion
           </h2>
