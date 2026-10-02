@@ -40,7 +40,15 @@ const nextConfig: NextConfig = {
   // sert depuis Firebase Storage à la place, de façon transparente.
   async rewrites() {
     return [
-      { source: '/images/:path*', destination: 'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/images/:path*' },
+      ...(process.env.NODE_ENV === 'production'
+        ? [
+            {
+              source: '/images/:path*',
+              destination:
+                'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/images/:path*',
+            },
+          ]
+        : []),
       { source: '/departements.geojson', destination: 'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/departements.geojson' },
       { source: '/arrondissements/:path*', destination: 'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/arrondissements/:path*' },
     ];
