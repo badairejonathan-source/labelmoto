@@ -103,7 +103,7 @@ export const RELATED_MODELS_POOL: RelatedModel[] = [
   { id: 'kawasaki-z650-2020-plus',           name: 'Kawasaki Z650',            cc: 649, category: 'roadster' },
   { id: 'kawasaki-versys-650-2022-plus',     name: 'Kawasaki Versys 650',      cc: 649, category: 'trail' },
   { id: 'suzuki-sv650-2016-plus',            name: 'Suzuki SV650',             cc: 645, category: 'roadster' },
-  { id: 'suzuki-vstrom-650-2017-plus',       name: 'Suzuki V-Strom 650',       cc: 645, category: 'trail' },
+  { id: 'suzuki-v-strom-650-2017-plus',       name: 'Suzuki V-Strom 650',       cc: 645, category: 'trail' },
   { id: 'triumph-trident-660-2021-plus',     name: 'Triumph Trident 660',      cc: 660, category: 'roadster' },
   { id: 'cfmoto-650mt-650nk-2020-plus',      name: 'CFMOTO 650MT / 650NK',     cc: 649, category: 'trail' },
   { id: 'cfmoto-675sr-r-2025-plus',          name: 'CFMOTO 675 SR-R',          cc: 674, category: 'sportive' },

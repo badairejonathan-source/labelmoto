@@ -4,6 +4,7 @@ import { MetadataRoute } from 'next';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import { getAllCitySlugs } from '@/app/lib/cities';
 import { getAllDepartmentSlugs } from '@/app/lib/departments';
+import { getAllBrandSlugs } from '@/app/lib/brands';
 import { loadSeoPros } from '@/lib/seo-pros';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -21,6 +22,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'weekly' as const,
       priority: 0.7,
     }));
+
+  const creatorUrls: MetadataRoute.Sitemap = Array.from(
+    new Map(
+      seoPros
+        .filter(pro => pro.collection === 'creators')
+        .map(pro => {
+          const entry = {
+            url: `${baseUrl}/creators/${pro.slug || pro.id}`,
+            lastModified: pro.updatedAt ? new Date(pro.updatedAt) : new Date(),
+            changeFrequency: 'monthly' as const,
+            priority: 0.6,
+          };
+          return [entry.url, entry] as const;
+        })
+    ).values()
+  );
+
+  const brandUrls: MetadataRoute.Sitemap = Array.from(
+    new Set([...getAllBrandSlugs(), 'multimarque'])
+  ).map(slug => ({
+    url: `${baseUrl}/marque/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.8,
+  }));
 
   let articleUrls: MetadataRoute.Sitemap = [];
   let motoUrls: MetadataRoute.Sitemap = [];
@@ -102,6 +128,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...cityUrls,
     ...deptUrls,
     ...concessionUrls,
+    ...creatorUrls,
+    ...brandUrls,
     ...articleUrls,
     ...motoUrls,
   ];

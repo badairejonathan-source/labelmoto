@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -477,6 +478,15 @@ export default async function CreatorPage({
 
   const creator =
     await getCreator(id);
+
+  // LABELMOTO_SEO_CREATOR_GUARD
+  if (!creator) {
+    notFound();
+  }
+
+  if (creator.slug && creator.slug !== id) {
+    permanentRedirect(`/creators/${creator.slug}`);
+  }
 
   if (!creator) {
     return (

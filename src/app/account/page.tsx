@@ -1513,7 +1513,7 @@ function AccountContent() {
                           </Link>
                         </Button>
                         <Button asChild variant="ghost" size="sm" className="rounded-xl">
-                          <Link href={listing.collection === 'concessions' ? `/concessions/${listing.id}` : `/${listing.collection}/${listing.id}`}>
+                          <Link href={listing.collection === 'concessions' ? `/concessions/${listing.slug || listing.id}` : `/${listing.collection}/${listing.slug || listing.id}`}>
                             <ExternalLink className="h-4 w-4" />
                           </Link>
                         </Button>

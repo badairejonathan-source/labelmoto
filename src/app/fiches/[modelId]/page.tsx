@@ -119,6 +119,12 @@ export default async function Page({
   const { modelId } = await params;
   const query = await searchParams;
 
+  if (modelId === 'suzuki-vstrom-650-2017-plus') {
+    permanentRedirect(
+      '/fiches/suzuki-v-strom-650-2017-plus'
+    );
+  }
+
   if (modelId === 'cfmoto-800mt-touring-2025-plus') {
     permanentRedirect(
       '/fiches/cfmoto-800mt-sport-explore-2023-plus'

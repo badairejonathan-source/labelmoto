@@ -574,7 +574,7 @@ const entries: MotorcycleProductImageEntry[] = [
   },
   {
     imageUrl: '/images/motorcycles/Suzuki-V-Strom-650.webp',
-    exactIds: ['suzuki-vstrom-650-2017-plus'],
+    exactIds: ['suzuki-v-strom-650-2017-plus'],
     aliases: ['suzuki v strom 650', 'suzuki vstrom 650'],
   },
   {

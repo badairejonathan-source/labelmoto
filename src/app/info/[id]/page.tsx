@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { cache } from 'react';
 import ArticleClient from '@/components/app/article-client';
 import { getAdminFirestore } from '@/lib/firebase-admin';
@@ -79,6 +80,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const { id } = await params;
   const seo = await getArticleSeo(id);
   const initialArticle = await getArticleData(id);
+
+  if (!seo && !initialArticle) {
+    notFound();
+  }
 
   const title = seo?.title || id.replace(/-/g, ' ');
   const description = seo?.description || '';
