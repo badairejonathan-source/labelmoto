@@ -35,10 +35,20 @@ const nextConfig: NextConfig = {
       'firebase',
     ],
   },
-  // Les images de public/images sont servies directement par Next/App Hosting.
-  // Les GeoJSON restent servis depuis Firebase Storage.
+  // Contournement : l'adaptateur Firebase App Hosting ne sert pas fiablement
+  // certains fichiers de public/ (.webp, .geojson) une fois déployés. On les
+  // sert depuis Firebase Storage à la place, de façon transparente.
   async rewrites() {
     return [
+      ...(process.env.NODE_ENV === 'production'
+        ? [
+            {
+              source: '/images/:path*',
+              destination:
+                'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/images/:path*',
+            },
+          ]
+        : []),
       { source: '/departements.geojson', destination: 'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/departements.geojson' },
       { source: '/arrondissements/:path*', destination: 'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/arrondissements/:path*' },
     ];
