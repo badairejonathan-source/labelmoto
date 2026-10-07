@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bike, ChevronDown } from 'lucide-react';
+import { Bike, ChevronDown, LayoutGrid, CheckCircle2 } from 'lucide-react';
 
 import { getMotorcycleProductImage } from '@/data/motorcycle-product-images';
 
@@ -284,8 +284,10 @@ function AccordionBody({
 
 export default function ArticleAccordionV1({
   article,
+  imageUrl,
 }: {
   article: any;
+  imageUrl?: string;
 }) {
   const sections: AccordionSection[] =
     Array.isArray(article?.accordion_sections)
@@ -323,6 +325,85 @@ export default function ArticleAccordionV1({
           ))}
         </div>
       ) : null}
+
+      {imageUrl ? (
+        <div className="relative mx-auto mb-8 w-full max-w-[760px] aspect-video overflow-hidden rounded-[2rem] border-4 border-white bg-muted shadow-xl lg:hidden">
+          <Image
+            src={imageUrl}
+            alt={article.display_title || article.title}
+            fill
+            className="object-cover"
+            priority
+            sizes="100vw"
+          />
+        </div>
+      ) : null}
+
+      <div
+        data-labelmoto-standard-article-hero="true"
+        className="my-8 hidden min-w-0 items-start gap-6 lg:grid lg:grid-cols-[minmax(280px,0.82fr)_minmax(420px,1.18fr)] lg:gap-8"
+      >
+        {imageUrl ? (
+          <div className="order-1 relative w-full aspect-video overflow-hidden rounded-[2rem] border-4 border-white bg-muted shadow-xl lg:order-2 lg:max-w-[640px] lg:justify-self-end">
+            <Image
+              src={imageUrl}
+              alt={article.display_title || article.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="(max-width: 1024px) 100vw, 640px"
+            />
+          </div>
+        ) : null}
+
+        <div className="order-2 relative overflow-hidden rounded-[2rem] border-2 border-dashed border-brand/20 bg-brand/5 p-6 shadow-sm lg:order-1">
+          <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+            <Image
+              src="/images/logo-moto.webp"
+              alt=""
+              width={150}
+              height={48}
+              loading="lazy"
+            />
+          </div>
+
+          <div className="mb-5 flex items-center gap-3">
+            <LayoutGrid className="h-5 w-5 text-brand" />
+
+            <h2 className="m-0 text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">
+              Au sommaire :
+            </h2>
+          </div>
+
+          <nav>
+            <ul className="space-y-3">
+              {sections.map((section, idx) => {
+                if (!section.title) return null;
+
+                return (
+                  <li
+                    key={`toc-${idx}`}
+                    className="group/item"
+                  >
+                    <a
+                      href={`#article-section-${section.id}`}
+                      className="flex items-start gap-3 text-sm font-black leading-snug text-foreground transition-all hover:text-brand xl:text-[15px]"
+                    >
+                      <div className="mt-[1px] flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand/10 shadow-sm transition-colors group-hover/item:bg-brand group-hover/item:text-white">
+                        <CheckCircle2 className="h-3 w-3" />
+                      </div>
+
+                      <span className="border-b-2 border-transparent pb-0.5 group-hover/item:border-brand/30">
+                        {section.title}
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </div>
+      </div>
 
       <div className="space-y-3 lg:hidden">
         {sections.map((section) => {
@@ -381,82 +462,19 @@ export default function ArticleAccordionV1({
       </div>
 
 
-      {/* Desktop editorial layout: guide beside the first two sections, then full width. */}
+      {/* Desktop : contenu pleine largeur sous le bloc Sommaire + Image standard. */}
       <div className="hidden lg:block">
-        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_240px] xl:grid-cols-[minmax(0,1fr)_260px] xl:gap-10">
-          <div className="min-w-0">
-            {sections.slice(0, 2).map((section, index) => (
-              <section
-                key={section.id}
-                id={`article-section-${section.id}`}
-                className={[
-                  'scroll-mt-28 py-8',
-                  index === 0 ? 'pt-0' : 'border-t border-border/70',
-                ].join(' ')}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-[2px] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/10 text-[10px] font-black text-brand">
-                    {section.number || section.id}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <h2 className="m-0 text-[24px] font-black leading-[1.05] tracking-[-0.035em] text-foreground xl:text-[26px]">
-                      {section.title}
-                    </h2>
-
-                    <div className="mt-5">
-                      <AccordionBody section={section} />
-                    </div>
-                  </div>
-                </div>
-              </section>
-            ))}
-          </div>
-
-          <aside className="relative">
-            <div className="sticky top-4 space-y-5">
-              <div className="rounded-2xl border border-border/60 bg-white p-5 shadow-sm">
-                <p className="mb-5 text-[10px] font-black uppercase tracking-[0.18em] text-brand">
-                  Dans ce guide
-                </p>
-
-                <nav aria-label="Sommaire de l’article">
-                  <ol className="space-y-[15px]">
-                    {sections.map((section) => (
-                      <li key={`guide-${section.id}`}>
-                        <a
-                          href={`#article-section-${section.id}`}
-                          className="group flex items-start gap-3 text-[11px] leading-[1.35] text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                          <span className="shrink-0 font-black text-brand">
-                            {section.number}
-                          </span>
-                          <span>{section.title}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ol>
-                </nav>
-              </div>
-
-              <div className="rounded-2xl border border-border/60 bg-white p-5 shadow-sm">
-                <p className="mb-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand">
-                  À retenir
-                </p>
-                <p className="text-[12px] leading-[1.5] text-muted-foreground">
-                  Toutes ces technologies n’automatisent pas la même chose. Certaines suppriment seulement l’usage de l’embrayage, d’autres peuvent aussi choisir les rapports.
-                </p>
-              </div>
-            </div>
-          </aside>
-        </div>
-
         <div className="min-w-0">
-          {sections.slice(2).map((section) => (
+          {sections.map((section, index) => (
             <section
               key={section.id}
               id={`article-section-${section.id}`}
-              className="scroll-mt-28 border-t border-border/70 py-8"
+              className={[
+                'scroll-mt-28 py-8',
+                index === 0
+                  ? 'pt-0'
+                  : 'border-t border-border/70',
+              ].join(' ')}
             >
               <div className="flex items-start gap-3">
                 <div className="mt-[2px] flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand/10 text-[10px] font-black text-brand">

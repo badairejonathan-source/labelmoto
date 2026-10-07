@@ -1,5 +1,7 @@
 'use client';
 
+import { getMotorcycleProductImage } from '@/data/motorcycle-product-images';
+
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -248,6 +250,20 @@ export default function ArticleClient({
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
     const articleId = id.toLowerCase();
     const title = (article.display_title || article.title || "").toLowerCase();
+
+    if (
+      articleId ===
+      'embrayage-automatique-moto-eclutch-dct-yamt-asa-amt'
+    ) {
+      return "/images/embrayage-automatique-eclutch-dct-yamt-asa-amt.webp";
+    }
+
+    if (
+      articleId === 'motos-chinoises-france-2026' ||
+      title.includes('motos chinoises')
+    ) {
+      return "/images/article-moto-chinoise-2026.webp";
+    }
 
     if (articleId.includes('scooter') || title.includes('scooter')) return "/images/article-scooter-125.webp";
     if (articleId.includes('meilleurs-casques') && articleId.includes('entree')) return "/images/casques-entree-de-gamme-2026.webp";
@@ -747,15 +763,35 @@ export default function ArticleClient({
     return (
       <div key={keyPrefix} className="my-8">
         {cards.length > 1 && (
-          <div className="mb-2 flex items-center justify-end gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-brand md:hidden">
-            <span>Glissez pour voir les autres</span>
+          <div className="mb-2 flex items-center justify-end gap-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-brand">
+            <span className="md:hidden">
+              Glissez pour voir les autres
+            </span>
+
+            <span className="hidden md:inline">
+              Faire défiler
+            </span>
+
             <ChevronRight className="h-3.5 w-3.5 shrink-0" />
           </div>
         )}
-        <div className="flex w-full max-w-full min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-4 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500 md:grid md:grid-cols-2 md:gap-6 md:overflow-visible md:pb-0">
+        <div className="flex w-full max-w-full min-w-0 items-stretch snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 md:gap-5 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500">
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = getFicheIdFromTitle(String(modelLabel));
+
+          const motorcycleImage = ficheId
+            ? (
+                getMotorcycleProductImage({
+                  modelId: ficheId,
+                  model: modelLabel,
+                  displayTitle: modelLabel,
+                  slug: ficheId,
+                }) ||
+                card.image ||
+                null
+              )
+            : null;
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance || card.limits;
@@ -763,7 +799,7 @@ export default function ArticleClient({
           const summary = card.summary || card.description || card.text || card.intro || card.content;
           const formula = card.formula || card.recommended_formula || card.recommended_option;
           return (
-            <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card h-full flex flex-col shadow-md group/card hover:border-brand/50 transition-all rounded-3xl w-full max-w-full min-w-0 shrink-0 snap-start md:w-auto md:max-w-none">
+            <Card key={`${keyPrefix}-card-${idx}`} className="border-2 border-brand/20 overflow-hidden bg-card self-stretch flex flex-col shadow-md group/card hover:border-brand/50 transition-all rounded-3xl w-[86vw] max-w-[430px] min-w-0 shrink-0 snap-start sm:w-[420px] md:w-[480px] md:max-w-[480px]">
               <CardHeader className="bg-brand/5 py-4 border-b flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">{card.title || "Information"}</CardTitle>
@@ -776,18 +812,36 @@ export default function ArticleClient({
                 </div>
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
-              {card.image && (
+              {card.image && !ficheId && (
                 <div className="relative w-full overflow-hidden bg-[#f8f7f5]" style={{aspectRatio:'4/3'}}>
-                  <img src={card.image} alt={card.title || ''} className="w-full h-full object-cover" loading="lazy" />
+                  <img
+                    src={card.image}
+                    alt={card.title || ''}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
                 </div>
               )}
-              <CardContent className="p-6 space-y-6 flex-grow">
+              <CardContent className="flow-root p-6 space-y-6 flex-grow">
+                {motorcycleImage && (
+                  <div
+                    data-labelmoto-moto-preview-image="true"
+                    className="float-right mb-4 ml-4 flex aspect-[8/5] w-[48%] min-w-[150px] max-w-[220px] items-center justify-center overflow-hidden rounded-2xl border border-brand/25 bg-[#faf8f5] p-2.5 shadow-sm sm:ml-5"
+                  >
+                    <img
+                      src={motorcycleImage}
+                      alt={String(modelLabel)}
+                      className="h-full w-full object-contain"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
                     {listItems.map((item: any, i: number) => (
-                      <li key={`${keyPrefix}-item-${idx}-${i}`} className="flex items-start gap-2 text-sm font-bold text-foreground">
-                        <CheckCircle2 className="h-4 w-4 text-brand shrink-0 mt-0.5" />
+                      <li key={`${keyPrefix}-item-${idx}-${i}`} className="relative pl-6 text-sm font-bold leading-relaxed text-foreground">
+                        <CheckCircle2 className="absolute left-0 top-[0.2em] h-4 w-4 text-brand" />
                         <span>{typeof item === 'string' ? item : (item.label || item.name || item.title || '')}</span>
                       </li>
                     ))}
@@ -799,8 +853,8 @@ export default function ArticleClient({
                       <div className="text-[9px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-2"><Settings2 className="h-3.5 w-3.5" /> Garanties conseillées</div>
                       <ul className="list-none space-y-1">
                         {usefulGuarantees.map((s: string, i: number) => (
-                          <li key={`${keyPrefix}-g-${idx}-${i}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground">
-                            <span className="text-blue-500">•</span> {s}
+                          <li key={`${keyPrefix}-g-${idx}-${i}`} className="text-[10px] font-bold leading-relaxed text-foreground">
+                            <span className="mr-2 text-blue-500">•</span> {s}
                           </li>
                         ))}
                       </ul>
@@ -809,19 +863,19 @@ export default function ArticleClient({
                   {strengths && Array.isArray(strengths) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-green-600 flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5" /> Avantages</div>
-                      <ul className="list-none space-y-1">{strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (<li key={`${keyPrefix}-s-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-green-500">•</span> {s}</li>))}</ul>
+                      <ul className="list-none space-y-1">{strengths && Array.isArray(strengths) && strengths.map((s: string, j: number) => (<li key={`${keyPrefix}-s-${idx}-${j}`} className="text-[10px] font-bold leading-relaxed text-foreground"><span className="mr-2 text-green-500">•</span> {s}</li>))}</ul>
                     </div>
                   )}
                   {weaknesses && Array.isArray(weaknesses) && (
                     <div className="space-y-2 pt-2">
                       <div className="text-[9px] font-black uppercase tracking-widest text-orange-600 flex items-center gap-2"><AlertTriangle className="h-3.5 w-3.5" /> Vigilance</div>
-                      <ul className="list-none space-y-1">{weaknesses && Array.isArray(weaknesses) && weaknesses.map((s: string, j: number) => (<li key={`${keyPrefix}-w-${idx}-${j}`} className="text-[10px] font-bold flex items-start gap-2 text-foreground"><span className="text-orange-500">•</span> {s}</li>))}</ul>
+                      <ul className="list-none space-y-1">{weaknesses && Array.isArray(weaknesses) && weaknesses.map((s: string, j: number) => (<li key={`${keyPrefix}-w-${idx}-${j}`} className="text-[10px] font-bold leading-relaxed text-foreground"><span className="mr-2 text-orange-500">•</span> {s}</li>))}</ul>
                     </div>
                   )}
                 </div>
               </CardContent>
               {ficheId && (
-                <CardFooter className="bg-brand p-3 border-t-0">
+                <CardFooter className="mt-auto bg-brand p-3 border-t-0">
                   <Link href={`/fiches/${ficheId}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${ficheId}`, `/info/${id}`); }} className="text-[10px] font-black uppercase tracking-widest text-white mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
                 </CardFooter>
               )}
@@ -1040,7 +1094,9 @@ export default function ArticleClient({
     section: any,
     idx: number,
     key?: string,
-    isChineseModelSlide = false
+    isChineseModelSlide = false,
+    hideTitle = false,
+    suppressId = false
   ) => {
     const sectionId = section.title ? slugify(section.title) : `section-${idx}`;
 
@@ -1072,9 +1128,11 @@ export default function ArticleClient({
     return (
       <div
         key={key || sectionId}
-        id={sectionId}
+        id={suppressId ? undefined : sectionId}
         className={cn(
-          "mb-12 scroll-mt-28",
+          hideTitle
+            ? "mb-0 scroll-mt-28"
+            : "mb-12 scroll-mt-28",
           isBudgetCarouselArticle &&
             !key &&
             "max-md:mb-0 max-md:w-[88vw] max-md:max-w-[88vw] max-md:flex-none max-md:snap-start max-md:rounded-[2rem] max-md:border max-md:border-border/70 max-md:bg-card max-md:p-5 max-md:shadow-sm",
@@ -1082,7 +1140,7 @@ export default function ArticleClient({
             "max-md:mb-0 max-md:w-[88vw] max-md:max-w-[88vw] max-md:flex-none max-md:snap-start max-md:rounded-[2rem] max-md:border max-md:border-border/70 max-md:bg-card max-md:p-5 max-md:shadow-sm"
         )}
       >
-        {section.title && (
+        {section.title && !hideTitle && (
           <h2
             className={cn(
               "text-3xl font-black uppercase mt-12 mb-6 text-foreground border-b-2 border-brand/20 pb-2",
@@ -1484,7 +1542,7 @@ export default function ArticleClient({
 
               {children && (<div className="mb-8">{children}</div>)}
 
-              {article.presentation === 'accordion_v1' && <ArticleAccordionV1 article={article} />}
+              {article.presentation === 'accordion_v1' && <ArticleAccordionV1 article={article} imageUrl={imageUrl} />}
 
               {article.presentation !== 'accordion_v1' && (
                 <>
@@ -1507,8 +1565,9 @@ export default function ArticleClient({
                 <div
                   className={cn(
                     "my-8 grid min-w-0 items-start gap-6 lg:gap-8",
-                    id !== 'entretien-moto-intervalles-prix-conseils-par-modele' &&
-                      "lg:grid-cols-[minmax(280px,0.82fr)_minmax(420px,1.18fr)]"
+                    id !== 'entretien-moto-intervalles-prix-conseils-par-modele'
+                      ? "lg:grid-cols-[minmax(280px,0.82fr)_minmax(420px,1.18fr)]"
+                      : "max-md:hidden"
                   )}
                 >
                   {id !== 'entretien-moto-intervalles-prix-conseils-par-modele' && (
@@ -1524,7 +1583,7 @@ export default function ArticleClient({
                     </div>
                   )}
 
-                  <div className="order-2 relative overflow-hidden rounded-[2rem] border-2 border-dashed border-brand/20 bg-brand/5 p-6 shadow-sm lg:order-1">
+                  <div className="order-2 hidden relative overflow-hidden rounded-[2rem] border-2 border-dashed border-brand/20 bg-brand/5 p-6 shadow-sm md:block lg:order-1">
                     <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
                       <Image src="/images/logo-moto.webp" alt="" width={150} height={48} loading="lazy"/>
                     </div>
@@ -1578,12 +1637,75 @@ export default function ArticleClient({
                   </div>
                 )}
 
-              {isBudgetCarouselArticle && (
-                <div className="mb-3 flex items-center justify-between text-[11px] font-black uppercase tracking-[0.12em] text-muted-foreground md:hidden">
-                  <span>{activeSections.length} parties</span>
-                  <span className="text-brand">Glisse pour lire →</span>
-                </div>
-              )}
+              <div
+                data-labelmoto-mobile-article-accordions="true"
+                className="space-y-3 md:hidden"
+              >
+                {activeSections.map((section: any, idx: number) => {
+                  const mobileSectionId =
+                    section?.title
+                      ? slugify(section.title)
+                      : `section-${idx}`;
+
+                  /*
+                   * Certains blocs techniques peuvent ne pas avoir de titre.
+                   * On les conserve tels quels plutôt que d'inventer un titre.
+                   */
+                  if (!section?.title) {
+                    return (
+                      <div key={`mobile-plain-${idx}`}>
+                        {renderSection(
+                          section,
+                          idx,
+                          `mobile-plain-${idx}`,
+                          false,
+                          false,
+                          true
+                        )}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <details
+                      key={`mobile-accordion-${mobileSectionId}`}
+                      id={mobileSectionId}
+                      className="group overflow-hidden rounded-[1.7rem] border border-border/60 bg-card shadow-sm"
+                    >
+                      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-4 text-left [&::-webkit-details-marker]:hidden">
+                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand/10 text-[9px] font-black text-brand">
+                          {String(idx + 1).padStart(2, '0')}
+                        </div>
+
+                        <div className="min-w-0 flex-1">
+                          <h2 className="m-0 text-[14px] font-black leading-[1.2] text-foreground">
+                            {section.title}
+                          </h2>
+
+                          {section.subtitle ? (
+                            <p className="mt-1 line-clamp-2 text-[10px] leading-4 text-muted-foreground">
+                              {section.subtitle}
+                            </p>
+                          ) : null}
+                        </div>
+
+                        <ChevronRight className="h-4 w-4 shrink-0 text-brand transition-transform duration-200 group-open:rotate-90" />
+                      </summary>
+
+                      <div className="border-t border-border/50 px-4 pb-5 pt-4">
+                        {renderSection(
+                          section,
+                          idx,
+                          `mobile-accordion-body-${mobileSectionId}`,
+                          false,
+                          true,
+                          true
+                        )}
+                      </div>
+                    </details>
+                  );
+                })}
+              </div>
 
               <div
                 ref={isBudgetCarouselArticle ? budgetCarouselRef : undefined}
@@ -1592,11 +1714,7 @@ export default function ArticleClient({
                     ? handleBudgetCarouselScroll
                     : undefined
                 }
-                className={cn(
-                  "space-y-3",
-                  isBudgetCarouselArticle &&
-                    "max-md:-mx-4 max-md:flex max-md:items-start max-md:gap-4 max-md:space-y-0 max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-mandatory max-md:scroll-smooth max-md:px-4 max-md:pb-4"
-                )}
+                className="hidden space-y-3 md:block md:space-y-10"
               >
                 {activeSections.map((section: any, idx: number) =>
                   renderSection(section, idx)
@@ -1606,11 +1724,75 @@ export default function ArticleClient({
               {(article.faq || article.faqs) && renderFaq(article.faq || article.faqs, "article-faq")}
 
               {article.conclusion && (
-                  <div className="mt-16 pt-8 border-t border-brand/20">
-                      <div className="flex items-center gap-3 mb-6"><Info className="h-6 w-6 text-brand" /><h3 className="text-2xl font-black uppercase m-0 text-foreground">Le mot de la fin</h3></div>
-                      <div className="space-y-4">{Array.isArray(article.conclusion) ? (article.conclusion.map((line: string, i: number) => (<p key={`conc-${i}`} className="text-lg text-foreground font-medium leading-relaxed">{line}</p>))) : (<p className="text-lg text-foreground font-medium leading-relaxed">{article.conclusion}</p>)}</div>
-                      <div className="flex justify-end items-center mt-12"><p className="text-lg font-bold text-foreground/90 relative z-10">L'équipe Label Moto</p><Image src="/images/Stamp-LM.webp" alt="Signature" width={110} height={110} className="object-contain opacity-60 -rotate-[15deg] pointer-events-none -ml-10" loading="lazy"/></div>
+                <>
+                  <div className="mt-4 rounded-[1.7rem] border border-brand/20 bg-brand/5 p-5 md:hidden">
+                    <h3 className="m-0 text-base font-black text-foreground">
+                      Conclusion
+                    </h3>
+
+                    <div className="mt-3 space-y-3">
+                      {Array.isArray(article.conclusion)
+                        ? article.conclusion.map(
+                            (line: string, i: number) => (
+                              <p
+                                key={`mobile-conc-${i}`}
+                                className="text-sm font-medium leading-relaxed text-foreground/90"
+                              >
+                                {line}
+                              </p>
+                            )
+                          )
+                        : (
+                            <p className="text-sm font-medium leading-relaxed text-foreground/90">
+                              {article.conclusion}
+                            </p>
+                          )}
+                    </div>
                   </div>
+
+                  <div className="mt-16 hidden border-t border-brand/20 pt-8 md:block">
+                    <div className="mb-6 flex items-center gap-3">
+                      <Info className="h-6 w-6 text-brand" />
+                      <h3 className="m-0 text-2xl font-black uppercase text-foreground">
+                        Le mot de la fin
+                      </h3>
+                    </div>
+
+                    <div className="space-y-4">
+                      {Array.isArray(article.conclusion)
+                        ? article.conclusion.map(
+                            (line: string, i: number) => (
+                              <p
+                                key={`conc-${i}`}
+                                className="text-lg font-medium leading-relaxed text-foreground"
+                              >
+                                {line}
+                              </p>
+                            )
+                          )
+                        : (
+                            <p className="text-lg font-medium leading-relaxed text-foreground">
+                              {article.conclusion}
+                            </p>
+                          )}
+                    </div>
+
+                    <div className="mt-12 flex items-center justify-end">
+                      <p className="relative z-10 text-lg font-bold text-foreground/90">
+                        L'équipe Label Moto
+                      </p>
+
+                      <Image
+                        src="/images/Stamp-LM.webp"
+                        alt="Signature"
+                        width={110}
+                        height={110}
+                        className="-ml-10 -rotate-[15deg] object-contain opacity-60 pointer-events-none"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                </>
               )}
                 </>
               )}

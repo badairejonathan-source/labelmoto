@@ -68,6 +68,37 @@ const getArticleCategories = (article: any) => {
 
 const ArticleCard = ({ article, priority = false, eager = false }: { article: any, priority?: boolean, eager?: boolean }) => {
     const imageUrl = React.useMemo(() => {
+    const labelMotoListingArticleId = String(
+      article?.id ||
+      article?.slug ||
+      ''
+    ).toLowerCase();
+
+    const labelMotoListingArticleTitle = String(
+      article?.display_title ||
+      article?.title ||
+      ''
+    ).toLowerCase();
+
+    if (
+      labelMotoListingArticleId ===
+        'embrayage-automatique-moto-eclutch-dct-yamt-asa-amt' ||
+      labelMotoListingArticleTitle.includes(
+        'fin du levier'
+      )
+    ) {
+      return '/images/embrayage-automatique-eclutch-dct-yamt-asa-amt.webp';
+    }
+
+    if (
+      labelMotoListingArticleId ===
+        'motos-chinoises-france-2026' ||
+      labelMotoListingArticleTitle.includes(
+        'motos chinoises'
+      )
+    ) {
+      return '/images/article-moto-chinoise-2026.webp';
+    }
         const id = (article.id || '').toLowerCase();
         const title = (article.title || '').toLowerCase();
 

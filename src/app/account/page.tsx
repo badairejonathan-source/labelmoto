@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, LogOut, ArrowLeft, User, Bike, Palette, Save, X, ShieldCheck, MailWarning, Store, Pencil, ExternalLink, Heart, BookOpen, ChevronDown } from 'lucide-react';
+import { Loader2, LogOut, ArrowLeft, User, Bike, Palette, Save, X, ShieldCheck, MailWarning, Store, Pencil, ExternalLink, Heart, BookOpen, ChevronDown, Handshake, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -169,6 +169,22 @@ function AccountContent() {
   const [isLoadingFavoriteMotorcycles, setIsLoadingFavoriteMotorcycles] = useState(false);
   const [favoriteArticles, setFavoriteArticles] = useState<any[]>([]);
   const [isLoadingFavoriteArticles, setIsLoadingFavoriteArticles] = useState(false);
+
+  const [
+    ownedRecommendations,
+    setOwnedRecommendations,
+  ] = useState<Record<string, any[]>>({});
+
+  const [
+    isLoadingOwnedRecommendations,
+    setIsLoadingOwnedRecommendations,
+  ] = useState(false);
+
+  const [
+    removingRecommendationId,
+    setRemovingRecommendationId,
+  ] = useState<string | null>(null);
+
   const [mobileOpenSection, setMobileOpenSection] = useState<
     'garage' | 'favorites' | 'pro' | null
   >(null);
@@ -654,6 +670,208 @@ function AccountContent() {
     loadOwnedListings();
     return () => { cancelled = true; };
   }, [firestore, user, isPro]);
+
+  useEffect(() => {
+    if (
+      !user?.emailVerified ||
+      ownedListings.length === 0
+    ) {
+      setOwnedRecommendations({});
+      setIsLoadingOwnedRecommendations(false);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadOwnedRecommendations =
+      async () => {
+        setIsLoadingOwnedRecommendations(
+          true
+        );
+
+        try {
+          const idToken =
+            await user.getIdToken(true);
+
+          const entries =
+            await Promise.all(
+              ownedListings.map(
+                async listing => {
+                  const listingKey =
+                    `${listing.collection}/${listing.id}`;
+
+                  const response =
+                    await fetch(
+                      `/api/pro-recommendations?owner=1&sourceCollection=${encodeURIComponent(
+                        listing.collection
+                      )}&sourceId=${encodeURIComponent(
+                        listing.id
+                      )}`,
+                      {
+                        method: 'GET',
+                        headers: {
+                          'Authorization':
+                            `Bearer ${idToken}`,
+                        },
+                      }
+                    );
+
+                  const payload =
+                    await response.json();
+
+                  if (!response.ok) {
+                    throw new Error(
+                      payload?.error ||
+                      'Chargement des recommandations impossible.'
+                    );
+                  }
+
+                  return [
+                    listingKey,
+                    Array.isArray(
+                      payload?.outgoing
+                    )
+                      ? payload.outgoing
+                      : [],
+                  ] as const;
+                }
+              )
+            );
+
+          if (!cancelled) {
+            setOwnedRecommendations(
+              Object.fromEntries(
+                entries
+              )
+            );
+          }
+        }
+        catch (error) {
+          console.warn(
+            'Chargement des recommandations professionnelles impossible',
+            error
+          );
+
+          if (!cancelled) {
+            setOwnedRecommendations({});
+          }
+        }
+        finally {
+          if (!cancelled) {
+            setIsLoadingOwnedRecommendations(
+              false
+            );
+          }
+        }
+      };
+
+    void loadOwnedRecommendations();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    user,
+    ownedListings,
+  ]);
+
+  const removeOwnedRecommendation =
+    async (
+      listingKey: string,
+      recommendation: any
+    ) => {
+      if (
+        !user ||
+        removingRecommendationId
+      ) {
+        return;
+      }
+
+      const relationId =
+        String(
+          recommendation?.relationId ||
+          ''
+        );
+
+      if (!relationId) {
+        return;
+      }
+
+      setRemovingRecommendationId(
+        relationId
+      );
+
+      try {
+        const idToken =
+          await user.getIdToken(true);
+
+        const response =
+          await fetch(
+            '/api/pro-recommendations',
+            {
+              method: 'DELETE',
+              headers: {
+                'Authorization':
+                  `Bearer ${idToken}`,
+                'Content-Type':
+                  'application/json',
+              },
+              body: JSON.stringify({
+                relationId,
+              }),
+            }
+          );
+
+        const payload =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            payload?.error ||
+            'Suppression impossible.'
+          );
+        }
+
+        setOwnedRecommendations(
+          current => ({
+            ...current,
+            [listingKey]:
+              (
+                current[
+                  listingKey
+                ] || []
+              ).filter(
+                item =>
+                  item.relationId !==
+                  relationId
+              ),
+          })
+        );
+
+        toast({
+          title:
+            'Recommandation supprimée',
+          description:
+            'Le professionnel a été retiré de vos recommandations.',
+        });
+      }
+      catch (error: any) {
+        toast({
+          title:
+            'Suppression impossible',
+          description:
+            error?.message ||
+            "La recommandation n'a pas pu être supprimée.",
+          variant:
+            'destructive',
+        });
+      }
+      finally {
+        setRemovingRecommendationId(
+          null
+        );
+      }
+    };
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -1497,29 +1715,178 @@ function AccountContent() {
                     </Button>
                   </div>
                 ) : (
-                  ownedListings.map(listing => (
-                    <div key={`${listing.collection}/${listing.id}`} className="rounded-2xl border-2 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-black truncate">{listing.title || listing.displayName || listing.id}</p>
-                          <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none text-[8px] uppercase">Vérifiée</Badge>
+                  ownedListings.map(listing => {
+                    const listingKey =
+                      `${listing.collection}/${listing.id}`;
+
+                    const listingRecommendations =
+                      ownedRecommendations[
+                        listingKey
+                      ] || [];
+
+                    return (
+                      <div
+                        key={listingKey}
+                        className="rounded-2xl border-2 p-4"
+                      >
+                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="truncate font-black">
+                                {listing.title ||
+                                  listing.displayName ||
+                                  listing.id}
+                              </p>
+
+                              <Badge className="border-none bg-green-100 text-[8px] uppercase text-green-700 hover:bg-green-100">
+                                Vérifiée
+                              </Badge>
+                            </div>
+
+                            <p className="mt-1 truncate text-xs text-muted-foreground">
+                              {listing.address ||
+                                listing.city ||
+                                listing.ville ||
+                                'Adresse non renseignée'}
+                            </p>
+                          </div>
+
+                          <div className="flex shrink-0 gap-2">
+                            <Button
+                              asChild
+                              variant="outline"
+                              size="sm"
+                              className="rounded-xl text-[9px] font-black uppercase tracking-widest"
+                            >
+                              <Link
+                                href={`/pro/mes-fiches/${encodeURIComponent(
+                                  listing.collection
+                                )}/${encodeURIComponent(
+                                  listing.id
+                                )}`}
+                              >
+                                <Pencil className="mr-1 h-3.5 w-3.5" />
+                                Modifier ma fiche
+                              </Link>
+                            </Button>
+
+                            <Button
+                              asChild
+                              variant="ghost"
+                              size="sm"
+                              className="rounded-xl"
+                            >
+                              <Link
+                                href={
+                                  listing.collection ===
+                                  'concessions'
+                                    ? `/concessions/${listing.slug || listing.id}`
+                                    : `/${listing.collection}/${listing.slug || listing.id}`
+                                }
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </div>
                         </div>
-                        <p className="text-xs text-muted-foreground truncate mt-1">{listing.address || listing.city || listing.ville || 'Adresse non renseignée'}</p>
+
+                        <div className="mt-4 border-t pt-4">
+                          <div className="mb-3 flex items-center gap-2">
+                            <Handshake className="h-4 w-4 text-brand" />
+
+                            <p className="text-[10px] font-black uppercase tracking-widest">
+                              Mes recommandations
+                            </p>
+
+                            <Badge
+                              variant="secondary"
+                              className="ml-auto text-[8px] font-black"
+                            >
+                              {listingRecommendations.length}
+                            </Badge>
+                          </div>
+
+                          {isLoadingOwnedRecommendations ? (
+                            <div className="flex justify-center py-4">
+                              <Loader2 className="h-4 w-4 animate-spin text-brand" />
+                            </div>
+                          ) : listingRecommendations.length > 0 ? (
+                            <div className="space-y-2">
+                              {listingRecommendations.map(
+                                recommendation => (
+                                  <div
+                                    key={
+                                      recommendation.relationId
+                                    }
+                                    className="flex items-center gap-3 rounded-xl bg-muted/30 px-3 py-2.5"
+                                  >
+                                    <div className="min-w-0 flex-1">
+                                      <p className="truncate text-xs font-black">
+                                        {recommendation.target?.title ||
+                                          'Professionnel moto'}
+                                      </p>
+
+                                      <p className="mt-0.5 truncate text-[10px] font-medium text-muted-foreground">
+                                        {recommendation.target?.category ||
+                                          'Professionnel moto'}
+                                      </p>
+                                    </div>
+
+                                    {recommendation.target?.href && (
+                                      <Button
+                                        asChild
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 shrink-0 rounded-lg px-2 text-[8px] font-black uppercase tracking-widest"
+                                      >
+                                        <Link
+                                          href={
+                                            recommendation.target.href
+                                          }
+                                        >
+                                          Voir la fiche
+                                        </Link>
+                                      </Button>
+                                    )}
+
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="icon"
+                                      disabled={Boolean(
+                                        removingRecommendationId
+                                      )}
+                                      onClick={() =>
+                                        void removeOwnedRecommendation(
+                                          listingKey,
+                                          recommendation
+                                        )
+                                      }
+                                      aria-label={`Supprimer la recommandation ${recommendation.target?.title || ''}`}
+                                      className="h-8 w-8 shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                    >
+                                      {removingRecommendationId ===
+                                      recommendation.relationId ? (
+                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                      ) : (
+                                        <Trash2 className="h-4 w-4" />
+                                      )}
+                                    </Button>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          ) : (
+                            <div className="rounded-xl border border-dashed px-3 py-3 text-center">
+                              <p className="text-[10px] font-medium text-muted-foreground">
+                                Aucune recommandation pour le moment.
+                              </p>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex gap-2 shrink-0">
-                        <Button asChild variant="outline" size="sm" className="rounded-xl font-black uppercase text-[9px] tracking-widest">
-                          <Link href={`/pro/mes-fiches/${encodeURIComponent(listing.collection)}/${encodeURIComponent(listing.id)}`}>
-                            <Pencil className="h-3.5 w-3.5 mr-1" /> Modifier ma fiche
-                          </Link>
-                        </Button>
-                        <Button asChild variant="ghost" size="sm" className="rounded-xl">
-                          <Link href={listing.collection === 'concessions' ? `/concessions/${listing.slug || listing.id}` : `/${listing.collection}/${listing.slug || listing.id}`}>
-                            <ExternalLink className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </CardContent>
             </Card>

@@ -5,7 +5,7 @@ import UnifiedSiteHeader from '@/components/app/unified-site-header';
 import LabelMotoLogo from '@/components/app/logo';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { MapPin, Phone, Globe, Clock, Home, ChevronRight, Star, MessageSquare, User, Loader2, Send, Instagram, Heart } from 'lucide-react';
+import { MapPin, Phone, Globe, Clock, Home, ChevronRight, Star, MessageSquare, User, Loader2, Send, Instagram, Heart, Handshake, Store, Check } from 'lucide-react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { Dealership } from '@/lib/types';
@@ -36,6 +36,36 @@ const reviewSchema = z.object({
 });
 
 type ReviewFormValues = z.infer<typeof reviewSchema>;
+
+const RECOMMENDATION_COLLECTIONS = [
+  'concessions',
+  'associations',
+  'relais',
+  'creators',
+] as const;
+
+type RecommendationCollection =
+  (typeof RECOMMENDATION_COLLECTIONS)[number];
+
+type OwnedRecommendationListing = {
+  collection: RecommendationCollection;
+  id: string;
+  title: string;
+  slug?: string;
+};
+
+type PublicProfessionalRecommendation = {
+  relationId: string;
+  targetCollection: RecommendationCollection;
+  targetId: string;
+  title: string;
+  slug?: string;
+  category?: string;
+  address?: string;
+  imageUrl?: string;
+  href: string;
+};
+
 
 const PROFESSIONAL_DAYS = [
   'lundi',
@@ -126,6 +156,27 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
   const firestore = useFirestore();
   const [descExpanded, setDescExpanded] = useState(false);
   const [nearby, setNearby] = useState<Array<{id:string;title:string;slug?:string;category?:string;address?:string}>>([]);
+  const [ownedRecommendationListings, setOwnedRecommendationListings] =
+    useState<OwnedRecommendationListing[]>([]);
+  const [professionalRecommendations, setProfessionalRecommendations] =
+    useState<PublicProfessionalRecommendation[]>([]);
+  const [isRecommendationDialogOpen, setIsRecommendationDialogOpen] =
+    useState(false);
+  const [recommendationSubmittingId, setRecommendationSubmittingId] =
+    useState<string | null>(null);
+
+  const [
+    recommendedSourceKeys,
+    setRecommendedSourceKeys,
+  ] = useState<Set<string>>(
+    () => new Set()
+  );
+
+  const [
+    recommendationStatusLoading,
+    setRecommendationStatusLoading,
+  ] = useState(false);
+
 
   useEffect(() => {
     if (!firestore || !(pro as any).departement) return;
@@ -185,7 +236,311 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
   
   const activeProfile = proProfile || stdProfile;
 
-  const professionalCollection = getProCollection();
+  const professionalCollection = getProCollection() as RecommendationCollection;
+
+  useEffect(() => {
+    if (!firestore || !user) {
+      setOwnedRecommendationListings([]);
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadOwnedRecommendationListings = async () => {
+      try {
+        const snapshots = await Promise.all(
+          RECOMMENDATION_COLLECTIONS.map(
+            async collectionName => {
+              const snapshot = await getDocs(
+                query(
+                  collection(
+                    firestore,
+                    collectionName
+                  ),
+                  where(
+                    'ownerUid',
+                    '==',
+                    user.uid
+                  )
+                )
+              );
+
+              return snapshot.docs.map(item => {
+                const data = item.data();
+
+                return {
+                  collection: collectionName,
+                  id: item.id,
+                  title: String(
+                    data.title ||
+                    data.displayName ||
+                    item.id
+                  ),
+                  slug: String(
+                    data.slug || ''
+                  ) || undefined,
+                } satisfies OwnedRecommendationListing;
+              });
+            }
+          )
+        );
+
+        if (!cancelled) {
+          setOwnedRecommendationListings(
+            snapshots.flat()
+          );
+        }
+      }
+      catch (error) {
+        console.warn(
+          'Chargement des fiches professionnelles possedees impossible',
+          error
+        );
+
+        if (!cancelled) {
+          setOwnedRecommendationListings([]);
+        }
+      }
+    };
+
+    void loadOwnedRecommendationListings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [firestore, user]);
+
+  useEffect(() => {
+    if (!pro.id) {
+      setProfessionalRecommendations([]);
+      return;
+    }
+
+    const controller =
+      new AbortController();
+
+    const loadRecommendations = async () => {
+      try {
+        const response = await fetch(
+          `/api/pro-recommendations?sourceCollection=${encodeURIComponent(
+            professionalCollection
+          )}&sourceId=${encodeURIComponent(
+            pro.id
+          )}`,
+          {
+            method: 'GET',
+            signal: controller.signal,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            'Chargement des recommandations impossible.'
+          );
+        }
+
+        const payload = await response.json();
+
+        setProfessionalRecommendations(
+          Array.isArray(payload?.recommendations)
+            ? payload.recommendations
+            : []
+        );
+      }
+      catch (error: any) {
+        if (error?.name === 'AbortError') {
+          return;
+        }
+
+        console.warn(
+          'Chargement des recommandations professionnelles impossible',
+          error
+        );
+
+        setProfessionalRecommendations([]);
+      }
+    };
+
+    void loadRecommendations();
+
+    return () => {
+      controller.abort();
+    };
+  }, [
+    professionalCollection,
+    pro.id,
+  ]);
+
+  const recommendationSourceOptions =
+    ownedRecommendationListings.filter(
+      item =>
+        !(
+          item.collection === professionalCollection &&
+          item.id === pro.id
+        )
+    );
+
+  useEffect(() => {
+    if (
+      !user?.emailVerified ||
+      !pro.id ||
+      recommendationSourceOptions.length === 0
+    ) {
+      setRecommendedSourceKeys(
+        new Set()
+      );
+
+      setRecommendationStatusLoading(
+        false
+      );
+
+      return;
+    }
+
+    let cancelled = false;
+
+    const loadRecommendationStatus =
+      async () => {
+        setRecommendationStatusLoading(
+          true
+        );
+
+        try {
+          const idToken =
+            await user.getIdToken(true);
+
+          const statuses =
+            await Promise.all(
+              recommendationSourceOptions.map(
+                async sourceListing => {
+                  const sourceKey =
+                    `${sourceListing.collection}/${sourceListing.id}`;
+
+                  const response =
+                    await fetch(
+                      `/api/pro-recommendations?owner=1&sourceCollection=${encodeURIComponent(
+                        sourceListing.collection
+                      )}&sourceId=${encodeURIComponent(
+                        sourceListing.id
+                      )}`,
+                      {
+                        method: 'GET',
+                        headers: {
+                          'Authorization':
+                            `Bearer ${idToken}`,
+                        },
+                      }
+                    );
+
+                  const payload =
+                    await response.json();
+
+                  if (!response.ok) {
+                    throw new Error(
+                      payload?.error ||
+                      'Lecture de la recommandation impossible.'
+                    );
+                  }
+
+                  const outgoing =
+                    Array.isArray(
+                      payload?.outgoing
+                    )
+                      ? payload.outgoing
+                      : [];
+
+                  const alreadyRecommended =
+                    outgoing.some(
+                      (
+                        item: {
+                          targetCollection?: string;
+                          targetId?: string;
+                        }
+                      ) =>
+                        item.targetCollection ===
+                          professionalCollection &&
+                        item.targetId ===
+                          pro.id
+                    );
+
+                  return {
+                    sourceKey,
+                    alreadyRecommended,
+                  };
+                }
+              )
+            );
+
+          if (cancelled) {
+            return;
+          }
+
+          setRecommendedSourceKeys(
+            new Set(
+              statuses
+                .filter(
+                  item =>
+                    item.alreadyRecommended
+                )
+                .map(
+                  item =>
+                    item.sourceKey
+                )
+            )
+          );
+        }
+        catch (error) {
+          console.warn(
+            'Lecture du statut des recommandations impossible',
+            error
+          );
+
+          if (!cancelled) {
+            setRecommendedSourceKeys(
+              new Set()
+            );
+          }
+        }
+
+        if (!cancelled) {
+          setRecommendationStatusLoading(
+            false
+          );
+        }
+      };
+
+    void loadRecommendationStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    user,
+    pro.id,
+    professionalCollection,
+    ownedRecommendationListings,
+  ]);
+
+  const singleRecommendationSource =
+    recommendationSourceOptions.length === 1
+      ? recommendationSourceOptions[0]
+      : null;
+
+  const singleRecommendationSourceKey =
+    singleRecommendationSource
+      ? `${singleRecommendationSource.collection}/${singleRecommendationSource.id}`
+      : null;
+
+  const singleSourceAlreadyRecommended =
+    Boolean(
+      singleRecommendationSourceKey &&
+      recommendedSourceKeys.has(
+        singleRecommendationSourceKey
+      )
+    );
+
+  const hasRecommendationToTarget =
+    recommendedSourceKeys.size > 0;
 
   const professionalFavoriteId =
     pro.id
@@ -387,6 +742,120 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
       });
     } finally {
       setIsFavoriteUpdating(false);
+    }
+  };
+
+  const addProfessionalRecommendation = async (
+    source: OwnedRecommendationListing
+  ) => {
+    if (
+      !user ||
+      !pro.id ||
+      recommendationSubmittingId
+    ) {
+      return;
+    }
+
+    setRecommendationSubmittingId(
+      `${source.collection}/${source.id}`
+    );
+
+    try {
+      const idToken =
+        await user.getIdToken(true);
+
+      const response = await fetch(
+        '/api/pro-recommendations',
+        {
+          method: 'POST',
+          headers: {
+            'Authorization':
+              `Bearer ${idToken}`,
+            'Content-Type':
+              'application/json',
+          },
+          body: JSON.stringify({
+            sourceCollection:
+              source.collection,
+            sourceId:
+              source.id,
+            targetCollection:
+              professionalCollection,
+            targetId:
+              pro.id,
+          }),
+        }
+      );
+
+      const payload =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          payload?.error ||
+          'Ajout de la recommandation impossible.'
+        );
+      }
+
+      setRecommendedSourceKeys(
+        current => {
+          const next =
+            new Set(current);
+
+          next.add(
+            `${source.collection}/${source.id}`
+          );
+
+          return next;
+        }
+      );
+
+      toast({
+        title: payload?.created
+          ? 'Recommandation ajoutée'
+          : 'Déjà recommandée',
+        description: payload?.created
+          ? `${pro.title} apparaît maintenant dans les recommandations de ${source.title}.`
+          : `${pro.title} figure déjà dans les recommandations de ${source.title}.`,
+      });
+
+      setIsRecommendationDialogOpen(
+        false
+      );
+    }
+    catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title:
+          'Recommandation impossible',
+        description:
+          error?.message ||
+          "L'enregistrement n'a pas pu être effectué.",
+      });
+    }
+    finally {
+      setRecommendationSubmittingId(
+        null
+      );
+    }
+  };
+
+  const handleRecommendationClick = () => {
+    if (
+      recommendationSourceOptions.length === 1
+    ) {
+      void addProfessionalRecommendation(
+        recommendationSourceOptions[0]
+      );
+      return;
+    }
+
+    if (
+      recommendationSourceOptions.length > 1
+    ) {
+      setIsRecommendationDialogOpen(
+        true
+      );
     }
   };
 
@@ -603,6 +1072,40 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
 
                 <p className="text-xl font-bold text-brand italic">{pro.category || 'Professionnel moto'}</p>
 
+                {recommendationSourceOptions.length > 0 && pro.id && (
+                  <div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleRecommendationClick}
+                      disabled={
+                        Boolean(
+                          recommendationSubmittingId
+                        ) ||
+                        recommendationStatusLoading ||
+                        singleSourceAlreadyRecommended
+                      }
+                      className="h-10 rounded-full border-2 border-brand px-5 text-[9px] font-black uppercase tracking-widest text-brand hover:bg-brand hover:text-white"
+                    >
+                      {recommendationSubmittingId ||
+                      recommendationStatusLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      ) : singleSourceAlreadyRecommended ? (
+                        <Check className="mr-2 h-4 w-4" />
+                      ) : (
+                        <Handshake className="mr-2 h-4 w-4" />
+                      )}
+
+                      {singleSourceAlreadyRecommended
+                        ? 'Ajouté à mes recommandations'
+                        : recommendationSourceOptions.length > 1 &&
+                          hasRecommendationToTarget
+                          ? 'Gérer mes recommandations'
+                          : 'Ajouter en recommandation sur ma fiche pro'}
+                    </Button>
+                  </div>
+                )}
+
                 {isAdmin && pro.id && (
                   <div>
                     <Button
@@ -654,6 +1157,65 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
                   </Button>
                 )}
               </div>
+
+              {professionalRecommendations.length > 0 && (
+                <details className="group rounded-2xl border-2 border-brand/15 bg-brand/5 lg:hidden">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand text-white">
+                      <Handshake className="h-4 w-4" />
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-brand">
+                        Recommandations pro
+                      </p>
+                      <p className="mt-0.5 text-xs font-bold text-muted-foreground">
+                        {professionalRecommendations.length} professionnel{professionalRecommendations.length > 1 ? 's' : ''} recommandé{professionalRecommendations.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+
+                    <ChevronRight className="h-4 w-4 text-brand transition-transform group-open:rotate-90" />
+                  </summary>
+
+                  <div className="space-y-2 border-t border-brand/10 px-4 py-4">
+                    {professionalRecommendations.map(item => (
+                      <Link
+                        key={item.relationId}
+                        href={item.href}
+                        className="flex items-center gap-3 rounded-xl bg-white p-3 transition-colors hover:bg-brand/5"
+                      >
+                        {item.imageUrl ? (
+                          <div className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-muted">
+                            <Image
+                              src={item.imageUrl}
+                              alt=""
+                              fill
+                              sizes="44px"
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                            <Store className="h-5 w-5" />
+                          </div>
+                        )}
+
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-xs font-black uppercase tracking-tight">
+                            {item.title}
+                          </p>
+                          <p className="mt-0.5 truncate text-[10px] font-bold text-muted-foreground">
+                            {item.category || 'Professionnel moto'}
+                          </p>
+                        </div>
+
+                        <ChevronRight className="h-4 w-4 shrink-0 text-brand" />
+                      </Link>
+                    ))}
+                  </div>
+                </details>
+              )}
+
               {((pro as any).instagramUrl || (pro as any).facebookUrl) && (
                 <div className="flex gap-3 flex-wrap pt-2">
                   {(pro as any).instagramUrl && (
@@ -832,6 +1394,62 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
           </div>
 
           <aside className="lg:col-span-4 space-y-6">
+            {professionalRecommendations.length > 0 && (
+              <div className="hidden rounded-[2rem] border-2 border-brand/15 bg-white p-6 shadow-lg lg:block">
+                <div className="mb-5 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-white">
+                    <Handshake className="h-5 w-5" />
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand">
+                      Recommandations pro
+                    </p>
+                    <p className="mt-0.5 text-xs font-bold text-muted-foreground">
+                      Les professionnels recommandés par {pro.title}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {professionalRecommendations.map(item => (
+                    <Link
+                      key={item.relationId}
+                      href={item.href}
+                      className="flex items-center gap-3 rounded-2xl border border-border/60 p-3 transition-all hover:border-brand/40 hover:bg-brand/5"
+                    >
+                      {item.imageUrl ? (
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl bg-muted">
+                          <Image
+                            src={item.imageUrl}
+                            alt=""
+                            fill
+                            sizes="48px"
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                          <Store className="h-5 w-5" />
+                        </div>
+                      )}
+
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-xs font-black uppercase tracking-tight">
+                          {item.title}
+                        </p>
+                        <p className="mt-0.5 truncate text-[10px] font-bold text-muted-foreground">
+                          {item.category || 'Professionnel moto'}
+                        </p>
+                      </div>
+
+                      <ChevronRight className="h-4 w-4 shrink-0 text-brand" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="bg-brand/5 p-8 rounded-[2rem] border-2 border-brand/20 text-center space-y-4">
               <p className="text-xs font-black uppercase tracking-widest text-brand">Besoin d'un autre pro ?</p>
               <Button asChild className="w-full bg-brand rounded-full font-black uppercase text-[10px] tracking-widest py-6">
@@ -841,6 +1459,62 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
           </aside>
         </div>
       </main>
+
+      <Dialog
+        open={isRecommendationDialogOpen}
+        onOpenChange={setIsRecommendationDialogOpen}
+      >
+        <DialogContent className="sm:max-w-lg rounded-[2rem]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black uppercase tracking-tight">
+              Ajouter à mes recommandations
+            </DialogTitle>
+            <DialogDescription className="font-medium">
+              Choisissez la fiche professionnelle qui recommande {pro.title}.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 py-2">
+            {recommendationSourceOptions.map(source => {
+              const sourceKey =
+                `${source.collection}/${source.id}`;
+
+              return (
+                <button
+                  key={sourceKey}
+                  type="button"
+                  disabled={Boolean(recommendationSubmittingId)}
+                  onClick={() =>
+                    void addProfessionalRecommendation(
+                      source
+                    )
+                  }
+                  className="flex w-full items-center gap-3 rounded-2xl border-2 p-4 text-left transition-colors hover:border-brand hover:bg-brand/5 disabled:opacity-60"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                    {recommendationSubmittingId === sourceKey ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Store className="h-5 w-5" />
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-black uppercase tracking-tight">
+                      {source.title}
+                    </p>
+                    <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Ma fiche professionnelle
+                    </p>
+                  </div>
+
+                  <ChevronRight className="h-4 w-4 shrink-0 text-brand" />
+                </button>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
         <DialogContent className="sm:max-w-xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">

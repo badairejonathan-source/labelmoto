@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,7 +8,7 @@ import { useFirebase } from '@/firebase/client';
 import Header from '@/components/app/header';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, CheckCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle, ExternalLink, Handshake, Loader2, Trash2 } from 'lucide-react';
 import { isAllowedProCollection } from '@/lib/pro-claim-utils';
 import ProfessionalListingForm, {
   type ProfessionalAppSection,
@@ -27,6 +27,34 @@ const DAYS = [
 ] as const;
 
 type DayKey = (typeof DAYS)[number];
+
+type RecommendationParty = {
+  collection: string;
+  id: string;
+  title: string;
+  slug?: string;
+  category?: string;
+  address?: string;
+  imageUrl?: string;
+  href: string;
+};
+
+type ManagedRecommendation = {
+  relationId: string;
+  createdAt?: string | null;
+  sourceCollection: string;
+  sourceId: string;
+  targetCollection: string;
+  targetId: string;
+  source: RecommendationParty;
+  target: RecommendationParty;
+};
+
+type OwnerRecommendations = {
+  outgoing: ManagedRecommendation[];
+  incoming: ManagedRecommendation[];
+};
+
 
 function getAllowedSections(
   collectionName: string
@@ -113,6 +141,22 @@ export default function EditOwnedListingPage() {
 
   const [submitted, setSubmitted] =
     useState(false);
+
+  const [recommendations, setRecommendations] =
+    useState<OwnerRecommendations>({
+      outgoing: [],
+      incoming: [],
+    });
+
+  const [
+    recommendationsLoading,
+    setRecommendationsLoading,
+  ] = useState(false);
+
+  const [
+    removingRecommendationId,
+    setRemovingRecommendationId,
+  ] = useState<string | null>(null);
 
   useEffect(() => {
     if (isUserLoading) return;
@@ -221,6 +265,172 @@ export default function EditOwnedListingPage() {
     listingId,
     toast,
   ]);
+
+  const loadRecommendations =
+    useCallback(async () => {
+      if (
+        !user?.emailVerified ||
+        !listing ||
+        !isAllowedProCollection(
+          collectionName
+        ) ||
+        !listingId
+      ) {
+        return;
+      }
+
+      setRecommendationsLoading(
+        true
+      );
+
+      try {
+        const idToken =
+          await user.getIdToken(true);
+
+        const response = await fetch(
+          `/api/pro-recommendations?owner=1&sourceCollection=${encodeURIComponent(
+            collectionName
+          )}&sourceId=${encodeURIComponent(
+            listingId
+          )}`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization':
+                `Bearer ${idToken}`,
+            },
+          }
+        );
+
+        const payload =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            payload?.error ||
+            'Chargement des recommandations impossible.'
+          );
+        }
+
+        setRecommendations({
+          outgoing:
+            Array.isArray(
+              payload?.outgoing
+            )
+              ? payload.outgoing
+              : [],
+          incoming:
+            Array.isArray(
+              payload?.incoming
+            )
+              ? payload.incoming
+              : [],
+        });
+      }
+      catch (error: any) {
+        toast({
+          title:
+            'Recommandations indisponibles',
+          description:
+            error?.message ||
+            'Impossible de charger les recommandations.',
+          variant: 'destructive',
+        });
+      }
+      finally {
+        setRecommendationsLoading(
+          false
+        );
+      }
+    }, [
+      user,
+      listing,
+      collectionName,
+      listingId,
+      toast,
+    ]);
+
+  useEffect(() => {
+    if (!listing) return;
+
+    void loadRecommendations();
+  }, [
+    listing,
+    loadRecommendations,
+  ]);
+
+  const removeRecommendation =
+    async (
+      recommendation:
+        ManagedRecommendation
+    ) => {
+      if (
+        !user ||
+        removingRecommendationId
+      ) {
+        return;
+      }
+
+      setRemovingRecommendationId(
+        recommendation.relationId
+      );
+
+      try {
+        const idToken =
+          await user.getIdToken(true);
+
+        const response = await fetch(
+          '/api/pro-recommendations',
+          {
+            method: 'DELETE',
+            headers: {
+              'Authorization':
+                `Bearer ${idToken}`,
+              'Content-Type':
+                'application/json',
+            },
+            body: JSON.stringify({
+              relationId:
+                recommendation.relationId,
+            }),
+          }
+        );
+
+        const payload =
+          await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            payload?.error ||
+            'Suppression impossible.'
+          );
+        }
+
+        toast({
+          title:
+            'Recommandation supprimée',
+          description:
+            'La relation a été retirée immédiatement.',
+        });
+
+        await loadRecommendations();
+      }
+      catch (error: any) {
+        toast({
+          title:
+            'Suppression impossible',
+          description:
+            error?.message ||
+            "La recommandation n'a pas pu être supprimée.",
+          variant: 'destructive',
+        });
+      }
+      finally {
+        setRemovingRecommendationId(
+          null
+        );
+      }
+    };
 
   const submit = async (
     values: ProfessionalListingFormValues
@@ -547,6 +757,165 @@ export default function EditOwnedListingPage() {
             }
             onSubmit={submit}
           />
+
+          <section className="rounded-[2rem] border-2 border-brand/15 bg-white p-5 shadow-lg sm:p-7">
+            <div className="mb-6 flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand text-white">
+                <Handshake className="h-5 w-5" />
+              </div>
+
+              <div>
+                <h2 className="text-lg font-black uppercase tracking-tight">
+                  Recommandations professionnelles
+                </h2>
+                <p className="mt-1 text-xs font-medium leading-relaxed text-muted-foreground">
+                  Gérez les professionnels recommandés par votre fiche et les professionnels qui recommandent votre établissement.
+                </p>
+              </div>
+            </div>
+
+            {recommendationsLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-brand" />
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2">
+                <div>
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-brand">
+                      Mes recommandations
+                    </h3>
+                    <span className="rounded-full bg-brand/10 px-2.5 py-1 text-[9px] font-black text-brand">
+                      {recommendations.outgoing.length}
+                    </span>
+                  </div>
+
+                  {recommendations.outgoing.length > 0 ? (
+                    <div className="space-y-2">
+                      {recommendations.outgoing.map(item => (
+                        <div
+                          key={item.relationId}
+                          className="rounded-2xl border p-3"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-black">
+                                {item.target.title}
+                              </p>
+                              <p className="mt-1 truncate text-xs text-muted-foreground">
+                                {item.target.category || 'Professionnel moto'}
+                              </p>
+                            </div>
+
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              disabled={Boolean(removingRecommendationId)}
+                              onClick={() =>
+                                void removeRecommendation(
+                                  item
+                                )
+                              }
+                              aria-label={`Retirer ${item.target.title} de mes recommandations`}
+                              className="h-9 w-9 shrink-0 text-destructive hover:text-destructive"
+                            >
+                              {removingRecommendationId === item.relationId ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+
+                          <Link
+                            href={item.target.href}
+                            className="mt-2 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-brand"
+                          >
+                            Voir la fiche
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border-2 border-dashed p-4 text-center">
+                      <p className="text-xs font-bold text-muted-foreground">
+                        Aucun professionnel recommandé pour le moment.
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <div className="mb-3 flex items-center justify-between gap-3">
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-brand">
+                      Qui recommande ma fiche
+                    </h3>
+                    <span className="rounded-full bg-brand/10 px-2.5 py-1 text-[9px] font-black text-brand">
+                      {recommendations.incoming.length}
+                    </span>
+                  </div>
+
+                  {recommendations.incoming.length > 0 ? (
+                    <div className="space-y-2">
+                      {recommendations.incoming.map(item => (
+                        <div
+                          key={item.relationId}
+                          className="rounded-2xl border p-3"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-black">
+                                {item.source.title}
+                              </p>
+                              <p className="mt-1 truncate text-xs text-muted-foreground">
+                                {item.source.category || 'Professionnel moto'}
+                              </p>
+                            </div>
+
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              disabled={Boolean(removingRecommendationId)}
+                              onClick={() =>
+                                void removeRecommendation(
+                                  item
+                                )
+                              }
+                              aria-label={`Refuser la recommandation de ${item.source.title}`}
+                              className="h-9 w-9 shrink-0 text-destructive hover:text-destructive"
+                            >
+                              {removingRecommendationId === item.relationId ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
+
+                          <Link
+                            href={item.source.href}
+                            className="mt-2 inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-widest text-brand"
+                          >
+                            Voir la fiche
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border-2 border-dashed p-4 text-center">
+                      <p className="text-xs font-bold text-muted-foreground">
+                        Aucun autre professionnel ne recommande cette fiche actuellement.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </section>
         </div>
       </main>
     </div>
