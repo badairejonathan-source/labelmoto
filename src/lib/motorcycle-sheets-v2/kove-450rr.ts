@@ -67,6 +67,8 @@ export const kove450rrV2: MotorcycleSheetV2 = {
     { "label": "SELLE", "value": "785 à 795 mm" },
     { "label": "RÉSERVOIR", "value": "15 L" },
     { "label": "PERMIS", "value": "A" }
+  ,
+    {"label":"POIDS TOUS PLEINS FAITS","value":"165 kg"}
   ],
   "quick_maintenance": [
     {

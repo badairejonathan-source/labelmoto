@@ -55,7 +55,9 @@ export const kove800xVariants = [
       { "label": "SELLE", "value": "875 mm" },
       { "label": "R\u00c9SERVOIR", "value": "20 L" },
       { "label": "PERMIS", "value": "A" }
-    ],
+    ,
+    {"label":"POIDS TOUS PLEINS FAITS","value":"190 kg"}
+  ],
     // LABELMOTO_KOVE_800X_PRO_CYCLE_PARTS
     "cycle_parts": {
       "front_suspension": "KYB, débattement 240 mm",
@@ -88,7 +90,9 @@ export const kove800xVariants = [
       { "label": "SELLE", "value": "826 mm" },
       { "label": "R\u00c9SERVOIR", "value": "22 L" },
       { "label": "PERMIS", "value": "A" }
-    ],
+    ,
+    {"label":"POIDS TOUS PLEINS FAITS","value":"195 kg"}
+  ],
     "cycle_parts": {
       "front_suspension": "Fourche invers\u00e9e KYB \u00d843 mm, r\u00e9glable en pr\u00e9charge, d\u00e9tente et compression \u00b7 d\u00e9battement 210 mm",
       "rear_suspension": "Mono-amortisseur KYB r\u00e9glable \u00b7 d\u00e9battement 210 mm",
@@ -120,7 +124,9 @@ export const kove800xVariants = [
       { "label": "SELLE", "value": "895 mm" },
       { "label": "R\u00c9SERVOIR", "value": "19 L" },
       { "label": "PERMIS", "value": "A" }
-    ],
+    ,
+    {"label":"POIDS TOUS PLEINS FAITS","value":"176 kg"}
+  ],
     "cycle_parts": {
       "front_suspension": "Fourche invers\u00e9e \u00d849 mm double chambre, enti\u00e8rement r\u00e9glable \u00b7 d\u00e9battement 270 mm",
       "rear_suspension": "Amortisseur r\u00e9glable \u00b7 d\u00e9battement 240 mm",
@@ -176,6 +182,8 @@ export const kove800xV2: MotorcycleSheetV2 = {
     { "label": "SELLE", "value": "875 mm" },
     { "label": "R\u00c9SERVOIR", "value": "20 L" },
     { "label": "PERMIS", "value": "A" }
+  ,
+    {"label":"POIDS TOUS PLEINS FAITS","value":"190 kg"}
   ],
   "quick_maintenance": [
     {

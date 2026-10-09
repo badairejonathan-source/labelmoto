@@ -74,6 +74,8 @@ export const cfmoto450nkV2: MotorcycleSheetV2 = {
       "label": "PERMIS",
       "value": "A2"
     }
+  ,
+    { label: "POIDS TOUS PLEINS FAITS", value: "165 kg" }
   ],
   "quick_maintenance": [
     {

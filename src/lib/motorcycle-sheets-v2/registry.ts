@@ -1,4 +1,7 @@
 import type { MotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
+import { hondaCb500fDraftV2 } from '@/lib/motorcycle-sheets-v2/honda-cb500f-draft';
+import { hondaCbr500rDraftV2 } from '@/lib/motorcycle-sheets-v2/honda-cbr500r-draft';
+import { hondaNx500DraftV2 } from '@/lib/motorcycle-sheets-v2/honda-nx500-draft';
 import { voge525dsxV2 } from '@/lib/motorcycle-sheets-v2/voge-525dsx';
 import { vogeDs625xV2 } from '@/lib/motorcycle-sheets-v2/voge-ds625x';
 import { vogeDS800XRallyV2 } from '@/lib/motorcycle-sheets-v2/voge-ds800x-rally';
@@ -35,6 +38,9 @@ import { zontes703tV2 } from '@/lib/motorcycle-sheets-v2/zontes-703-t';
  * ses champs V2 prennent la priorite sur service_guide.
  */
 const motorcycleSheetV2Registry: Record<string, MotorcycleSheetV2> = {
+  'honda-cb500f-2022-plus': hondaCb500fDraftV2,
+  'honda-cbr500r-2022-plus': hondaCbr500rDraftV2,
+  'honda-nx500-2024-plus': hondaNx500DraftV2,
   'kove-nk-125r-2026-plus': koveNk125rV2,
   'kove-350rr-2026-plus': kove350rrV2,
   'kove-450rr-2026-plus': kove450rrV2,

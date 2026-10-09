@@ -173,6 +173,8 @@ export const cfmoto450srV2: MotorcycleSheetV2 = {
       label: 'PERMIS',
       value: 'A2 native',
     },
+
+    { label: "CYLINDR\u00c9E", value: "449,5 cm\u00b3" }
   ],
 
 

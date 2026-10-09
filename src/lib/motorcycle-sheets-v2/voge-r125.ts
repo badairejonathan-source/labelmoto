@@ -13,7 +13,7 @@ export const vogeR125V2: MotorcycleSheetV2 = {
   hero_subtitle: 'Guide LabelMoto Voge R125 : entretien 5 000 km, consommables OEM, budget atelier en fourchettes et sources France.',
   quick_facts: [
     { label: 'PUISSANCE', value: '15 ch' }, { label: 'COUPLE', value: '11,1 Nm' }, { label: 'CYLINDRÉE', value: '124,8 cm³' },
-    { label: 'SELLE', value: '795 mm' }, { label: 'RÉSERVOIR', value: '10 L' }, { label: 'POIDS', value: '133 kg sans essence' }
+    { label: 'SELLE', value: '795 mm' }, { label: 'RÉSERVOIR', value: '10 L' }, { label: 'POIDS', value: "136 ? 138 kg (estim?)" /* 133 kg sans essence selon fiche existante. Poids TPF estime, non confirme par constructeur. */ }
   ],
   quick_maintenance: [
     { label: '1ère révision', value: '1 000 km', confidence: 'observed' },

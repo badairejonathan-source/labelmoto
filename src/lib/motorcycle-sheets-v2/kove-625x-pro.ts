@@ -64,7 +64,7 @@ export const kove625xProV2: MotorcycleSheetV2 = {
   "hero_subtitle": "Guide KOVE 625X Pro : révision initiale 1 000 km, vidange tous les 5 000 km, contrôles principaux tous les 10 000 km, CPR8EA-9 et jeux aux soupapes chiffrés.",
   "quick_facts": [
     {
-      "label": "PUISSANCE FRANCE",
+      "label": "PUISSANCE",
       "value": "46 kW / 62,5 ch"
     },
     {
@@ -83,6 +83,8 @@ export const kove625xProV2: MotorcycleSheetV2 = {
       "label": "RÉSERVOIR",
       "value": "21 L"
     }
+  ,
+    {"label":"HAUTEUR DE SELLE","value":"820 mm"}
   ],
   "quick_maintenance": [
     {

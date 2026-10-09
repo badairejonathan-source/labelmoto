@@ -98,10 +98,10 @@ export const zontes703tV2: MotorcycleSheetV2 = {
   hero_subtitle:
     'Trois-cylindres de 95 ch, roues routières de 17 pouces, selle de 805 mm et réservoir de 20 L. Version A bridable A2 en France.',
   quick_facts: [
-    { label: 'PUISSANCE FRANCE', value: '70 kW / 95 ch' },
+    { label: "PUISSANCE", value: '70 kW / 95 ch' },
     { label: 'COUPLE FRANCE', value: '74 Nm' },
     { label: 'CYLINDRÉE', value: '699 cm³' },
-    { label: 'POIDS FRANCE', value: '206 kg' },
+    { label: "POIDS", value: '206 kg' },
     { label: 'SELLE', value: '805 mm' },
     { label: 'RÉSERVOIR', value: '20 L' },
     // PERMIS est inséré automatiquement et une seule fois par le renderer V2.

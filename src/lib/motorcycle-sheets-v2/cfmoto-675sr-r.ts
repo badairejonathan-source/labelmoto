@@ -108,6 +108,8 @@ export const cfmoto675srrV2: MotorcycleSheetV2 = {
       "label": "PERMIS",
       "value": "A2 bridée / A"
     }
+  ,
+    {"label":"CYLINDRÉE","value":"674 cm³"}
   ],
   "quick_maintenance": [
     {

@@ -170,6 +170,8 @@ export const cfmoto800mtSportExploreV2: MotorcycleSheetV2 = {
       "label": "PERMIS",
       "value": "A2 bridée / A"
     }
+  ,
+    {"label":"POIDS TOUS PLEINS FAITS","value":"231 kg"}
   ],
   "quick_maintenance": [
     {

@@ -105,7 +105,9 @@ export const zontes703rrVariants = [
         "label": "RÉSERVOIR",
         "value": "16 L"
       }
-    ],
+    ,
+    { label: "HAUTEUR DE SELLE", value: "820 mm" }
+  ],
     "cycle_parts": {
       "frame": "Cadre périmétrique en alliage d’aluminium",
       "front_brake": "Double disques J.Juan",
@@ -148,7 +150,9 @@ export const zontes703rrVariants = [
         "label": "RÉSERVOIR",
         "value": "16 L"
       }
-    ],
+    ,
+    { label: "HAUTEUR DE SELLE", value: "820 mm" }
+  ],
     "cycle_parts": {
       "frame": "Cadre périmétrique en alliage d’aluminium",
       "front_brake": "Double disques Brembo",
@@ -177,7 +181,7 @@ export const zontes703rrV2: MotorcycleSheetV2 = {
 
   "quick_facts": [
     {
-      "label": "PUISSANCE FRANCE",
+      "label": "PUISSANCE",
       "value": "70 kW / 95 ch"
     },
     {
@@ -196,6 +200,8 @@ export const zontes703rrV2: MotorcycleSheetV2 = {
       "label": "RÉSERVOIR",
       "value": "16 L"
     }
+  ,
+    { label: "HAUTEUR DE SELLE", value: "820 mm" }
   ],
 
   "service_schedule_v2": [

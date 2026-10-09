@@ -398,9 +398,9 @@ export const zontes703fV2: MotorcycleSheetV2 = {
   quick_facts: [
     {
       label:
-        'MOTEUR',
+        "CYLINDRÉE",
       value:
-        '699 cm³ · 3 cylindres',
+        "699 cm³",
     },
     {
       label:
@@ -426,6 +426,8 @@ export const zontes703fV2: MotorcycleSheetV2 = {
       value:
         '22 L',
     },
+
+    { label: "HAUTEUR DE SELLE", value: "845 mm" }
   ],
 
   service_schedule_v2: [

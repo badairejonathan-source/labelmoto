@@ -164,20 +164,108 @@ export default function MotorcycleSheetV2TabbedUniversal({
    * On conserve puissance, couple, cylindrée, poids, etc.
    */
 
+
+  // Standard Label Moto : exactement six chiffres cles.
+  // Les valeurs proviennent de la variante active en priorite.
+  const normalizeQuickFactLabel = (value: string) =>
+    value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, ' ')
+      .trim();
+
+  const getQuickFactValue = (aliases: string[]): string => {
+    const normalizedAliases = aliases.map(normalizeQuickFactLabel);
+
+    const match = sourceQuickFacts.find((fact: any) =>
+      typeof fact?.label === 'string' &&
+      normalizedAliases.includes(normalizeQuickFactLabel(fact.label))
+    );
+
+    if (typeof match?.value !== 'string') {
+      return 'Non renseign\u00e9';
+    }
+
+    const value = match.value.trim();
+
+    if (
+      !value ||
+      value === '-' ||
+      value === '?' ||
+      /^(a verifier|a confirmer|non renseigne)$/i.test(
+        normalizeQuickFactLabel(value).toLowerCase()
+      )
+    ) {
+      return 'Non renseign\u00e9';
+    }
+
+    return value;
+  };
+
   const quickFacts = [
-    ...sourceQuickFacts.filter(
-      (fact: any) =>
-        !(
-          typeof fact?.label === 'string' &&
-          fact.label.trim().toUpperCase() === 'PERMIS'
-        )
-    ),
-    { label: 'PERMIS', value: normalizedPermit },
+    {
+      label: 'CYLINDR\u00c9E',
+      value: getQuickFactValue(['Cylindr\u00e9e', 'Cylindree']),
+    },
+    {
+      label: 'PUISSANCE',
+      value: getQuickFactValue(['Puissance']),
+    },
+    {
+      label: 'POIDS TOUS PLEINS FAITS',
+      value: getQuickFactValue([
+        'Poids tous pleins faits',
+        'Poids',
+        'Poids en ordre de marche',
+      ]),
+    },
+    {
+      label: 'HAUTEUR DE SELLE',
+      value: getQuickFactValue([
+        'Hauteur de selle',
+        'Selle',
+      ]),
+    },
+    {
+      label: 'R\u00c9SERVOIR',
+      value: getQuickFactValue([
+        'R\u00e9servoir',
+        'Capacit\u00e9 du r\u00e9servoir',
+        'Capacit\u00e9 r\u00e9servoir',
+      ]),
+    },
+    {
+      label: 'PERMIS',
+      value: normalizedPermit,
+    },
   ];
 
-  const schedule = v2.service_schedule_v2?.length
-    ? v2.service_schedule_v2
-    : (displayData.serviceSchedule || []).map((item: any) => ({
+
+  const activeVariant =
+    displayData.hasVariants && Array.isArray(displayData.variants)
+      ? displayData.variants[selectedVariantIndex] ?? null
+      : null;
+
+  const variantSchedule = activeVariant?.service_schedule_v2;
+  const variantConsumables = activeVariant?.consumables_v2;
+  // Une variante peut remplacer les donnees communes de la fiche.
+  // Les fiches existantes conservent leur comportement par defaut.
+  const generationWarranty = activeVariant?.warranty ?? v2.warranty;
+  const generationVerdict = activeVariant?.verdict ?? v2.verdict;
+  const generationDataQuality = activeVariant?.data_quality ?? v2.data_quality;
+  const generationMaintenanceDetails = activeVariant?.maintenance_details ?? v2.maintenance_details;
+  const generationFaq = activeVariant?.faq ?? v2.faq;
+  const generationLongevityTips = activeVariant?.longevity_tips ?? v2.longevity_tips;
+  const generationBudget = activeVariant?.budget ?? v2.budget;
+  const generationConclusion = activeVariant?.conclusion ?? v2.conclusion;
+
+
+  const schedule = Array.isArray(variantSchedule)
+    ? variantSchedule
+    : v2.service_schedule_v2?.length
+      ? v2.service_schedule_v2
+      : (displayData.serviceSchedule || []).map((item: any) => ({
         km: Number(item.km || 0),
         title: item.service_label || 'Révision',
         price_estimate: item.price_estimate,
@@ -185,8 +273,10 @@ export default function MotorcycleSheetV2TabbedUniversal({
         operations: [{ label: item.service_label || item.operations || 'Opérations selon plan constructeur' }],
       }));
 
-  const maintenanceDetails = v2.maintenance_details || [];
-  const consumables = v2.consumables_v2 || [];
+  const maintenanceDetails = generationMaintenanceDetails || [];
+  const consumables = Array.isArray(variantConsumables)
+    ? variantConsumables
+    : v2.consumables_v2 || [];
   const issues: MotorcycleKnownIssueV2[] = v2.known_issues_v2?.length
     ? v2.known_issues_v2
     : (displayData.knownIssues || []).map((text: string) => ({
@@ -195,8 +285,8 @@ export default function MotorcycleSheetV2TabbedUniversal({
         type: 'usage_limitation' as const,
         confidence: 'to_confirm' as const,
       }));
-  const faq = v2.faq?.length
-    ? v2.faq
+  const faq = generationFaq?.length
+    ? generationFaq
     : displayData.faq || [];
   const equivalents = (() => {
     const normalizeEquivalentName = (value: unknown) =>
@@ -230,21 +320,21 @@ export default function MotorcycleSheetV2TabbedUniversal({
   })();
   // Budget V2 compact: revision details remain in the REVISIONS tab.
   // Legacy cards can remain in data temporarily but are never rendered.
-  const budgetCards = (v2.budget?.cards || []).filter(() => false);
-  const longevityTips = v2.longevity_tips?.length
-    ? v2.longevity_tips
+  const budgetCards = (generationBudget?.cards || []).filter(() => false);
+  const longevityTips = generationLongevityTips?.length
+    ? generationLongevityTips
     : displayData.longevityTips || [];
   const conclusion =
-    v2.conclusion ??
+    generationConclusion ??
     displayData.conclusion;
-  const budgetSummary = v2.budget?.summary;
+  const budgetSummary = generationBudget?.summary;
 
   const tabs = [
     schedule.length ? { id: 'revisions', label: 'Révisions' } : null,
     maintenanceDetails.length || consumables.length ? { id: 'consommables', label: 'Consommables' } : null,
-    v2.warranty ? { id: 'garantie', label: 'Garantie' } : null,
+    generationWarranty ? { id: 'garantie', label: 'Garantie' } : null,
     faq.length ? { id: 'faq', label: 'FAQ' } : null,
-    v2.data_quality ? { id: 'sources', label: 'Sources' } : null,
+    generationDataQuality ? { id: 'sources', label: 'Sources' } : null,
     { id: 'reviews', label: 'Avis' },
   ].filter(Boolean) as { id: string; label: string }[];
 
@@ -600,12 +690,12 @@ export default function MotorcycleSheetV2TabbedUniversal({
         </>
       ) : null}
 
-      {activeTab === 'garantie' && v2.warranty ? (
+      {activeTab === 'garantie' && generationWarranty ? (
         <section className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6">
-          <div className="border-b border-zinc-100 pb-5"><div className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600">Garantie constructeur {v2.warranty.market || ''}</div><h3 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">Conditions de garantie</h3><p className="mt-2 max-w-2xl text-[13px] font-medium leading-5 text-zinc-500">Les conditions ci-dessous correspondent au marché indiqué et aux conditions applicables au modèle.</p></div>
-          <div className="mt-5 min-w-0 rounded-2xl border border-orange-200 bg-orange-50 p-5"><div className="text-[9px] font-black uppercase tracking-[0.16em] text-orange-700">Durée constructeur</div><div className="mt-2 break-words text-2xl font-black leading-[1.08] text-zinc-950 md:text-3xl">{v2.warranty.duration}</div>{v2.warranty.coverage ? <p className="mt-3 max-w-4xl text-xs leading-5 text-zinc-600">{v2.warranty.coverage}</p> : null}</div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">{v2.warranty.maintenance_requirement ? <div className="rounded-2xl bg-zinc-50 p-4"><div className="text-[9px] font-black uppercase tracking-[0.15em] text-zinc-400">Entretien</div><p className="mt-2 text-xs leading-5 text-zinc-700">{v2.warranty.maintenance_requirement}</p></div> : null}{v2.warranty.claim_requirement ? <div className="rounded-2xl bg-zinc-50 p-4"><div className="text-[9px] font-black uppercase tracking-[0.15em] text-zinc-400">Prise en charge</div><p className="mt-2 text-xs leading-5 text-zinc-700">{v2.warranty.claim_requirement}</p></div> : null}</div>
-          {v2.warranty.source_label ? <div className="mt-5 border-t border-zinc-100 pt-4 text-right text-[10px] font-bold text-zinc-500">Source : {v2.warranty.source_label}</div> : null}
+          <div className="border-b border-zinc-100 pb-5"><div className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600">Garantie constructeur {generationWarranty.market || ''}</div><h3 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">Conditions de garantie</h3><p className="mt-2 max-w-2xl text-[13px] font-medium leading-5 text-zinc-500">Les conditions ci-dessous correspondent au marché indiqué et aux conditions applicables au modèle.</p></div>
+          <div className="mt-5 min-w-0 rounded-2xl border border-orange-200 bg-orange-50 p-5"><div className="text-[9px] font-black uppercase tracking-[0.16em] text-orange-700">Durée constructeur</div><div className="mt-2 break-words text-2xl font-black leading-[1.08] text-zinc-950 md:text-3xl">{generationWarranty.duration}</div>{generationWarranty.coverage ? <p className="mt-3 max-w-4xl text-xs leading-5 text-zinc-600">{generationWarranty.coverage}</p> : null}</div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">{generationWarranty.maintenance_requirement ? <div className="rounded-2xl bg-zinc-50 p-4"><div className="text-[9px] font-black uppercase tracking-[0.15em] text-zinc-400">Entretien</div><p className="mt-2 text-xs leading-5 text-zinc-700">{generationWarranty.maintenance_requirement}</p></div> : null}{generationWarranty.claim_requirement ? <div className="rounded-2xl bg-zinc-50 p-4"><div className="text-[9px] font-black uppercase tracking-[0.15em] text-zinc-400">Prise en charge</div><p className="mt-2 text-xs leading-5 text-zinc-700">{generationWarranty.claim_requirement}</p></div> : null}</div>
+          {generationWarranty.source_label ? <div className="mt-5 border-t border-zinc-100 pt-4 text-right text-[10px] font-bold text-zinc-500">Source : {generationWarranty.source_label}</div> : null}
         </section>
       ) : null}
 
@@ -616,11 +706,11 @@ export default function MotorcycleSheetV2TabbedUniversal({
         </section>
       ) : null}
 
-      {activeTab === 'sources' && v2.data_quality ? (
+      {activeTab === 'sources' && generationDataQuality ? (
         <section className="mt-8 scroll-mt-24 rounded-[24px] border border-zinc-200 bg-white p-5 shadow-sm md:p-6">
           <div className="mb-4"><div className="text-[10px] font-black uppercase leading-none tracking-[0.18em] text-orange-600">Transparence LabelMoto</div><h2 className="mt-1 text-[22px] font-black uppercase leading-[1.05] tracking-[-0.035em] text-zinc-950">Sources & vérification</h2><p className="mt-2 max-w-2xl text-[13px] font-medium leading-5 text-zinc-500">Nous indiquons le marché, le millésime et le niveau de vérification utilisés pour construire cette fiche.</p></div>
-          <div className="overflow-hidden rounded-[18px] border border-zinc-100 bg-zinc-50/40"><div className="grid grid-cols-2 divide-x divide-y divide-zinc-100 sm:grid-cols-3">{[['Marché', v2.data_quality.market], ['Millésime', v2.data_quality.model_year], ['Vérifié le', v2.data_quality.last_verified]].map(([label, value]) => <div key={label} className="p-4"><div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">{label}</div><div className="mt-1 text-sm font-black text-zinc-900">{value || '—'}</div></div>)}</div><div className="flex flex-wrap gap-2 border-t border-zinc-100 px-4 py-3">{v2.data_quality.manufacturer_fr_verified ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">Constructeur France vérifié</span> : null}{v2.data_quality.european_manual_verified ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">Manuel Europe vérifié</span> : null}{v2.data_quality.technical_documentation_verified ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">Documentation technique vérifiée</span> : null}</div>
-            {v2.data_quality.sources?.length ? <details className="group border-t border-zinc-100"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4"><div><div className="text-sm font-black text-zinc-900">Sources principales</div><div className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-400">{v2.data_quality.sources.length} références documentaires</div></div><div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 text-lg font-black transition-transform group-open:rotate-45" style={{ color: ORANGE }}>+</div></summary><div className="border-t border-zinc-100 bg-zinc-50/60 p-3"><div className="space-y-2">{v2.data_quality.sources.map((source: any, index: number) => <div key={`${source.label}-${index}`} className="rounded-xl border border-zinc-200 bg-white p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="text-xs font-black leading-5 text-zinc-900">{source.label}</div><div className="mt-1 text-[9px] font-bold uppercase tracking-wide text-zinc-400">{[source.market, source.model_year].filter(Boolean).join(' · ')}</div></div>{source.url ? <a href={source.url} target="_blank" rel="noreferrer" className="shrink-0 rounded-lg bg-orange-50 px-2.5 py-1.5 text-[8px] font-black uppercase text-orange-700">Ouvrir</a> : null}</div>{source.note ? <p className="mt-2 text-[10px] leading-4 text-zinc-500">{source.note}</p> : null}</div>)}</div></div></details> : null}
+          <div className="overflow-hidden rounded-[18px] border border-zinc-100 bg-zinc-50/40"><div className="grid grid-cols-2 divide-x divide-y divide-zinc-100 sm:grid-cols-3">{[['Marché', generationDataQuality.market], ['Millésime', generationDataQuality.model_year], ['Vérifié le', generationDataQuality.last_verified]].map(([label, value]) => <div key={label} className="p-4"><div className="text-[8px] font-black uppercase tracking-wide text-zinc-400">{label}</div><div className="mt-1 text-sm font-black text-zinc-900">{value || '—'}</div></div>)}</div><div className="flex flex-wrap gap-2 border-t border-zinc-100 px-4 py-3">{generationDataQuality.manufacturer_fr_verified ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">Constructeur France vérifié</span> : null}{generationDataQuality.european_manual_verified ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">Manuel Europe vérifié</span> : null}{generationDataQuality.technical_documentation_verified ? <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-[8px] font-black uppercase tracking-wide text-emerald-700">Documentation technique vérifiée</span> : null}</div>
+            {generationDataQuality.sources?.length ? <details className="group border-t border-zinc-100"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4"><div><div className="text-sm font-black text-zinc-900">Sources principales</div><div className="mt-0.5 text-[9px] font-bold uppercase tracking-wide text-zinc-400">{generationDataQuality.sources.length} références documentaires</div></div><div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-50 text-lg font-black transition-transform group-open:rotate-45" style={{ color: ORANGE }}>+</div></summary><div className="border-t border-zinc-100 bg-zinc-50/60 p-3"><div className="space-y-2">{generationDataQuality.sources.map((source: any, index: number) => <div key={`${source.label}-${index}`} className="rounded-xl border border-zinc-200 bg-white p-3"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="text-xs font-black leading-5 text-zinc-900">{source.label}</div><div className="mt-1 text-[9px] font-bold uppercase tracking-wide text-zinc-400">{[source.market, source.model_year].filter(Boolean).join(' · ')}</div></div>{source.url ? <a href={source.url} target="_blank" rel="noreferrer" className="shrink-0 rounded-lg bg-orange-50 px-2.5 py-1.5 text-[8px] font-black uppercase text-orange-700">Ouvrir</a> : null}</div>{source.note ? <p className="mt-2 text-[10px] leading-4 text-zinc-500">{source.note}</p> : null}</div>)}</div></div></details> : null}
           </div>
         </section>
       ) : null}
@@ -633,13 +723,13 @@ export default function MotorcycleSheetV2TabbedUniversal({
       ) : null}
       </div>
 
-      {v2.verdict || conclusion ? (
+      {generationVerdict || conclusion ? (
         <section id="verdict-labelmoto-editorial" className="mt-10 overflow-hidden rounded-[26px] border border-zinc-200 bg-white shadow-sm">
           <div className="p-5 md:p-8">
             <div className="text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: ORANGE }}>Verdict LabelMoto</div>
-            <h2 className="mt-1 text-[24px] font-black leading-[1.03] tracking-[-0.035em] text-zinc-950 md:text-[30px]">{v2.verdict?.title || 'Notre avis'}</h2>
-            <p className="mt-4 max-w-4xl text-sm leading-6 text-zinc-600 md:text-[15px] md:leading-7">{v2.verdict?.text || conclusion}</p>
-            <div className="mt-5 flex flex-wrap gap-2">{(v2.verdict?.strengths || []).map((item) => <span key={item} className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[9px] font-black uppercase text-emerald-800">+ {item}</span>)}{(v2.verdict?.weaknesses || []).map((item) => <span key={item} className="rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-[9px] font-black uppercase text-orange-800">À surveiller : {item}</span>)}</div>
+            <h2 className="mt-1 text-[24px] font-black leading-[1.03] tracking-[-0.035em] text-zinc-950 md:text-[30px]">{generationVerdict?.title || 'Notre avis'}</h2>
+            <p className="mt-4 text-sm leading-6 text-zinc-600 md:text-[15px] md:leading-7">{generationVerdict?.text || conclusion}</p>
+            <div className="mt-5 flex flex-wrap gap-2">{(generationVerdict?.strengths || []).map((item: string) => <span key={item} className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[9px] font-black uppercase text-emerald-800">+ {item}</span>)}{(generationVerdict?.weaknesses || []).map((item: string) => <span key={item} className="rounded-full border border-orange-200 bg-orange-50 px-3 py-1.5 text-[9px] font-black uppercase text-orange-800">À surveiller : {item}</span>)}</div>
             <div className="mt-6 space-y-3">
 {(budgetSummary || budgetCards.length > 0) ? (
                 <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white">
@@ -728,9 +818,9 @@ export default function MotorcycleSheetV2TabbedUniversal({
                       </div>
                     ) : null}
 
-                    {v2.budget?.note ? (
+                    {generationBudget?.note ? (
                       <p className="mt-3 text-[10px] leading-5 text-zinc-500">
-                        {v2.budget.note}
+                        {generationBudget.note}
                       </p>
                     ) : null}
                   </div>
@@ -738,7 +828,7 @@ export default function MotorcycleSheetV2TabbedUniversal({
               ) : null}
               {issues.length ? <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-white"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 md:px-5"><div><div className="text-[9px] font-black uppercase tracking-[0.18em]" style={{ color: ORANGE }}>Avant d'acheter</div><div className="mt-1 text-sm font-black text-zinc-950 md:text-base">Points à vérifier</div></div><span className="text-xl font-black transition group-open:rotate-45" style={{ color: ORANGE }}>+</span></summary><div className="border-t border-zinc-100 bg-white px-5 py-5"><div className="space-y-4">{issues.map((issue, index) => <div key={`${issue.title}-${index}`}><div className="flex items-center gap-2"><span className="text-sm font-black text-zinc-900">{issue.title}</span><span className="rounded-full bg-zinc-100 px-2 py-1 text-[8px] font-black uppercase text-zinc-500">{issueLabel(issue)}</span></div><p className="mt-1 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">{issue.description}</p></div>)}</div></div></details> : null}
               {longevityTips.length ? <details className="group overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50/60"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4"><div><div className="text-[9px] font-black uppercase tracking-[0.18em]" style={{ color: ORANGE }}>Usage</div><div className="mt-1 text-sm font-black text-zinc-950 md:text-base">Conseils de longévité</div></div><span className="text-xl font-black transition group-open:rotate-45" style={{ color: ORANGE }}>+</span></summary><div className="border-t border-zinc-200 bg-white px-5 py-5"><ul className="space-y-3 text-xs leading-5 text-zinc-600 md:text-sm md:leading-6">{longevityTips.map((tip: string, index: number) => <li key={index} className="flex gap-2"><span className="font-black" style={{ color: ORANGE }}>•</span><span>{tip}</span></li>)}</ul></div></details> : null}
-              {conclusion && conclusion !== v2.verdict?.text ? <details className="group overflow-hidden rounded-2xl border border-orange-200 bg-orange-50"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4"><div><div className="text-[9px] font-black uppercase tracking-[0.18em] text-orange-700">Notre recommandation</div><div className="mt-1 text-sm font-black text-zinc-950 md:text-base">Le conseil LabelMoto</div></div><span className="text-xl font-black text-orange-600 transition group-open:rotate-45">+</span></summary><div className="border-t border-orange-200 bg-white px-5 py-5"><p className="text-sm font-bold leading-6 text-zinc-900 md:text-[15px] md:leading-7">{conclusion}</p></div></details> : null}
+              {conclusion && conclusion !== generationVerdict?.text ? <details className="group overflow-hidden rounded-2xl border border-orange-200 bg-orange-50"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4"><div><div className="text-[9px] font-black uppercase tracking-[0.18em] text-orange-700">Notre recommandation</div><div className="mt-1 text-sm font-black text-zinc-950 md:text-base">Le conseil LabelMoto</div></div><span className="text-xl font-black text-orange-600 transition group-open:rotate-45">+</span></summary><div className="border-t border-orange-200 bg-white px-5 py-5"><p className="text-sm font-bold leading-6 text-zinc-900 md:text-[15px] md:leading-7">{conclusion}</p></div></details> : null}
             </div>
           </div>
         </section>

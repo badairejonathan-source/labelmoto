@@ -73,7 +73,7 @@ export const kove510xV2: MotorcycleSheetV2 = {
     },
     {
       "label": "POIDS",
-      "value": "178 kg à vide"
+      "value": "Non renseigné"
     },
     {
       "label": "SELLE",
@@ -83,6 +83,8 @@ export const kove510xV2: MotorcycleSheetV2 = {
       "label": "RÉSERVOIR",
       "value": "20 L"
     }
+  ,
+    {"label":"PUISSANCE","value":"32 ou 35 kW - à vérifier"}
   ],
   "quick_maintenance": [
     {
