@@ -1,5 +1,26 @@
 'use client';
 
+import {
+  PROFESSIONAL_CATEGORIES,
+} from '@/app/lib/professional-categories';
+
+const CREATOR_PROFESSION = (() => {
+  const profession =
+    PROFESSIONAL_CATEGORIES.find(
+      category =>
+        category.slug ===
+        'photographes-videastes'
+    );
+
+  if (!profession) {
+    throw new Error(
+      'Catégorie photographe / vidéaste introuvable.'
+    );
+  }
+
+  return profession;
+})();
+
 import React, { Suspense, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -453,12 +474,17 @@ function RegisterCreatorContent() {
                       Métier *
                     </label>
 
-                    <Input
+                    <input
+                      type="hidden"
                       name="creatorType"
-                      required
-                      placeholder="Ex : Photographe moto"
-                      className="h-12 rounded-xl font-bold"
+                      value={
+                        CREATOR_PROFESSION.mapSearch
+                      }
                     />
+
+                    <div className="flex h-12 items-center rounded-xl border border-input bg-muted/40 px-3 text-sm font-bold text-foreground">
+                      {CREATOR_PROFESSION.singular}
+                    </div>
                   </div>
                 </div>
 

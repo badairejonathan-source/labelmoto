@@ -8,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Info, Loader2, MapPin, RefreshCw, Save, Send, X } from 'lucide-react';
+import {
+  PROFESSIONAL_CATEGORIES,
+} from '@/app/lib/professional-categories';
 
 export type ProfessionalAppSection =
   | 'shopping'
@@ -92,6 +95,73 @@ const SECTION_LABELS: Record<ProfessionalAppSection, string> = {
   relais: 'Relais Motard (Hôtel/Resto)',
   creator: 'Photographe / Vidéaste',
 };
+
+type PublicProfessionOption = {
+  id: string;
+  label: string;
+  category: string;
+  appSection: ProfessionalAppSection;
+};
+
+function professionAppSection(
+  slug: string
+): ProfessionalAppSection {
+  if (
+    slug === 'concessionnaires-revendeurs' ||
+    slug === 'equipement-accessoires'
+  ) {
+    return 'shopping';
+  }
+
+  if (
+    slug === 'photographes-videastes'
+  ) {
+    return 'creator';
+  }
+
+  return 'service';
+}
+
+const PUBLIC_PROFESSION_OPTIONS:
+  PublicProfessionOption[] = [
+    ...PROFESSIONAL_CATEGORIES
+      .slice(0, 2)
+      .map(category => ({
+        id: category.slug,
+        label: category.singular,
+        category: category.mapSearch,
+        appSection:
+          professionAppSection(
+            category.slug
+          ),
+      })),
+
+    {
+      id: 'association',
+      label: 'Association / club',
+      category: 'Association',
+      appSection: 'association',
+    },
+
+    {
+      id: 'relais',
+      label: 'Relais motard',
+      category: 'Relais motard',
+      appSection: 'relais',
+    },
+
+    ...PROFESSIONAL_CATEGORIES
+      .slice(2)
+      .map(category => ({
+        id: category.slug,
+        label: category.singular,
+        category: category.mapSearch,
+        appSection:
+          professionAppSection(
+            category.slug
+          ),
+      })),
+  ];
 
 function emptyHours(): Record<DayKey, HoursParts> {
   return {
@@ -232,6 +302,26 @@ export default function ProfessionalListingForm({
     setValues(previous => ({ ...previous, [key]: value }));
   };
 
+  const selectedPublicProfession =
+    PUBLIC_PROFESSION_OPTIONS.find(
+      option => {
+        if (
+          values.appSection === 'association' ||
+          values.appSection === 'relais'
+        ) {
+          return (
+            option.appSection ===
+            values.appSection
+          );
+        }
+
+        return (
+          option.category ===
+          values.category
+        );
+      }
+    )?.id || '';
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -338,40 +428,110 @@ export default function ProfessionalListingForm({
               />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Type de structure</label>
-              <Select
-                value={values.appSection}
-                onValueChange={(next) => {
-                  const section = next as ProfessionalAppSection;
-                  if (section === 'creator' && !adminMode && onCreatorSelected) {
-                    onCreatorSelected();
-                    return;
-                  }
-                  update('appSection', section);
-                }}
-              >
-                <SelectTrigger className="font-bold h-12 rounded-xl">
-                  <SelectValue placeholder="Choisir un type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {allowedSections.map(section => (
-                    <SelectItem key={section} value={section}>{SECTION_LABELS[section]}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">
+                {adminMode
+                  ? 'Type de structure'
+                  : 'Métier'}
+              </label>
+
+              {adminMode ? (
+                <Select
+                  value={values.appSection}
+                  onValueChange={(next) => {
+                    update(
+                      'appSection',
+                      next as ProfessionalAppSection
+                    );
+                  }}
+                >
+                  <SelectTrigger className="font-bold h-12 rounded-xl">
+                    <SelectValue placeholder="Choisir un type" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {allowedSections.map(section => (
+                      <SelectItem
+                        key={section}
+                        value={section}
+                      >
+                        {SECTION_LABELS[section]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <Select
+                  value={selectedPublicProfession}
+                  onValueChange={(professionId) => {
+                    const profession =
+                      PUBLIC_PROFESSION_OPTIONS.find(
+                        option =>
+                          option.id ===
+                          professionId
+                      );
+
+                    if (!profession) {
+                      return;
+                    }
+
+                    if (
+                      profession.appSection === 'creator' &&
+                      onCreatorSelected
+                    ) {
+                      onCreatorSelected();
+                      return;
+                    }
+
+                    setValues(previous => ({
+                      ...previous,
+                      appSection:
+                        profession.appSection,
+                      category:
+                        profession.category,
+                    }));
+                  }}
+                >
+                  <SelectTrigger className="font-bold h-12 rounded-xl">
+                    <SelectValue placeholder="Sélectionner votre métier" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {PUBLIC_PROFESSION_OPTIONS.map(
+                      profession => (
+                        <SelectItem
+                          key={profession.id}
+                          value={profession.id}
+                        >
+                          {profession.label}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Spécialité / Catégorie</label>
-            <Input
-              value={values.category}
-              onChange={event => update('category', event.target.value)}
-              required
-              placeholder="Ex: Spécialiste Ducati, Préparateur, Revendeur multimarque..."
-              className="font-bold h-12 rounded-xl"
-            />
-          </div>
+          {adminMode && (
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">
+                Spécialité / Catégorie
+              </label>
+
+              <Input
+                value={values.category}
+                onChange={event =>
+                  update(
+                    'category',
+                    event.target.value
+                  )
+                }
+                required
+                placeholder="Ex: Spécialiste Ducati, Préparateur, Revendeur multimarque..."
+                className="font-bold h-12 rounded-xl"
+              />
+            </div>
+          )}
 
           <div className="space-y-2">
             <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Adresse complète</label>

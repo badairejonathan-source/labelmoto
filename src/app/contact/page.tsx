@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/app/header';
 import { useForm } from 'react-hook-form';
@@ -12,9 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { useFirestore } from '@/firebase/client';
-import { collection, serverTimestamp } from 'firebase/firestore';
-import { addDocumentNonBlocking } from '@/firebase/client';
+import { useUser } from '@/firebase/client';
 import { Mail, MessageSquare, Send, ArrowLeft, Loader2, Info } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -31,7 +29,7 @@ type ContactFormValues = z.infer<typeof contactSchema>;
 export default function ContactPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const firestore = useFirestore();
+  const { user, profile } = useUser();
   const [searchTerm, setSearchTerm] = useState('');
   const [isSubmitted, setIsSubmitting] = useState(false);
 
@@ -40,19 +38,101 @@ export default function ContactPage() {
     defaultValues: { name: '', email: '', subject: '', message: '' },
   });
 
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    const displayName =
+      profile?.displayName ||
+      user.displayName ||
+      '';
+
+    if (displayName) {
+      form.setValue(
+        'name',
+        displayName,
+        { shouldValidate: false }
+      );
+    }
+
+    if (user.email) {
+      form.setValue(
+        'email',
+        user.email,
+        { shouldValidate: false }
+      );
+    }
+  }, [
+    user,
+    profile?.displayName,
+    form,
+  ]);
+
   const onSubmit = async (data: ContactFormValues) => {
-    if (!firestore) return;
     setIsSubmitting(true);
-    
+
     try {
-      addDocumentNonBlocking(collection(firestore, 'contact_messages'), {
-        ...data,
-        submittedAt: serverTimestamp(),
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+
+      if (user) {
+        headers.Authorization =
+          `Bearer ${await user.getIdToken(true)}`;
+      }
+
+      const response =
+        await fetch(
+          '/api/support-messages',
+          {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(data),
+          }
+        );
+
+      const payload =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          payload?.error ||
+          "Une erreur est survenue lors de l'envoi."
+        );
+      }
+
+      toast({
+        title: "Message envoyé !",
+        description:
+          payload.replyChannel === 'account'
+            ? "La réponse de LabelMoto apparaîtra dans votre espace client."
+            : "La réponse de LabelMoto vous sera envoyée par e-mail.",
       });
-      toast({ title: "Message envoyé !", description: "Merci pour votre message, nous reviendrons vers vous rapidement." });
-      form.reset();
-    } catch (e) {
-      toast({ variant: "destructive", title: "Erreur", description: "Une erreur est survenue lors de l'envoi." });
+
+      form.reset({
+        name:
+          user
+            ? (
+                profile?.displayName ||
+                user.displayName ||
+                data.name
+              )
+            : '',
+        email:
+          user?.email ||
+          '',
+        subject: '',
+        message: '',
+      });
+    } catch (e: any) {
+      toast({
+        variant: "destructive",
+        title: "Erreur",
+        description:
+          e?.message ||
+          "Une erreur est survenue lors de l'envoi.",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -107,7 +187,7 @@ export default function ContactPage() {
                     <FormField control={form.control} name="email" render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Votre Email</FormLabel>
-                        <FormControl><Input placeholder="jean@email.com" className="font-bold h-12" {...field} /></FormControl>
+                        <FormControl><Input placeholder="jean@email.com" className="font-bold h-12" readOnly={!!user} {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
                     )} />
@@ -130,6 +210,12 @@ export default function ContactPage() {
                     {isSubmitted ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Send className="mr-2 h-5 w-5" />}
                     Envoyer le message
                   </Button>
+
+                  <p className="text-center text-[10px] font-bold text-muted-foreground">
+                    {user
+                      ? "Vous êtes connecté : la réponse sera disponible dans votre espace client."
+                      : "Vous n'êtes pas connecté : la réponse sera envoyée à l'adresse e-mail indiquée."}
+                  </p>
                 </form>
               </Form>
 

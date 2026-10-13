@@ -10,6 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, MapPin, RefreshCw, Plus, CheckCircle } from 'lucide-react';
 import { encodeGeohash } from '@/lib/geohash';
+import {
+  PROFESSIONAL_CATEGORIES,
+  getPrimaryProfessionalCategory,
+  getProfessionalCategoryBySlug,
+} from '@/app/lib/professional-categories';
 
 const COLLECTIONS = [
   { value: 'concessions', label: 'Concession' },
@@ -25,6 +30,29 @@ const APP_SECTIONS = [
   { value: 'relais', label: 'Relais' },
   { value: 'creator', label: 'Créateur' },
 ];
+
+function inferProfessionalCategory(
+  title: string,
+  rawCategory: string
+): string {
+  const slug =
+    getPrimaryProfessionalCategory({
+      title,
+      category:
+        rawCategory,
+    });
+
+  if (!slug) {
+    return '';
+  }
+
+  return (
+    getProfessionalCategoryBySlug(
+      slug
+    )?.mapSearch ||
+    ''
+  );
+}
 
 function slugify(s: string): string {
   return (s || '')
@@ -81,7 +109,12 @@ export default function AddListing() {
         address: data.address || prev.address,
         phoneNumber: data.phoneNumber || prev.phoneNumber,
         website: data.website || prev.website,
-        category: data.category || prev.category,
+        category:
+          inferProfessionalCategory(
+            data.title || prev.title,
+            data.category || ''
+          ) ||
+          prev.category,
         lundi: data.lundi || prev.lundi,
         mardi: data.mardi || prev.mardi,
         mercredi: data.mercredi || prev.mercredi,
@@ -315,7 +348,49 @@ export default function AddListing() {
           </div>
         </div>
 
-        <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Catégorie</Label><Input value={form.category} onChange={e => set('category', e.target.value)} placeholder="assurance moto, atelier..." className="font-bold rounded-xl border-2" /></div>
+        <div>
+          <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+            Catégorie
+          </Label>
+
+          {form.appSection === 'association' || form.appSection === 'relais' ? (
+            <Input
+              value={form.category}
+              onChange={e =>
+                set(
+                  'category',
+                  e.target.value
+                )
+              }
+              className="font-bold rounded-xl border-2"
+            />
+          ) : (
+            <Select
+              value={form.category}
+              onValueChange={value =>
+                set(
+                  'category',
+                  value
+                )
+              }
+            >
+              <SelectTrigger className="font-bold rounded-xl border-2">
+                <SelectValue placeholder="Sélectionner un métier" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {PROFESSIONAL_CATEGORIES.map(category => (
+                  <SelectItem
+                    key={category.slug}
+                    value={category.mapSearch}
+                  >
+                    {category.singular}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div><Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Téléphone</Label><Input value={form.phoneNumber} onChange={e => set('phoneNumber', e.target.value)} className="font-bold rounded-xl border-2" /></div>

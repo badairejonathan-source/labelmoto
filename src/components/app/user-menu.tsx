@@ -1,4 +1,6 @@
 'use client';
+
+import SupportUnreadBadge from '@/components/app/support-unread-badge';
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -93,7 +95,11 @@ export default function UserMenu() {
               </DropdownMenuItem>
             )}
             <DropdownMenuItem onClick={() => router.push('/account')} className="cursor-pointer">
-              <Settings className="mr-2 h-4 w-4" /><span>Mon compte</span>
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Mon compte</span>
+              <span className="ml-auto">
+                <SupportUnreadBadge />
+              </span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => router.push('/pro/register')} className="cursor-pointer">
               <Building2 className="mr-2 h-4 w-4" /><span>Ma fiche pro</span>

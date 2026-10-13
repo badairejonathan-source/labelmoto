@@ -4,6 +4,9 @@ import { z } from 'zod';
 import { getAdminAuth, getAdminFirestore } from '@/lib/firebase-admin';
 import { slugify } from '@/lib/utils';
 import { resolveFrenchCommune } from '@/lib/france-commune';
+import {
+  PROFESSIONAL_CATEGORIES,
+} from '@/app/lib/professional-categories';
 
 const optionalUrl =
   z
@@ -12,6 +15,23 @@ const optionalUrl =
     .url('URL invalide')
     .optional()
     .or(z.literal(''));
+
+const CREATOR_CATEGORY_VALUE = (() => {
+  const profession =
+    PROFESSIONAL_CATEGORIES.find(
+      category =>
+        category.slug ===
+        'photographes-videastes'
+    );
+
+  if (!profession) {
+    throw new Error(
+      'Catégorie photographe / vidéaste introuvable.'
+    );
+  }
+
+  return profession.mapSearch;
+})();
 
 const creatorSchema = z.object({
   displayName:
@@ -30,6 +50,12 @@ const creatorSchema = z.object({
       .min(
         2,
         'Le métier est requis'
+      )
+      .refine(
+        value =>
+          value ===
+          CREATOR_CATEGORY_VALUE,
+        'Sélectionne un métier proposé par LabelMoto'
       ),
 
   specialties:

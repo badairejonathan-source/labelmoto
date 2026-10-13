@@ -129,20 +129,6 @@ function mapPointMatchesDirectoryFilter(
     return false;
   }
 
-  /*
-   * Les fiches creator actuelles correspondent
-   * aux photographes / vidéastes.
-   */
-  if (
-    point.appSection ===
-    'creator'
-  ) {
-    return (
-      normalized ===
-      'photographes-videastes'
-    );
-  }
-
   return professionalMatchesCategory(
     {
       title:
@@ -188,13 +174,6 @@ function primaryMapDirectoryFilterForPoint(
     'relais'
   ) {
     return 'relais';
-  }
-
-  if (
-    point.appSection ===
-    'creator'
-  ) {
-    return 'photographes-videastes';
   }
 
   /*

@@ -1,5 +1,13 @@
 'use client';
 
+import AdminSupportUnreadBadge from '@/components/app/admin-support-unread-badge';
+
+import {
+  PROFESSIONAL_CATEGORIES,
+  getPrimaryProfessionalCategory,
+  getProfessionalCategoryBySlug,
+} from '@/app/lib/professional-categories';
+
 import { useState, useEffect } from 'react';
 import { useFirebase, useMemoFirebase, useCollection } from '@/firebase/client';
 import { 
@@ -73,6 +81,11 @@ const AdminImageRequests = dynamic(
   { ssr: false, loading: AdminModuleLoader }
 );
 
+const AdminContactMessages = dynamic(
+  () => import('@/components/app/admin-contact-messages'),
+  { ssr: false, loading: AdminModuleLoader }
+);
+
 const ListingsManager = dynamic(
   () => import('@/components/app/listings-manager'),
   { ssr: false, loading: AdminModuleLoader }
@@ -91,6 +104,70 @@ const ModificationRequests = dynamic(
   () => import('@/components/app/modification-requests'),
   { ssr: false, loading: AdminModuleLoader }
 );
+
+function resolveProfessionalCategoryValue(
+  source: any
+): string {
+  const raw =
+    String(
+      source?.creatorType ||
+      source?.categoryRequested ||
+      source?.category ||
+      source?.activite ||
+      ''
+    ).trim();
+
+  const exact =
+    PROFESSIONAL_CATEGORIES.find(
+      category =>
+        category.mapSearch === raw ||
+        category.singular === raw ||
+        category.label === raw ||
+        category.slug === raw
+    );
+
+  if (exact) {
+    return exact.mapSearch;
+  }
+
+  const slug =
+    getPrimaryProfessionalCategory({
+      title:
+        source?.displayName ||
+        source?.businessName ||
+        source?.title,
+
+      category:
+        raw,
+
+      appSection:
+        source?.appSection ||
+        source?.appSectionRequested,
+
+      collection:
+        source?.collectionName,
+
+      creatorType:
+        source?.creatorType,
+
+      activite:
+        source?.activite,
+
+      specialties:
+        source?.specialties,
+    });
+
+  if (!slug) {
+    return '';
+  }
+
+  return (
+    getProfessionalCategoryBySlug(
+      slug
+    )?.mapSearch ||
+    ''
+  );
+}
 
 interface Submission {
   id: string;
@@ -1941,16 +2018,13 @@ export default function AdminPage() {
     'history',
     'modifs',
     'comments',
+    'messages',
+    'images',
   ].includes(activeTab);
 
   const isProfessionalsSection = [
     'listings',
     'add',
-  ].includes(activeTab);
-
-  const isToolsSection = [
-    'images',
-    'users',
   ].includes(activeTab);
 
   return (
@@ -1996,7 +2070,10 @@ export default function AdminPage() {
       )}
     >
       <AdminRequestsIcon className="h-5 w-5" />
-      Demandes
+      <span className="inline-flex items-center gap-1.5">
+        Demandes
+        <AdminSupportUnreadBadge />
+      </span>
     </Button>
 
     <Button
@@ -2044,15 +2121,15 @@ export default function AdminPage() {
     <Button
       type="button"
       variant="ghost"
-      onClick={() => setActiveTab('images')}
+      onClick={() => setActiveTab('users')}
       className={cn(
         "h-16 rounded-xl flex flex-col items-center justify-center gap-1 font-black uppercase text-[9px] tracking-widest",
-        isToolsSection &&
+        activeTab === 'users' &&
           "bg-white shadow-sm text-foreground"
       )}
     >
       <AdminToolsIcon className="h-5 w-5" />
-      Outils
+      Comptes
     </Button>
 
   </div>
@@ -2098,6 +2175,29 @@ export default function AdminPage() {
       >
         Avis
       </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'messages' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('messages')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        <span className="inline-flex items-center gap-1.5">
+          Messages
+          <AdminSupportUnreadBadge />
+        </span>
+      </Button>
+
+      <Button
+        type="button"
+        size="sm"
+        variant={activeTab === 'images' ? 'default' : 'outline'}
+        onClick={() => setActiveTab('images')}
+        className="rounded-full font-black uppercase text-[9px] tracking-widest"
+      >
+        Images
+      </Button>
     </div>
   )}
 
@@ -2121,30 +2221,6 @@ export default function AdminPage() {
         className="rounded-full font-black uppercase text-[9px] tracking-widest"
       >
         Ajouter
-      </Button>
-    </div>
-  )}
-
-  {isToolsSection && (
-    <div className="flex flex-wrap items-center gap-2 px-1">
-      <Button
-        type="button"
-        size="sm"
-        variant={activeTab === 'images' ? 'default' : 'outline'}
-        onClick={() => setActiveTab('images')}
-        className="rounded-full font-black uppercase text-[9px] tracking-widest"
-      >
-        Images
-      </Button>
-
-      <Button
-        type="button"
-        size="sm"
-        variant={activeTab === 'users' ? 'default' : 'outline'}
-        onClick={() => setActiveTab('users')}
-        className="rounded-full font-black uppercase text-[9px] tracking-widest"
-      >
-        Comptes
       </Button>
     </div>
   )}
@@ -2173,7 +2249,7 @@ export default function AdminPage() {
                     </CardDescription>
 
                     <CardTitle className="text-4xl font-black">
-                      {dashboardCounts ? totalToProcess : '—'}
+                      <AdminSupportUnreadBadge mode="number" baseCount={dashboardCounts ? totalToProcess : null} />
                     </CardTitle>
                   </CardHeader>
                 </Card>
@@ -2316,7 +2392,7 @@ export default function AdminPage() {
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
 
                   <Button
                     variant="outline"
@@ -2351,6 +2427,17 @@ export default function AdminPage() {
 
                     <span>
                       {dashboardCounts ? dashboardCommentsCount : '—'}
+                    </span>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab('messages')}
+                    className="h-16 rounded-2xl justify-between px-5 font-black uppercase text-xs"
+                  >
+                    Messages
+                    <span className="text-brand">
+                      <AdminSupportUnreadBadge mode="number" baseCount={0} />
                     </span>
                   </Button>
 
@@ -2572,9 +2659,14 @@ export default function AdminPage() {
           <TabsContent value="stats">
             <AdminStats />
           </TabsContent>
+          <TabsContent value="messages">
+            <AdminContactMessages />
+          </TabsContent>
+
           <TabsContent value="images">
             <AdminImageRequests />
           </TabsContent>
+
           <TabsContent value="users">
             <AdminUsers />
           </TabsContent>
@@ -2590,7 +2682,15 @@ export default function AdminPage() {
                   <div className="space-y-1">
                     <div className="flex items-center gap-3">
                         <Badge className="bg-white/20 text-white uppercase text-[8px] tracking-widest border-none">{editDraft.status}</Badge>
-                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter">{editDraft.businessName}</DialogTitle>
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tighter">
+                            {editDraft.type === 'creator'
+                              ? (
+                                  editDraft.displayName ||
+                                  editDraft.title ||
+                                  'Créateur'
+                                )
+                              : editDraft.businessName}
+                        </DialogTitle>
                     </div>
                     <DialogDescription className="text-white/80 font-bold text-xs uppercase tracking-widest">Demande reçue {formatDate(editDraft.createdAt)}</DialogDescription>
                   </div>
@@ -2609,31 +2709,291 @@ export default function AdminPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Nom (mappe vers title)</Label>
-                                    <Input value={editDraft.businessName} onChange={e => setEditDraft({...editDraft, businessName: e.target.value})} className="font-bold rounded-xl h-12 border-2" />
+                                    <Input
+                                        value={
+                                          editDraft.type === 'creator'
+                                            ? (
+                                                editDraft.displayName ||
+                                                editDraft.title ||
+                                                ''
+                                              )
+                                            : editDraft.businessName
+                                        }
+                                        onChange={e => {
+                                          if (editDraft.type === 'creator') {
+                                            setEditDraft({
+                                              ...editDraft,
+                                              displayName: e.target.value,
+                                              title: e.target.value,
+                                              businessName: e.target.value,
+                                            });
+
+                                            return;
+                                          }
+
+                                          setEditDraft({
+                                            ...editDraft,
+                                            businessName: e.target.value,
+                                          });
+                                        }}
+                                        className="font-bold rounded-xl h-12 border-2"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Section App (Cible Collection)</Label>
-                                    <Select value={editDraft.appSectionRequested} onValueChange={(v) => setEditDraft({...editDraft, appSectionRequested: v as any})}>
-                                        <SelectTrigger className="font-bold h-12 rounded-xl border-2"><SelectValue /></SelectTrigger>
-                                        <SelectContent className="rounded-xl border-2 z-[3200]">
-                                            <SelectItem value="shopping">Concessionnaire</SelectItem>
-                                            <SelectItem value="service">Atelier / Garage</SelectItem>
-                                            <SelectItem value="both">Vente & Service</SelectItem>
-                                            <SelectItem value="association">Association</SelectItem>
-                                            <SelectItem value="relais">Relais Motard</SelectItem>
-                                        </SelectContent>
-                                    </Select>
+                                    {editDraft.type === 'creator' ? (
+                                        <Input
+                                            value="Créateur"
+                                            disabled
+                                            className="font-bold h-12 rounded-xl border-2 bg-muted/40"
+                                        />
+                                    ) : (
+                                        <Select
+                                            value={editDraft.appSectionRequested}
+                                            onValueChange={(v) =>
+                                                setEditDraft({
+                                                    ...editDraft,
+                                                    appSectionRequested: v as any,
+                                                })
+                                            }
+                                        >
+                                            <SelectTrigger className="font-bold h-12 rounded-xl border-2">
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="rounded-xl border-2 z-[3200]">
+                                                <SelectItem value="shopping">Concessionnaire</SelectItem>
+                                                <SelectItem value="service">Atelier / Garage</SelectItem>
+                                                <SelectItem value="both">Vente & Service</SelectItem>
+                                                <SelectItem value="association">Association</SelectItem>
+                                                <SelectItem value="relais">Relais Motard</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    )}
                                 </div>
                             </div>
                             <div className="space-y-2">
-                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Catégorie / Spécialité</Label>
-                                <Input value={editDraft.categoryRequested} onChange={e => setEditDraft({...editDraft, categoryRequested: e.target.value})} className="font-bold rounded-xl h-12 border-2" />
+                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                    Métier / catégorie
+                                </Label>
+
+                                {editDraft.type !== 'creator' &&
+                                (
+                                    editDraft.appSectionRequested === 'association' ||
+                                    editDraft.appSectionRequested === 'relais'
+                                ) ? (
+                                    <Input
+                                        value={editDraft.categoryRequested || ''}
+                                        onChange={e =>
+                                            setEditDraft({
+                                                ...editDraft,
+                                                categoryRequested: e.target.value,
+                                            })
+                                        }
+                                        className="font-bold rounded-xl h-12 border-2"
+                                    />
+                                ) : (
+                                    <Select
+                                        value={resolveProfessionalCategoryValue(editDraft)}
+                                        onValueChange={value => {
+                                            if (editDraft.type === 'creator') {
+                                                setEditDraft({
+                                                    ...editDraft,
+                                                    creatorType: value,
+                                                    category: value,
+                                                    activite: value,
+                                                });
+
+                                                return;
+                                            }
+
+                                            setEditDraft({
+                                                ...editDraft,
+                                                categoryRequested: value,
+                                            });
+                                        }}
+                                    >
+                                        <SelectTrigger className="font-bold h-12 rounded-xl border-2">
+                                            <SelectValue placeholder="Sélectionner un métier" />
+                                        </SelectTrigger>
+
+                                        <SelectContent className="rounded-xl border-2 z-[3200]">
+                                            {PROFESSIONAL_CATEGORIES.map(category => (
+                                                <SelectItem
+                                                    key={category.slug}
+                                                    value={category.mapSearch}
+                                                >
+                                                    {category.singular}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                )}
                             </div>
-                            <div className="space-y-2">
-                                <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (mappe vers address)</Label>
-                                <Textarea value={editDraft.addressRaw} onChange={e => setEditDraft({...editDraft, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px] border-2" />
-                                {editDraft.needsGeocoding && <p className="text-[8px] text-orange-500 font-black uppercase tracking-widest ml-1 animate-pulse">⚠️ Géocodage requis ou à vérifier.</p>}
-                            </div>
+
+                            {editDraft.type === 'creator' && (
+                                <div className="space-y-5 rounded-2xl border-2 border-brand/10 bg-brand/[0.03] p-5">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                Spécialités
+                                            </Label>
+
+                                            <Input
+                                                value={
+                                                    Array.isArray(editDraft.specialties)
+                                                        ? editDraft.specialties.join(', ')
+                                                        : (
+                                                            editDraft.specialite ||
+                                                            ''
+                                                        )
+                                                }
+                                                onChange={e => {
+                                                    const value =
+                                                        e.target.value;
+
+                                                    setEditDraft({
+                                                        ...editDraft,
+                                                        specialties:
+                                                            value
+                                                                .split(',')
+                                                                .map(item => item.trim())
+                                                                .filter(Boolean),
+                                                        specialite:
+                                                            value,
+                                                    });
+                                                }}
+                                                className="font-bold rounded-xl h-12 border-2"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                Ville de base
+                                            </Label>
+
+                                            <Input
+                                                value={
+                                                    editDraft.city ||
+                                                    editDraft.ville ||
+                                                    ''
+                                                }
+                                                onChange={e =>
+                                                    setEditDraft({
+                                                        ...editDraft,
+                                                        city: e.target.value,
+                                                        ville: e.target.value,
+                                                        publicLocationLabel: e.target.value,
+                                                    })
+                                                }
+                                                className="font-bold rounded-xl h-12 border-2"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                Département
+                                            </Label>
+
+                                            <Input
+                                                value={editDraft.departement || ''}
+                                                onChange={e =>
+                                                    setEditDraft({
+                                                        ...editDraft,
+                                                        departement: e.target.value,
+                                                    })
+                                                }
+                                                className="font-bold rounded-xl h-12 border-2"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-2 md:col-span-2">
+                                            <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                Zone d'intervention
+                                            </Label>
+
+                                            <Input
+                                                value={editDraft.serviceArea || ''}
+                                                onChange={e =>
+                                                    setEditDraft({
+                                                        ...editDraft,
+                                                        serviceArea: e.target.value,
+                                                    })
+                                                }
+                                                className="font-bold rounded-xl h-12 border-2"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                                Localisation publique
+                                            </Label>
+
+                                            <Badge
+                                                variant="outline"
+                                                className="text-[8px] font-black uppercase"
+                                            >
+                                                {editDraft.hasPublicLocation
+                                                    ? 'Adresse publique'
+                                                    : 'Ville uniquement'}
+                                            </Badge>
+                                        </div>
+
+                                        {editDraft.hasPublicLocation ? (
+                                            <Textarea
+                                                value={
+                                                    editDraft.publicAddress ||
+                                                    editDraft.address ||
+                                                    ''
+                                                }
+                                                onChange={e =>
+                                                    setEditDraft({
+                                                        ...editDraft,
+                                                        publicAddress: e.target.value,
+                                                        address: e.target.value,
+                                                    })
+                                                }
+                                                className="font-bold rounded-xl min-h-[80px] border-2"
+                                            />
+                                        ) : (
+                                            <div className="rounded-xl bg-muted/40 px-4 py-3 text-xs font-bold text-muted-foreground">
+                                                Aucune adresse publique : seule la ville de base sera affichée.
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">
+                                            Présentation
+                                        </Label>
+
+                                        <Textarea
+                                            value={
+                                                editDraft.info ||
+                                                editDraft.description ||
+                                                ''
+                                            }
+                                            onChange={e =>
+                                                setEditDraft({
+                                                    ...editDraft,
+                                                    info: e.target.value,
+                                                    description: e.target.value,
+                                                })
+                                            }
+                                            className="font-bold rounded-xl min-h-[120px] border-2"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {editDraft.type !== 'creator' && (
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Adresse (mappe vers address)</Label>
+                                    <Textarea value={editDraft.addressRaw} onChange={e => setEditDraft({...editDraft, addressRaw: e.target.value})} className="font-bold rounded-xl min-h-[80px] border-2" />
+                                    {editDraft.needsGeocoding && <p className="text-[8px] text-orange-500 font-black uppercase tracking-widest ml-1 animate-pulse">⚠️ Géocodage requis ou à vérifier.</p>}
+                                </div>
+                            )}
                         </section>
 
                         <section className="space-y-6">
@@ -2644,7 +3004,37 @@ export default function AdminPage() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Téléphone</Label>
-                                    <Input value={editDraft.phone} onChange={e => setEditDraft({...editDraft, phone: e.target.value})} className="font-bold border-2 rounded-xl" />
+                                    <Input
+                                        value={
+                                            editDraft.type === 'creator'
+                                                ? (
+                                                    editDraft.phoneNumber ||
+                                                    editDraft.phone ||
+                                                    ''
+                                                )
+                                                : (
+                                                    editDraft.phone ||
+                                                    ''
+                                                )
+                                        }
+                                        onChange={e => {
+                                            if (editDraft.type === 'creator') {
+                                                setEditDraft({
+                                                    ...editDraft,
+                                                    phoneNumber: e.target.value,
+                                                    phone: e.target.value,
+                                                });
+
+                                                return;
+                                            }
+
+                                            setEditDraft({
+                                                ...editDraft,
+                                                phone: e.target.value,
+                                            });
+                                        }}
+                                        className="font-bold border-2 rounded-xl"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Site Web</Label>
@@ -2658,11 +3048,41 @@ export default function AdminPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Instagram</Label>
-                                    <Input value={editDraft.instagram || ''} onChange={e => setEditDraft({...editDraft, instagram: e.target.value})} placeholder="https://instagram.com/..." className="font-bold border-2 rounded-xl" />
+                                    <Input
+                                        value={
+                                            editDraft.instagramUrl ||
+                                            editDraft.instagram ||
+                                            ''
+                                        }
+                                        onChange={e =>
+                                            setEditDraft({
+                                                ...editDraft,
+                                                instagram: e.target.value,
+                                                instagramUrl: e.target.value,
+                                            })
+                                        }
+                                        placeholder="https://instagram.com/..."
+                                        className="font-bold border-2 rounded-xl"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Facebook</Label>
-                                    <Input value={editDraft.facebook || ''} onChange={e => setEditDraft({...editDraft, facebook: e.target.value})} placeholder="https://facebook.com/..." className="font-bold border-2 rounded-xl" />
+                                    <Input
+                                        value={
+                                            editDraft.facebookUrl ||
+                                            editDraft.facebook ||
+                                            ''
+                                        }
+                                        onChange={e =>
+                                            setEditDraft({
+                                                ...editDraft,
+                                                facebook: e.target.value,
+                                                facebookUrl: e.target.value,
+                                            })
+                                        }
+                                        placeholder="https://facebook.com/..."
+                                        className="font-bold border-2 rounded-xl"
+                                    />
                                 </div>
                             </div>
                         </section>
@@ -2675,7 +3095,24 @@ export default function AdminPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Photo URL</Label>
-                                    <Input value={editDraft.imageUrl || ''} onChange={e => setEditDraft({...editDraft, imageUrl: e.target.value})} placeholder="https://..." className="font-bold border-2 rounded-xl" />
+                                    <Input
+                                        value={
+                                            editDraft.photoUrl ||
+                                            editDraft.imageUrl ||
+                                            editDraft.imgUrl ||
+                                            ''
+                                        }
+                                        onChange={e =>
+                                            setEditDraft({
+                                                ...editDraft,
+                                                photoUrl: e.target.value,
+                                                imageUrl: e.target.value,
+                                                imgUrl: e.target.value,
+                                            })
+                                        }
+                                        placeholder="https://..."
+                                        className="font-bold border-2 rounded-xl"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <Label className="text-[9px] uppercase font-black ml-1">Google Maps URL</Label>

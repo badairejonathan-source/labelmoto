@@ -27,6 +27,7 @@ export default function AdminImageRequests() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
   const [filter, setFilter] = useState<'pending' | 'approved' | 'rejected'>('pending');
+  const [previewRequest, setPreviewRequest] = useState<ImageRequest | null>(null);
 
   const load = async () => {
     if (!firestore) return;
@@ -39,6 +40,41 @@ export default function AdminImageRequests() {
   };
 
   useEffect(() => { load(); }, [firestore, filter]);
+
+  useEffect(() => {
+    if (!previewRequest) {
+      return;
+    }
+
+    const previousOverflow =
+      document.body.style.overflow;
+
+    const handleKeyDown = (
+      event: KeyboardEvent
+    ) => {
+      if (event.key === 'Escape') {
+        setPreviewRequest(null);
+      }
+    };
+
+    document.body.style.overflow =
+      'hidden';
+
+    window.addEventListener(
+      'keydown',
+      handleKeyDown
+    );
+
+    return () => {
+      document.body.style.overflow =
+        previousOverflow;
+
+      window.removeEventListener(
+        'keydown',
+        handleKeyDown
+      );
+    };
+  }, [previewRequest]);
 
   const approve = async (req: ImageRequest) => {
     if (!firestore) return;
@@ -125,14 +161,41 @@ export default function AdminImageRequests() {
           {requests.map(req => (
             <div key={req.id} className="bg-white rounded-2xl border shadow-sm overflow-hidden">
               {/* Image */}
-              <div className="relative h-48 bg-muted">
-                <img src={req.imageUrl} alt={req.concessionTitle} className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={() =>
+                  setPreviewRequest(req)
+                }
+                className="group relative flex w-full cursor-zoom-in items-center justify-center overflow-hidden bg-muted/40 p-2"
+                style={{
+                  height: '18rem',
+                }}
+                aria-label={`Agrandir l'image de ${req.concessionTitle || 'la fiche'}`}
+              >
+                <img
+                  src={req.imageUrl}
+                  alt={req.concessionTitle}
+                  className="h-full w-full !object-contain"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    objectPosition: 'center',
+                  }}
+                />
+
+                <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/[0.04]" />
+
+                <div className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/70 px-3 py-1.5 text-[9px] font-black uppercase tracking-widest text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                  Agrandir
+                </div>
+
                 {filter === 'pending' && (
                   <div className="absolute top-2 right-2 bg-orange-500 text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-full">
                     En attente
                   </div>
                 )}
-              </div>
+              </button>
 
               {/* Info */}
               <div className="p-4 space-y-3">
@@ -170,6 +233,61 @@ export default function AdminImageRequests() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {previewRequest && (
+        <div
+          className="fixed inset-0 z-[5000] flex items-center justify-center bg-black/90 p-3 backdrop-blur-sm md:p-8"
+          onClick={() =>
+            setPreviewRequest(null)
+          }
+          role="dialog"
+          aria-modal="true"
+          aria-label="Aperçu agrandi de l'image"
+        >
+          <button
+            type="button"
+            onClick={() =>
+              setPreviewRequest(null)
+            }
+            className="absolute right-4 top-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/70 text-white shadow-xl transition hover:bg-white hover:text-black md:right-7 md:top-7"
+            aria-label="Fermer l'aperçu"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          <div
+            className="flex max-h-full max-w-full flex-col items-center justify-center gap-3"
+            onClick={event =>
+              event.stopPropagation()
+            }
+          >
+            <img
+              src={previewRequest.imageUrl}
+              alt={previewRequest.concessionTitle}
+              className="!object-contain shadow-2xl"
+              style={{
+                display: 'block',
+                width: 'auto',
+                height: 'auto',
+                maxWidth: 'min(92vw, 1100px)',
+                maxHeight: '68vh',
+                objectFit: 'contain',
+                objectPosition: 'center',
+              }}
+            />
+
+            <div className="max-w-[90vw] text-center text-white">
+              <p className="text-xs font-black uppercase tracking-widest md:text-sm">
+                {previewRequest.concessionTitle || 'Fiche inconnue'}
+              </p>
+
+              <p className="mt-1 text-[10px] text-white/60">
+                Échap ou clic en dehors de l’image pour fermer
+              </p>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -1,5 +1,7 @@
 'use client';
 
+import SupportUnreadBadge from '@/components/app/support-unread-badge';
+
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useUser, useAuth, useFirestore, useMemoFirebase, useCollection } from '@/firebase/client';
@@ -11,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
 import Header from '@/components/app/header';
+import SupportMessagesAccount from '@/components/app/support-messages-account';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -1035,6 +1038,17 @@ function AccountContent() {
                 Mes favoris
               </a>
 
+              <a
+                href="#messages-labelmoto"
+                onClick={() => window.dispatchEvent(new Event('labelmoto:support-open'))}
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-full border-2 bg-white px-3 py-2.5 text-center text-[9px] font-black uppercase tracking-widest transition-colors hover:border-brand hover:text-brand sm:px-5 sm:text-[10px]"
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  Messages
+                  <SupportUnreadBadge />
+                </span>
+              </a>
+
               {isPro && (
                 <a
                   href="#fiches-pro"
@@ -1651,6 +1665,10 @@ function AccountContent() {
                 </Card>
               </div>
             </section>
+          )}
+
+          {!showChoice && (
+            <SupportMessagesAccount />
           )}
 
           {!showChoice && isPro && (
