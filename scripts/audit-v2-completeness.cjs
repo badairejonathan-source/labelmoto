@@ -107,12 +107,12 @@ function euroRange(value) {
   }
 
   const normalized = value
-    .replace(/\u00a0/g, ' ')
+    .replace(/[\u00a0\u202f]/g, ' ')
     .replace(/\u2248/g, '')
     .trim();
 
   const range = normalized.match(
-    /([0-9][0-9 ]*)\s*[\u2013-]\s*([0-9][0-9 ]*)\s*\u20ac/
+    /([0-9][0-9 ]*)\s*(?:\u20ac\s*)?[\u2013-]\s*([0-9][0-9 ]*)\s*\u20ac/
   );
 
   if (range) {
@@ -175,10 +175,9 @@ function auditRenderer() {
   );
 
   const compactRule =
-    "const budgetCards = " +
-    "(v2.budget?.cards || []).filter(() => false);";
+    /const\s+budgetCards\s*=\s*\((?:generationBudget|v2\.budget)\?\.cards\s*\|\|\s*\[\]\)\.filter\(\(\)\s*=>\s*false\);/;
 
-  if (!source.includes(compactRule)) {
+  if (!compactRule.test(source)) {
     fail(
       'RENDERER_BUDGET_COMPACT_RULE_MISSING'
     );
@@ -207,6 +206,11 @@ function auditStrictSheet(file) {
     'utf8'
   );
 
+  const auditSource = source.replace(
+    /"([A-Za-z_][A-Za-z0-9_]*)"\s*:/g,
+    '$1:'
+  );
+
   const required = [
     /\blayout_version:\s*2\b/,
     /\blicense_fr\s*:/,
@@ -222,7 +226,7 @@ function auditStrictSheet(file) {
   ];
 
   for (const pattern of required) {
-    if (!pattern.test(source)) {
+    if (!pattern.test(auditSource)) {
       fail(
         file +
         ':MISSING_REQUIRED_SECTION:' +
@@ -232,14 +236,14 @@ function auditStrictSheet(file) {
   }
 
   const schedule = extractBalanced(
-    source,
+    auditSource,
     'service_schedule_v2:',
     '[',
     ']'
   );
 
   const budget = extractBalanced(
-    source,
+    auditSource,
     'budget:',
     '{',
     '}'
@@ -284,7 +288,7 @@ function auditStrictSheet(file) {
   const rows = [];
 
   const rowRegex =
-    /km:\s*(\d+)[\s\S]*?price_estimate:\s*'([^']+)'/g;
+    /km:\s*(\d+)[\s\S]*?price_estimate:\s*(['"])(.*?)\2/g;
 
   let match;
 
@@ -292,7 +296,7 @@ function auditStrictSheet(file) {
     (match = rowRegex.exec(schedule))
   ) {
     const price = euroRange(
-      match[2]
+      match[3]
     );
 
     if (!price) {
@@ -326,11 +330,11 @@ function auditStrictSheet(file) {
   );
 
   const totalMatch = budget.match(
-    /total_cost:\s*'([^']+)'/
+    /total_cost:\s*(['"])(.*?)\1/
   );
 
   const kmCostMatch = budget.match(
-    /cost_per_km:\s*'([^']+)'/
+    /cost_per_km:\s*(['"])(.*?)\1/
   );
 
   if (
@@ -356,11 +360,11 @@ function auditStrictSheet(file) {
   }
 
   const total = euroRange(
-    totalMatch[1]
+    totalMatch[2]
   );
 
   const costKm = kmRange(
-    kmCostMatch[1]
+    kmCostMatch[2]
   );
 
   if (!total) {

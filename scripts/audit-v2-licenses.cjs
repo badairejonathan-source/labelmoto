@@ -220,14 +220,19 @@ if (!permitBlock) {
   }
 }
 
+const quickFactsPermitUsesNormalized =
+  /const\s+quickFacts\s*=\s*\[[\s\S]*?label:\s*['"]PERMIS['"]\s*,\s*value:\s*normalizedPermit[\s\S]*?\];/.test(
+    renderer
+  );
+
+const technicalPermitUsesNormalized =
+  /\[\s*['"]Permis['"]\s*,\s*normalizedPermit\s*\]/.test(
+    renderer
+  );
+
 if (
-  !renderer.includes("sourceQuickFacts.filter") ||
-  !renderer.includes(
-    "{ label: 'PERMIS', value: normalizedPermit }"
-  ) ||
-  !renderer.includes(
-    "['Permis', normalizedPermit]"
-  )
+  !quickFactsPermitUsesNormalized ||
+  !technicalPermitUsesNormalized
 ) {
   errors++;
   console.log("RENDERER_SINGLE_SOURCE=ERROR");

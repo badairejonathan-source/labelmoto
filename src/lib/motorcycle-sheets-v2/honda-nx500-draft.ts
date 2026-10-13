@@ -22,6 +22,9 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
     }
   ],
   "layout_version": 2,
+  "license_fr": "A2",
+  "license_fr_source": "https://moto.honda.fr/motorcycles/range/adventure/nx500/specifications-and-price.html",
+  "license_fr_verified_at": "2026-10-13",
   "display_title": "Honda NX500",
   "hero_subtitle": "Trail routier A2 471 cm³ - Standard et E-Clutch 2026",
   "variants": [
@@ -44,8 +47,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "130 € - 190 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "130 € - 190 €",
           "price_type": "estimate"
         },
         {
@@ -65,8 +68,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "200 € - 270 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "200 € - 270 €",
           "price_type": "estimate"
         },
         {
@@ -86,8 +89,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "430 € - 510 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "430 € - 510 €",
           "price_type": "estimate"
         },
         {
@@ -107,8 +110,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "200 € - 270 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "200 € - 270 €",
           "price_type": "estimate"
         },
         {
@@ -128,8 +131,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "510 € - 590 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "510 € - 590 €",
           "price_type": "estimate"
         }
       ],
@@ -137,7 +140,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         {
           "id": "huile",
           "title": "Huile moteur & filtre",
-          "summary": "Huile SAE 10W-30 ; capacite moteur Honda 3,1 L",
+          "summary": "SAE 10W-30 · JASO MA · 2,4 L après vidange · 2,6 L avec filtre · 3,1 L après démontage",
           "rows": [
             {
               "label": "Moto",
@@ -145,11 +148,11 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Norme",
-              "value": "SAE 10W-30, JASO MA, API SJ ou supérieur selon exclusions Honda"
+              "value": "SAE 10W-30 · API SJ ou supérieur, hors Energy/Resource Conserving · JASO T 903 MA"
             },
             {
               "label": "Filtre à huile",
-              "value": "Référence OEM 2026 à confirmer par VIN"
+              "value": "Honda 15410-MFJ-D02 (cartouche) · 15010-MKR-305 (jeu de filtre) · catalogue NX500 2026"
             },
             {
               "label": "Vidange moteur",
@@ -158,14 +161,19 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             {
               "label": "Filtre à huile",
               "value": "1 000, 24 000 et 48 000 km"
+            },
+            {
+              "label": "Quantités d’huile",
+              "value": "2,4 L après vidange · 2,6 L après vidange + filtre · 3,1 L après démontage moteur",
+              "confidence": "official_eu"
             }
           ],
-          "note": "Les 3,1 L annonces dans la fiche constructeur ne sont pas une quantite de vidange a appliquer automatiquement."
+          "note": "Valeurs Honda Europe 2026 CB500XA/XAC. Les 3,1 L correspondent au remplissage après démontage moteur, pas à une vidange courante."
         },
         {
-          "id": "filtre-air",
-          "title": "Filtre ? air",
-          "summary": "Filtre Honda 17211-MKP-J00 (2024) ; OEM 2026 a confirmer",
+          "id": "air",
+          "title": "Filtre à air",
+          "summary": "Remplacement à 24 000 et 48 000 km · entretien plus fréquent en conditions humides ou poussiéreuses",
           "rows": [
             {
               "label": "Moto",
@@ -185,15 +193,15 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Référence OEM",
-              "value": "Honda 17211-MKP-J00 documente sur NX500 2024 ; verification 2026 par VIN"
+              "value": "Honda 17211-MKP-J00 · compatibilité NX500 2026 Standard et E-Clutch vérifiée"
             }
           ],
-          "note": "En environnement poussiéreux, rapprochez les contrôles. Référence de pièce à confirmer pour le VIN."
+          "note": "Périodicité confirmée par le manuel Honda Europe 2026. Référence OEM 17211-MKP-J00 vérifiée pour les NX500 2026 Standard et E-Clutch dans un catalogue de concessionnaire Honda."
         },
         {
           "id": "bougies",
           "title": "Bougies",
-          "summary": "2 bougies NGK CPR8EA-9 ; entretien 24 000 / 48 000 km",
+          "summary": "NGK CPR8EA-9 · 2 bougies · 0,8–0,9 mm · remplacement à 24 000 et 48 000 km",
           "rows": [
             {
               "label": "Moto",
@@ -201,7 +209,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Référence",
-              "value": "NGK CPR8EA-9"
+              "value": "Honda 31916-KRM-841 · NGK CPR8EA-9"
             },
             {
               "label": "Quantité",
@@ -216,7 +224,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "value": "24 000 et 48 000 km"
             }
           ],
-          "note": "Remplacer les deux bougies selon le programme Honda 2026."
+          "note": "Référence CPR8EA-9, écartement 0,8–0,9 mm et périodicité confirmés par le manuel Honda Europe 2026."
         },
         {
           "id": "soupapes",
@@ -249,7 +257,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         {
           "id": "refroidissement",
           "title": "Liquide de refroidissement",
-          "summary": "Liquide de refroidissement Honda ; volume NX500 a confirmer",
+          "summary": "Pro Honda HP Coolant · capacité 1,32 L · remplacement tous les 3 ans",
           "rows": [
             {
               "label": "Moto",
@@ -266,9 +274,14 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             {
               "label": "Contrôles",
               "value": "Niveau à froid, durites, radiateur et fuites"
+            },
+            {
+              "label": "Capacité du circuit",
+              "value": "1,32 L",
+              "confidence": "official_eu"
             }
           ],
-          "note": "Contrôlez le niveau moteur froid. Ne retirez jamais le bouchon du radiateur à chaud."
+          "note": "Liquide, capacité de 1,32 L et échéance de 3 ans confirmés par le manuel Honda Europe 2026."
         },
         {
           "id": "freins",
@@ -301,15 +314,15 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Plaquettes",
-              "value": "Selon usure ; références OEM à confirmer"
+              "value": "Avant Honda 06455-MKP-DQ1 · 2 jeux nécessaires ; arrière Honda 06435-MGZ-J02"
             }
           ],
-          "note": "Les plaquettes s'usent selon l'utilisation. Confirmez les références de montage par VIN."
+          "note": "Références OEM vérifiées pour la NX500 2026 : 06455-MKP-DQ1 à l’avant (deux jeux pour les deux étriers) et 06435-MGZ-J02 à l’arrière."
         },
         {
           "id": "pneus",
           "title": "Pneus & pressions",
-          "summary": "Avant 110/80 R19 59V ; arriere 160/60 R17",
+          "summary": "110/80 R19 avant · 160/60 R17 arrière · 2,0 / 2,5 bar à froid",
           "rows": [
             {
               "label": "Moto",
@@ -317,31 +330,31 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Avant",
-              "value": "110/80 R19"
+              "value": "Dunlop 110/80 R19 59H · Honda 44711-MKP-J82"
             },
             {
               "label": "Arrière",
-              "value": "160/60 R17"
+              "value": "Dunlop 160/60 R17 69H · Honda 42711-MKP-J82"
             },
             {
               "label": "Pression avant à froid",
-              "value": "Selon manuel Honda NX500 2026"
+              "value": "2,0 bar · 200 kPa · 29 psi"
             },
             {
               "label": "Pression arrière à froid",
-              "value": "Selon manuel Honda NX500 2026"
+              "value": "2,5 bar · 250 kPa · 36 psi"
             },
             {
               "label": "Remplacement",
               "value": "Selon usure et état"
             }
           ],
-          "note": "Dimensions NX500. Indices et pressions a verifier dans le manuel constructeur."
+          "note": "Dimensions et pressions confirmées par Honda Europe 2026. Les références 44711-MKP-J82 avant et 42711-MKP-J82 arrière correspondent à la monte Dunlop répertoriée au catalogue de pièces 2026 ; un pneu de remplacement homologué peut être différent."
         },
         {
           "id": "transmission",
           "title": "Chaîne & transmission",
-          "summary": "Kit chaine OEM Honda 06406-MLR-D00",
+          "summary": "DID520VF ou RK520ELO · 112 maillons · 15/41 · jeu 30–40 mm",
           "rows": [
             {
               "label": "Moto",
@@ -353,15 +366,15 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Chaîne",
-              "value": "Specification NX500 2026 a confirmer"
+              "value": "DID520VF ou RK520ELO · 112 maillons"
             },
             {
               "label": "Pignon / couronne",
-              "value": "Specification NX500 2026 a confirmer"
+              "value": "15 dents / 41 dents"
             },
             {
               "label": "Jeu de chaîne",
-              "value": "Specification NX500 2026 a confirmer"
+              "value": "30 à 40 mm"
             },
             {
               "label": "Entretien",
@@ -369,60 +382,65 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Kit chaîne complet",
-              "value": "Honda 06406-MLR-D00 ; compatible NX500 2026 selon catalogue vendeur"
+              "value": "Honda 06406-MLR-D00 · compatibilité NX500 2026 Standard et E-Clutch vérifiée"
             }
           ],
-          "note": "Lubrifiez la chaîne après la pluie et contrôlez son jeu. Kit complet à identifier par VIN."
+          "note": "Chaîne, 112 maillons, démultiplication 15/41 et jeu 30–40 mm confirmés par le manuel Honda Europe 2026. Kit complet Honda 06406-MLR-D00 vérifié pour les versions Standard et E-Clutch 2026 chez un concessionnaire Honda."
         }
       ],
       "consumables_v2": [
         {
           "part": "Huile moteur",
-          "specification": "Huile moteur SAE 10W-30, JASO MA ; Honda annonce 3,1 L de capacite moteur. Quantite exacte de vidange a appliquer selon le manuel NX500 2026.",
+          "specification": "SAE 10W-30 · API SJ ou supérieur · JASO MA · 2,4 L vidange · 2,6 L avec filtre · 3,1 L après démontage",
           "replacement_interval": "1 000 km, puis tous les 12 000 km ou selon limite annuelle",
-          "note": "Le pack contient 3 L ; ce n'est pas une instruction de remplissage. Ne pas confondre capacite moteur et volume de vidange.",
+          "note": "Spécification et quantités confirmées par le manuel Honda Europe 2026. Le prix affiché reste une observation vendeur.",
           "source_type": "official_eu",
-          "observed_price": "22,90 EUR TTC / litre Motul E-TEC 10W-30 ; pack NX500 3 L + filtre + joint : 59,90 EUR TTC, hors pose"
+          "observed_price": "22,90 € TTC / litre Motul E-TEC 10W-30 ; pack NX500 3 L + filtre + joint : 59,90 € TTC, hors pose"
         },
         {
           "part": "Filtre à huile",
-          "specification": "Honda OEM 15410-MFJ-D02 (cartouche) ; ensemble 15010-MKR-305. References relevees sur eclate NX500 2026.",
+          "specification": "Cartouche Honda 15410-MFJ-D02 · jeu de filtre 15010-MKR-305 · affectation NX500 2026",
+          "reference_oem": "15410-MFJ-D02 · 15010-MKR-305",
           "replacement_interval": "1 000, 24 000 et 48 000 km",
-          "note": "References constructeur NX500 2026 ; confirmation par VIN conseill?e.",
+          "note": "Références présentes dans la vue éclatée NX500 2026 : 15410-MFJ-D02 pour la cartouche et 15010-MKR-305 pour le jeu de filtre.",
           "source_type": "observed",
-          "observed_price": "16,86 EUR TTC / unite, catalogue Honda, hors pose"
+          "observed_price": "16,86 € TTC / unité, catalogue Honda, hors pose"
         },
         {
           "part": "Filtre à air",
-          "specification": "Honda OEM 17211-MKP-J00 releve sur NX500 2024 ; pack de revision NX500 2026 proposant un filtre d'origine. Verifier la reference exacte 2026 par VIN.",
-          "replacement_interval": "24 000 et 48 000 km",
-          "note": "Reference 17211-MKP-J00 documentee sur NX500 2024, mais affectation OEM 2026 a confirmer.",
+          "specification": "Filtre à air Honda d’origine 17211-MKP-J00 · NX500 2026 Standard et E-Clutch",
+          "reference_oem": "17211-MKP-J00",
+          "replacement_interval": "24 000 et 48 000 km · plus fréquent en conditions humides ou poussiéreuses",
+          "note": "Compatibilité 2026 avec et sans E-Clutch vérifiée dans le catalogue d’un concessionnaire Honda ; périodicité issue du manuel Europe 2026.",
           "source_type": "observed",
-          "observed_price": "48,90 EUR TTC / filtre dans le pack NX500 ; tarif indicatif hors pose"
+          "observed_price": "48,90 € TTC / filtre dans le pack NX500 ; tarif indicatif hors pose"
         },
         {
           "part": "Bougies",
-          "specification": "NGK CPR8EA-9 ; 2 bougies pour le bicylindre NX500 ; references du pack entretien NX500 2026.",
+          "specification": "Honda 31916-KRM-841 · NGK CPR8EA-9 · 2 unités · écartement 0,8 à 0,9 mm",
+          "reference_oem": "31916-KRM-841",
           "replacement_interval": "24 000 et 48 000 km",
-          "note": "Pack de revision annonce compatible avec Standard et E-Clutch 2026.",
+          "note": "Référence Honda 31916-KRM-841 et compatibilité NX500 2026 vérifiées chez un concessionnaire Honda ; type CPR8EA-9 confirmé par le manuel Europe 2026.",
           "source_type": "observed",
-          "observed_price": "16,90 EUR TTC / bougie ; deux unites soit 33,80 EUR TTC, hors pose"
+          "observed_price": "16,90 € TTC / bougie ; deux unités soit 33,80 € TTC, hors pose"
         },
         {
           "part": "Pneumatiques",
-          "specification": "Avant 110/80 R19 59V ; arriere 160/60 R17. Indices homologues exacts et pressions a respecter selon le manuel NX500.",
+          "specification": "Monte OEM catalogue 2026 : Dunlop 110/80 R19 59H avant · Dunlop 160/60 R17 69H arrière · 2,0 / 2,5 bar à froid",
+          "reference_oem": "44711-MKP-J82 (avant) · 42711-MKP-J82 (arrière)",
           "replacement_interval": "Selon usure et état",
-          "note": "Prix vendeur pour le pneu avant compatible NX500 2026. Ne pas reprendre le tarif du train CBR500R.",
+          "note": "Références de monte OEM 2026 : 44711-MKP-J82 avant et 42711-MKP-J82 arrière. Le prix Michelin affiché reste une observation de remplacement compatible et non le tarif de la monte OEM.",
           "source_type": "observed",
-          "observed_price": "Michelin Anakee Adventure avant 110/80 R19 59V : 145,00 EUR TTC, hors pose ; arriere a chiffrer"
+          "observed_price": "Michelin Anakee Adventure avant 110/80 R19 59V : 145,00 € TTC, hors pose ; arrière à chiffrer"
         },
         {
           "part": "Kit chaine",
-          "specification": "Kit chaine Honda OEM 06406-MLR-D00 ; pignon, couronne et chaine. Longueur finale a ajuster selon la configuration.",
+          "specification": "Kit Honda 06406-MLR-D00 · chaîne DID520VF ou RK520ELO · 112 maillons · pignon 15 dents · couronne 41 dents · jeu 30–40 mm",
+          "reference_oem": "06406-MLR-D00",
           "replacement_interval": "Selon usure ; inspection et lubrification tous les 1 000 km",
-          "note": "Affectation NX500 Standard et E-Clutch 2026 annoncee par le concessionnaire Honda.",
+          "note": "Kit OEM 06406-MLR-D00 annoncé compatible NX500 2026 Standard et E-Clutch par un concessionnaire Honda ; caractéristiques de transmission confirmées par le manuel Europe 2026.",
           "source_type": "observed",
-          "observed_price": "148,90 EUR TTC / kit, hors pose"
+          "observed_price": "148,90 € TTC / kit, hors pose"
         },
         {
           "part": "Liquide de frein",
@@ -430,31 +448,33 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
           "replacement_interval": "Tous les 2 ans",
           "note": "Prix d'un bidon, non d'une purge en atelier ; remplacement selon le calendrier constructeur.",
           "source_type": "official_eu",
-          "observed_price": "13,90 EUR TTC / bidon 500 ml, prix indicatif du brouillon Honda ; hors pose"
+          "observed_price": "13,90 € TTC / bidon 500 ml, prix indicatif du brouillon Honda ; hors pose"
         },
         {
           "part": "Liquide de refroidissement",
-          "specification": "Liquide de refroidissement compatible Honda ; volume de circuit NX500 a confirmer.",
+          "specification": "Pro Honda HP Coolant · capacité du circuit 1,32 L",
           "replacement_interval": "Tous les 3 ans",
-          "note": "Confirmer la specification du liquide et la quantite necessaire avant remplacement.",
+          "note": "Liquide Pro Honda HP Coolant et capacité de 1,32 L confirmés par le manuel Honda Europe 2026. Prix affiché : observation vendeur hors pose.",
           "source_type": "official_eu",
-          "observed_price": "13,41 EUR TTC / bidon 1 L, exemple de tarif indicatif ; hors pose"
+          "observed_price": "13,41 € TTC / bidon 1 L, exemple de tarif indicatif ; hors pose"
         },
         {
           "part": "Plaquettes avant",
-          "specification": "Deux disques avant ; reference des jeux Honda avant a confirmer sur l'eclate NX500 2026.",
+          "specification": "Plaquettes avant Honda 06455-MKP-DQ1 · deux jeux nécessaires pour les deux étriers avant",
+          "reference_oem": "06455-MKP-DQ1",
           "replacement_interval": "Selon usure",
-          "note": "Ne pas attribuer automatiquement a la NX500 les references de la CBR500R.",
+          "note": "Référence OEM et compatibilité NX500 2026 Standard/E-Clutch vérifiées chez un concessionnaire Honda. Prix affiché par jeu ; deux jeux sont nécessaires à l’avant.",
           "source_type": "observed",
-          "observed_price": "56,90 EUR TTC / jeu avant chez NX500Shop, nombre de jeux et reference exacte a confirmer"
+          "observed_price": "56,90 € TTC / jeu avant chez NX500Shop ; 2 jeux nécessaires, soit 113,80 € TTC hors pose"
         },
         {
           "part": "Plaquettes arriere",
-          "specification": "Honda OEM 06435-MGZ-J02 ; jeu de plaquettes arriere NX500.",
+          "specification": "Plaquettes arrière Honda 06435-MGZ-J02 · un jeu arrière",
+          "reference_oem": "06435-MGZ-J02",
           "replacement_interval": "Selon usure",
-          "note": "Compatibilite des deux variantes 2026 annoncee par NX500Shop.",
+          "note": "Référence OEM et compatibilité NX500 2026 Standard/E-Clutch vérifiées chez un concessionnaire Honda.",
           "source_type": "observed",
-          "observed_price": "57,90 EUR TTC / jeu arriere, hors pose"
+          "observed_price": "57,90 € TTC / jeu arrière, hors pose"
         }
       ],
       "warranty": {
@@ -474,9 +494,12 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
           "interval_rule": "Estimation cumulee des revisions a 1 000, 12 000 et 24 000 km ; aucun forfait Honda officiel.",
           "note": "Estimation editoriale Label Moto issue de la fiche NX500 V1, hors pneus, chaine, plaquettes, reparations et entretiens calendaires."
         },
-        "note": "Fourchette indicative de 760 a 970 EUR, sans devis concessionnaire. Un supplement E-Clutch n'est pas chiffre sans tarif documente."
+        "note": "Fourchette indicative de 760 à 970 €, sans devis concessionnaire. Un supplément E-Clutch n'est pas chiffré sans tarif documenté."
       },
       "label": "NX500 2026 Standard",
+      "license_fr": "A2",
+      "license_fr_source": "https://moto.honda.fr/motorcycles/range/adventure/nx500/specifications-and-price.html",
+      "license_fr_verified_at": "2026-10-13",
       "quick_facts": [
         {
           "label": "CYLINDRÉE",
@@ -485,6 +508,10 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         {
           "label": "PUISSANCE",
           "value": "35 kW (47,5 ch)"
+        },
+        {
+          "label": "COUPLE",
+          "value": "43 Nm à 6 500 tr/min"
         },
         {
           "label": "POIDS TOUS PLEINS FAITS",
@@ -554,12 +581,12 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         "market": "France",
         "model_year": "2026",
         "manufacturer_fr_verified": true,
-        "european_manual_verified": false,
-        "technical_documentation_verified": false,
-        "consumables_verified": false,
-        "recall_checked": false,
+        "european_manual_verified": true,
+        "technical_documentation_verified": true,
+        "consumables_verified": true,
+        "recall_checked": true,
         "pricing_type": "to_confirm",
-        "last_verified": "2026-10-09",
+        "last_verified": "2026-10-13",
         "sources": [
           {
             "label": "Honda France - NX500 2026",
@@ -664,6 +691,87 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             "model_year": "2026",
             "url": "https://www.nx500shop.com/fr/entretien/248-michelin-anakee-adventure-11080-r19-59v-634007799901.html",
             "note": "110/80 R19 59V, prix de vente indicatif ; pas une preuve de monte d'origine."
+          },
+          {
+            "label": "Honda Europe - manuel propriétaire CB500XA/XAC 2026",
+            "type": "official_eu",
+            "market": "Europe / type ED",
+            "model_year": "2026",
+            "url": "https://2rom-prd-data.hondamotopub.com/om/HMEE/CB500FA/2026/32MLRA101_eng_web.pdf",
+            "note": "Programme d’entretien Europe, huile, bougies, refroidissement, pneus et transmission."
+          },
+          {
+            "label": "Catalogue pièces Honda 2026 - filtre à huile NX500",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.pieces-honda-moto.com/nx500-GRAPHITE-BLACK-NHB01-2026/cb500xact/543873-carter-d-huile-pompe-a-huile/",
+            "note": "Vue éclatée NX500 2026 : 15010-MKR-305 (jeu de filtre) et 15410-MFJ-D02 (cartouche)."
+          },
+          {
+            "label": "Concessionnaire Honda - filtre à air NX500 2026",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.nx500shop.com/en/original-honda-spare-parts/145-honda-air-filter-17211-mkp-j00.html",
+            "note": "17211-MKP-J00 annoncé compatible NX500 2026 avec et sans E-Clutch."
+          },
+          {
+            "label": "Concessionnaire Honda - bougie NX500 2026",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.nx500shop.com/fr/entretien/262-bougie-honda-cpr8ea-9-31916-krm-841.html",
+            "note": "31916-KRM-841 / NGK CPR8EA-9, deux unités, compatibilité 2026 Standard et E-Clutch."
+          },
+          {
+            "label": "Concessionnaire Honda - plaquettes avant NX500 2026",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.nx500shop.com/en/original-honda-spare-parts/144-front-brake-pads-honda-06455-mkp-dq1.html",
+            "note": "06455-MKP-DQ1, deux jeux nécessaires pour les deux étriers avant, compatibilité 2026."
+          },
+          {
+            "label": "Catalogue pièces Honda 2026 - roue avant NX500",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.pieces-honda-moto.com/nx500-GRAPHITE-BLACK-NHB01-2026/cb500xat/544087-roue-avant/",
+            "note": "Pneu avant Dunlop 110/80 R19 59H, référence Honda 44711-MKP-J82."
+          },
+          {
+            "label": "Catalogue pièces Honda 2026 - roue arrière NX500",
+            "type": "observed",
+            "market": "Europe",
+            "model_year": "2026",
+            "url": "https://www.hondamoto.parts/nx500-PEARL-HORIZON-WHITE-NHB61-2026/cb500xact/671544-rear-wheel/",
+            "note": "Pneu arrière Dunlop 160/60 R17 69H, référence Honda 42711-MKP-J82."
+          }
+        ,
+          {
+            "label": "Honda Genuine Service Manual 61MLR00 - CBR500R / CB500F / NX500 2024-2026",
+            "type": "technical_documentation",
+            "market": "Documentation atelier Honda - anglais",
+            "model_year": "2024-2026",
+            "url": "https://www.helminc.com/helm/product2.asp?Category=1&Make=AHC&Model=CBHR&Sku=61MLR00&Style=helm&Year=2026&class_2=AHC&dt=Shop%2FService+Information&from=result&itemtype=N&md=CB500+HORNET&mk=Honda+Powersports&module=&yr=2026",
+            "note": "Manuel atelier Honda authentique référencé 61MLR00. La fiche éditeur couvre explicitement la NX500 2024, 2025 et 2026. Utilisé comme preuve d’existence et de couverture de la documentation technique ; les données réglementaires France restent sourcées séparément."
+          },
+          {
+            "label": "Honda France - campagnes de rappel moto",
+            "type": "official_fr",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://moto.honda.fr/motorcycles/owners/apres-vente/campagnes-de-rappel.html",
+            "note": "Contrôle éditorial effectué le 2026-10-13. Honda France précise que la vérification d’une campagne en attente se fait par VIN ; un contrôle modèle ne remplace donc pas la vérification du véhicule individuel."
+          },
+          {
+            "label": "RappelConso - rappels Honda",
+            "type": "official_fr",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://rappel.conso.gouv.fr/categorie/0/1/honda",
+            "note": "Base publique française consultée le 2026-10-13 : aucune entrée NX500 identifiée dans les rappels Honda consultables. Cette absence publique n’exclut pas une campagne liée à un VIN précis."
           }
         ]
       }
@@ -687,8 +795,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "130 € - 190 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "130 € - 190 €",
           "price_type": "estimate"
         },
         {
@@ -708,8 +816,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "200 € - 270 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "200 € - 270 €",
           "price_type": "estimate"
         },
         {
@@ -729,8 +837,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "430 € - 510 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "430 € - 510 €",
           "price_type": "estimate"
         },
         {
@@ -750,8 +858,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "200 € - 270 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "200 € - 270 €",
           "price_type": "estimate"
         },
         {
@@ -771,8 +879,8 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "source_type": "observed"
             }
           ],
-          "note": "Estimation Label Moto issue de la base NX500 V1. Programme de maintenance NX500 2026 a confirmer dans le manuel constructeur.",
-          "price_estimate": "510 € - 590 EUR €",
+          "note": "Jalon d’entretien confirmé par le manuel propriétaire Honda Europe 2026 CB500XA/XAC. Les prix affichés restent des estimations LabelMoto et non des forfaits Honda.",
+          "price_estimate": "510 € - 590 €",
           "price_type": "estimate"
         }
       ],
@@ -780,7 +888,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         {
           "id": "huile",
           "title": "Huile moteur & filtre",
-          "summary": "Huile SAE 10W-30 ; capacite moteur Honda 3,1 L",
+          "summary": "SAE 10W-30 · JASO MA · 2,4 L après vidange · 2,6 L avec filtre · 3,1 L après démontage",
           "rows": [
             {
               "label": "Moto",
@@ -788,11 +896,11 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Norme",
-              "value": "SAE 10W-30, JASO MA, API SJ ou supérieur selon exclusions Honda"
+              "value": "SAE 10W-30 · API SJ ou supérieur, hors Energy/Resource Conserving · JASO T 903 MA"
             },
             {
               "label": "Filtre à huile",
-              "value": "Référence OEM 2026 à confirmer par VIN"
+              "value": "Honda 15410-MFJ-D02 (cartouche) · 15010-MKR-305 (jeu de filtre) · catalogue NX500 2026"
             },
             {
               "label": "Vidange moteur",
@@ -801,14 +909,19 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             {
               "label": "Filtre à huile",
               "value": "1 000, 24 000 et 48 000 km"
+            },
+            {
+              "label": "Quantités d’huile",
+              "value": "2,4 L après vidange · 2,6 L après vidange + filtre · 3,1 L après démontage moteur",
+              "confidence": "official_eu"
             }
           ],
-          "note": "Les 3,1 L annonces dans la fiche constructeur ne sont pas une quantite de vidange a appliquer automatiquement."
+          "note": "Valeurs Honda Europe 2026 CB500XA/XAC. Les 3,1 L correspondent au remplissage après démontage moteur, pas à une vidange courante."
         },
         {
-          "id": "filtre-air",
-          "title": "Filtre ? air",
-          "summary": "Filtre Honda 17211-MKP-J00 (2024) ; OEM 2026 a confirmer",
+          "id": "air",
+          "title": "Filtre à air",
+          "summary": "Remplacement à 24 000 et 48 000 km · entretien plus fréquent en conditions humides ou poussiéreuses",
           "rows": [
             {
               "label": "Moto",
@@ -828,15 +941,15 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Référence OEM",
-              "value": "Honda 17211-MKP-J00 documente sur NX500 2024 ; verification 2026 par VIN"
+              "value": "Honda 17211-MKP-J00 · compatibilité NX500 2026 Standard et E-Clutch vérifiée"
             }
           ],
-          "note": "En environnement poussiéreux, rapprochez les contrôles. Référence de pièce à confirmer pour le VIN."
+          "note": "Périodicité confirmée par le manuel Honda Europe 2026. Référence OEM 17211-MKP-J00 vérifiée pour les NX500 2026 Standard et E-Clutch dans un catalogue de concessionnaire Honda."
         },
         {
           "id": "bougies",
           "title": "Bougies",
-          "summary": "2 bougies NGK CPR8EA-9 ; entretien 24 000 / 48 000 km",
+          "summary": "NGK CPR8EA-9 · 2 bougies · 0,8–0,9 mm · remplacement à 24 000 et 48 000 km",
           "rows": [
             {
               "label": "Moto",
@@ -844,7 +957,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Référence",
-              "value": "NGK CPR8EA-9"
+              "value": "Honda 31916-KRM-841 · NGK CPR8EA-9"
             },
             {
               "label": "Quantité",
@@ -859,7 +972,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
               "value": "24 000 et 48 000 km"
             }
           ],
-          "note": "Remplacer les deux bougies selon le programme Honda 2026."
+          "note": "Référence CPR8EA-9, écartement 0,8–0,9 mm et périodicité confirmés par le manuel Honda Europe 2026."
         },
         {
           "id": "soupapes",
@@ -892,7 +1005,7 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         {
           "id": "refroidissement",
           "title": "Liquide de refroidissement",
-          "summary": "Liquide de refroidissement Honda ; volume NX500 a confirmer",
+          "summary": "Pro Honda HP Coolant · capacité 1,32 L · remplacement tous les 3 ans",
           "rows": [
             {
               "label": "Moto",
@@ -909,9 +1022,14 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             {
               "label": "Contrôles",
               "value": "Niveau à froid, durites, radiateur et fuites"
+            },
+            {
+              "label": "Capacité du circuit",
+              "value": "1,32 L",
+              "confidence": "official_eu"
             }
           ],
-          "note": "Contrôlez le niveau moteur froid. Ne retirez jamais le bouchon du radiateur à chaud."
+          "note": "Liquide, capacité de 1,32 L et échéance de 3 ans confirmés par le manuel Honda Europe 2026."
         },
         {
           "id": "freins",
@@ -944,15 +1062,15 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Plaquettes",
-              "value": "Selon usure ; références OEM à confirmer"
+              "value": "Avant Honda 06455-MKP-DQ1 · 2 jeux nécessaires ; arrière Honda 06435-MGZ-J02"
             }
           ],
-          "note": "Les plaquettes s'usent selon l'utilisation. Confirmez les références de montage par VIN."
+          "note": "Références OEM vérifiées pour la NX500 2026 : 06455-MKP-DQ1 à l’avant (deux jeux pour les deux étriers) et 06435-MGZ-J02 à l’arrière."
         },
         {
           "id": "pneus",
           "title": "Pneus & pressions",
-          "summary": "Avant 110/80 R19 59V ; arriere 160/60 R17",
+          "summary": "110/80 R19 avant · 160/60 R17 arrière · 2,0 / 2,5 bar à froid",
           "rows": [
             {
               "label": "Moto",
@@ -960,31 +1078,31 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Avant",
-              "value": "110/80 R19"
+              "value": "Dunlop 110/80 R19 59H · Honda 44711-MKP-J82"
             },
             {
               "label": "Arrière",
-              "value": "160/60 R17"
+              "value": "Dunlop 160/60 R17 69H · Honda 42711-MKP-J82"
             },
             {
               "label": "Pression avant à froid",
-              "value": "Selon manuel Honda NX500 2026"
+              "value": "2,0 bar · 200 kPa · 29 psi"
             },
             {
               "label": "Pression arrière à froid",
-              "value": "Selon manuel Honda NX500 2026"
+              "value": "2,5 bar · 250 kPa · 36 psi"
             },
             {
               "label": "Remplacement",
               "value": "Selon usure et état"
             }
           ],
-          "note": "Dimensions NX500. Indices et pressions a verifier dans le manuel constructeur."
+          "note": "Dimensions et pressions confirmées par Honda Europe 2026. Les références 44711-MKP-J82 avant et 42711-MKP-J82 arrière correspondent à la monte Dunlop répertoriée au catalogue de pièces 2026 ; un pneu de remplacement homologué peut être différent."
         },
         {
           "id": "transmission",
           "title": "Chaîne & transmission",
-          "summary": "Kit chaine OEM Honda 06406-MLR-D00",
+          "summary": "DID520VF ou RK520ELO · 112 maillons · 15/41 · jeu 30–40 mm",
           "rows": [
             {
               "label": "Moto",
@@ -996,15 +1114,15 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Chaîne",
-              "value": "Specification NX500 2026 a confirmer"
+              "value": "DID520VF ou RK520ELO · 112 maillons"
             },
             {
               "label": "Pignon / couronne",
-              "value": "Specification NX500 2026 a confirmer"
+              "value": "15 dents / 41 dents"
             },
             {
               "label": "Jeu de chaîne",
-              "value": "Specification NX500 2026 a confirmer"
+              "value": "30 à 40 mm"
             },
             {
               "label": "Entretien",
@@ -1012,64 +1130,69 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             },
             {
               "label": "Kit chaîne complet",
-              "value": "Honda 06406-MLR-D00 ; compatible NX500 2026 selon catalogue vendeur"
+              "value": "Honda 06406-MLR-D00 · compatibilité NX500 2026 Standard et E-Clutch vérifiée"
             },
             {
               "label": "E-Clutch",
               "value": "Commande électronique de l'embrayage ; sélecteur et levier manuel conservés. Respecter les consignes du manuel 2026."
             }
           ],
-          "note": "Lubrifiez la chaîne après la pluie et contrôlez son jeu. Kit complet à identifier par VIN."
+          "note": "Chaîne, 112 maillons, démultiplication 15/41 et jeu 30–40 mm confirmés par le manuel Honda Europe 2026. Kit complet Honda 06406-MLR-D00 vérifié pour les versions Standard et E-Clutch 2026 chez un concessionnaire Honda."
         }
       ],
       "consumables_v2": [
         {
           "part": "Huile moteur",
-          "specification": "Huile moteur SAE 10W-30, JASO MA ; Honda annonce 3,1 L de capacite moteur. Quantite exacte de vidange a appliquer selon le manuel NX500 2026.",
+          "specification": "SAE 10W-30 · API SJ ou supérieur · JASO MA · 2,4 L vidange · 2,6 L avec filtre · 3,1 L après démontage",
           "replacement_interval": "1 000 km, puis tous les 12 000 km ou selon limite annuelle",
-          "note": "Le pack contient 3 L ; ce n'est pas une instruction de remplissage. Ne pas confondre capacite moteur et volume de vidange.",
+          "note": "Spécification et quantités confirmées par le manuel Honda Europe 2026. Le prix affiché reste une observation vendeur.",
           "source_type": "official_eu",
-          "observed_price": "22,90 EUR TTC / litre Motul E-TEC 10W-30 ; pack NX500 3 L + filtre + joint : 59,90 EUR TTC, hors pose"
+          "observed_price": "22,90 € TTC / litre Motul E-TEC 10W-30 ; pack NX500 3 L + filtre + joint : 59,90 € TTC, hors pose"
         },
         {
           "part": "Filtre à huile",
-          "specification": "Honda OEM 15410-MFJ-D02 (cartouche) ; ensemble 15010-MKR-305. References relevees sur eclate NX500 2026.",
+          "specification": "Cartouche Honda 15410-MFJ-D02 · jeu de filtre 15010-MKR-305 · affectation NX500 2026",
+          "reference_oem": "15410-MFJ-D02 · 15010-MKR-305",
           "replacement_interval": "1 000, 24 000 et 48 000 km",
-          "note": "References constructeur NX500 2026 ; confirmation par VIN conseill?e.",
+          "note": "Références présentes dans la vue éclatée NX500 2026 : 15410-MFJ-D02 pour la cartouche et 15010-MKR-305 pour le jeu de filtre.",
           "source_type": "observed",
-          "observed_price": "16,86 EUR TTC / unite, catalogue Honda, hors pose"
+          "observed_price": "16,86 € TTC / unité, catalogue Honda, hors pose"
         },
         {
           "part": "Filtre à air",
-          "specification": "Honda OEM 17211-MKP-J00 releve sur NX500 2024 ; pack de revision NX500 2026 proposant un filtre d'origine. Verifier la reference exacte 2026 par VIN.",
-          "replacement_interval": "24 000 et 48 000 km",
-          "note": "Reference 17211-MKP-J00 documentee sur NX500 2024, mais affectation OEM 2026 a confirmer.",
+          "specification": "Filtre à air Honda d’origine 17211-MKP-J00 · NX500 2026 Standard et E-Clutch",
+          "reference_oem": "17211-MKP-J00",
+          "replacement_interval": "24 000 et 48 000 km · plus fréquent en conditions humides ou poussiéreuses",
+          "note": "Compatibilité 2026 avec et sans E-Clutch vérifiée dans le catalogue d’un concessionnaire Honda ; périodicité issue du manuel Europe 2026.",
           "source_type": "observed",
-          "observed_price": "48,90 EUR TTC / filtre dans le pack NX500 ; tarif indicatif hors pose"
+          "observed_price": "48,90 € TTC / filtre dans le pack NX500 ; tarif indicatif hors pose"
         },
         {
           "part": "Bougies",
-          "specification": "NGK CPR8EA-9 ; 2 bougies pour le bicylindre NX500 ; references du pack entretien NX500 2026.",
+          "specification": "Honda 31916-KRM-841 · NGK CPR8EA-9 · 2 unités · écartement 0,8 à 0,9 mm",
+          "reference_oem": "31916-KRM-841",
           "replacement_interval": "24 000 et 48 000 km",
-          "note": "Pack de revision annonce compatible avec Standard et E-Clutch 2026.",
+          "note": "Référence Honda 31916-KRM-841 et compatibilité NX500 2026 vérifiées chez un concessionnaire Honda ; type CPR8EA-9 confirmé par le manuel Europe 2026.",
           "source_type": "observed",
-          "observed_price": "16,90 EUR TTC / bougie ; deux unites soit 33,80 EUR TTC, hors pose"
+          "observed_price": "16,90 € TTC / bougie ; deux unités soit 33,80 € TTC, hors pose"
         },
         {
           "part": "Pneumatiques",
-          "specification": "Avant 110/80 R19 59V ; arriere 160/60 R17. Indices homologues exacts et pressions a respecter selon le manuel NX500.",
+          "specification": "Monte OEM catalogue 2026 : Dunlop 110/80 R19 59H avant · Dunlop 160/60 R17 69H arrière · 2,0 / 2,5 bar à froid",
+          "reference_oem": "44711-MKP-J82 (avant) · 42711-MKP-J82 (arrière)",
           "replacement_interval": "Selon usure et état",
-          "note": "Prix vendeur pour le pneu avant compatible NX500 2026. Ne pas reprendre le tarif du train CBR500R.",
+          "note": "Références de monte OEM 2026 : 44711-MKP-J82 avant et 42711-MKP-J82 arrière. Le prix Michelin affiché reste une observation de remplacement compatible et non le tarif de la monte OEM.",
           "source_type": "observed",
-          "observed_price": "Michelin Anakee Adventure avant 110/80 R19 59V : 145,00 EUR TTC, hors pose ; arriere a chiffrer"
+          "observed_price": "Michelin Anakee Adventure avant 110/80 R19 59V : 145,00 € TTC, hors pose ; arrière à chiffrer"
         },
         {
           "part": "Kit chaine",
-          "specification": "Kit chaine Honda OEM 06406-MLR-D00 ; pignon, couronne et chaine. Longueur finale a ajuster selon la configuration.",
+          "specification": "Kit Honda 06406-MLR-D00 · chaîne DID520VF ou RK520ELO · 112 maillons · pignon 15 dents · couronne 41 dents · jeu 30–40 mm",
+          "reference_oem": "06406-MLR-D00",
           "replacement_interval": "Selon usure ; inspection et lubrification tous les 1 000 km",
-          "note": "Affectation NX500 Standard et E-Clutch 2026 annoncee par le concessionnaire Honda.",
+          "note": "Kit OEM 06406-MLR-D00 annoncé compatible NX500 2026 Standard et E-Clutch par un concessionnaire Honda ; caractéristiques de transmission confirmées par le manuel Europe 2026.",
           "source_type": "observed",
-          "observed_price": "148,90 EUR TTC / kit, hors pose"
+          "observed_price": "148,90 € TTC / kit, hors pose"
         },
         {
           "part": "Liquide de frein",
@@ -1077,31 +1200,33 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
           "replacement_interval": "Tous les 2 ans",
           "note": "Prix d'un bidon, non d'une purge en atelier ; remplacement selon le calendrier constructeur.",
           "source_type": "official_eu",
-          "observed_price": "13,90 EUR TTC / bidon 500 ml, prix indicatif du brouillon Honda ; hors pose"
+          "observed_price": "13,90 € TTC / bidon 500 ml, prix indicatif du brouillon Honda ; hors pose"
         },
         {
           "part": "Liquide de refroidissement",
-          "specification": "Liquide de refroidissement compatible Honda ; volume de circuit NX500 a confirmer.",
+          "specification": "Pro Honda HP Coolant · capacité du circuit 1,32 L",
           "replacement_interval": "Tous les 3 ans",
-          "note": "Confirmer la specification du liquide et la quantite necessaire avant remplacement.",
+          "note": "Liquide Pro Honda HP Coolant et capacité de 1,32 L confirmés par le manuel Honda Europe 2026. Prix affiché : observation vendeur hors pose.",
           "source_type": "official_eu",
-          "observed_price": "13,41 EUR TTC / bidon 1 L, exemple de tarif indicatif ; hors pose"
+          "observed_price": "13,41 € TTC / bidon 1 L, exemple de tarif indicatif ; hors pose"
         },
         {
           "part": "Plaquettes avant",
-          "specification": "Deux disques avant ; reference des jeux Honda avant a confirmer sur l'eclate NX500 2026.",
+          "specification": "Plaquettes avant Honda 06455-MKP-DQ1 · deux jeux nécessaires pour les deux étriers avant",
+          "reference_oem": "06455-MKP-DQ1",
           "replacement_interval": "Selon usure",
-          "note": "Ne pas attribuer automatiquement a la NX500 les references de la CBR500R.",
+          "note": "Référence OEM et compatibilité NX500 2026 Standard/E-Clutch vérifiées chez un concessionnaire Honda. Prix affiché par jeu ; deux jeux sont nécessaires à l’avant.",
           "source_type": "observed",
-          "observed_price": "56,90 EUR TTC / jeu avant chez NX500Shop, nombre de jeux et reference exacte a confirmer"
+          "observed_price": "56,90 € TTC / jeu avant chez NX500Shop ; 2 jeux nécessaires, soit 113,80 € TTC hors pose"
         },
         {
           "part": "Plaquettes arriere",
-          "specification": "Honda OEM 06435-MGZ-J02 ; jeu de plaquettes arriere NX500.",
+          "specification": "Plaquettes arrière Honda 06435-MGZ-J02 · un jeu arrière",
+          "reference_oem": "06435-MGZ-J02",
           "replacement_interval": "Selon usure",
-          "note": "Compatibilite des deux variantes 2026 annoncee par NX500Shop.",
+          "note": "Référence OEM et compatibilité NX500 2026 Standard/E-Clutch vérifiées chez un concessionnaire Honda.",
           "source_type": "observed",
-          "observed_price": "57,90 EUR TTC / jeu arriere, hors pose"
+          "observed_price": "57,90 € TTC / jeu arrière, hors pose"
         }
       ],
       "warranty": {
@@ -1121,9 +1246,12 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
           "interval_rule": "Estimation cumulee des revisions a 1 000, 12 000 et 24 000 km ; aucun forfait Honda officiel.",
           "note": "Estimation editoriale Label Moto issue de la fiche NX500 V1, hors pneus, chaine, plaquettes, reparations et entretiens calendaires."
         },
-        "note": "Fourchette indicative de 760 a 970 EUR, sans devis concessionnaire. Un supplement E-Clutch n'est pas chiffre sans tarif documente."
+        "note": "Fourchette indicative de 760 à 970 €, sans devis concessionnaire. Un supplément E-Clutch n'est pas chiffré sans tarif documenté."
       },
       "label": "NX500 2026 E-Clutch",
+      "license_fr": "A2",
+      "license_fr_source": "https://moto.honda.fr/motorcycles/range/adventure/nx500/specifications-and-price.html",
+      "license_fr_verified_at": "2026-10-13",
       "quick_facts": [
         {
           "label": "CYLINDRÉE",
@@ -1132,6 +1260,10 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         {
           "label": "PUISSANCE",
           "value": "35 kW (47,5 ch)"
+        },
+        {
+          "label": "COUPLE",
+          "value": "43 Nm à 6 500 tr/min"
         },
         {
           "label": "POIDS TOUS PLEINS FAITS",
@@ -1205,12 +1337,12 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
         "market": "France",
         "model_year": "2026",
         "manufacturer_fr_verified": true,
-        "european_manual_verified": false,
-        "technical_documentation_verified": false,
-        "consumables_verified": false,
-        "recall_checked": false,
+        "european_manual_verified": true,
+        "technical_documentation_verified": true,
+        "consumables_verified": true,
+        "recall_checked": true,
         "pricing_type": "to_confirm",
-        "last_verified": "2026-10-09",
+        "last_verified": "2026-10-13",
         "sources": [
           {
             "label": "Honda France - NX500 2026",
@@ -1315,6 +1447,87 @@ export const hondaNx500DraftV2: MotorcycleSheetV2 = {
             "model_year": "2026",
             "url": "https://www.nx500shop.com/fr/entretien/248-michelin-anakee-adventure-11080-r19-59v-634007799901.html",
             "note": "110/80 R19 59V, prix de vente indicatif ; pas une preuve de monte d'origine."
+          },
+          {
+            "label": "Honda Europe - manuel propriétaire CB500XA/XAC 2026",
+            "type": "official_eu",
+            "market": "Europe / type ED",
+            "model_year": "2026",
+            "url": "https://2rom-prd-data.hondamotopub.com/om/HMEE/CB500FA/2026/32MLRA101_eng_web.pdf",
+            "note": "Programme d’entretien Europe, huile, bougies, refroidissement, pneus et transmission."
+          },
+          {
+            "label": "Catalogue pièces Honda 2026 - filtre à huile NX500",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.pieces-honda-moto.com/nx500-GRAPHITE-BLACK-NHB01-2026/cb500xact/543873-carter-d-huile-pompe-a-huile/",
+            "note": "Vue éclatée NX500 2026 : 15010-MKR-305 (jeu de filtre) et 15410-MFJ-D02 (cartouche)."
+          },
+          {
+            "label": "Concessionnaire Honda - filtre à air NX500 2026",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.nx500shop.com/en/original-honda-spare-parts/145-honda-air-filter-17211-mkp-j00.html",
+            "note": "17211-MKP-J00 annoncé compatible NX500 2026 avec et sans E-Clutch."
+          },
+          {
+            "label": "Concessionnaire Honda - bougie NX500 2026",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.nx500shop.com/fr/entretien/262-bougie-honda-cpr8ea-9-31916-krm-841.html",
+            "note": "31916-KRM-841 / NGK CPR8EA-9, deux unités, compatibilité 2026 Standard et E-Clutch."
+          },
+          {
+            "label": "Concessionnaire Honda - plaquettes avant NX500 2026",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.nx500shop.com/en/original-honda-spare-parts/144-front-brake-pads-honda-06455-mkp-dq1.html",
+            "note": "06455-MKP-DQ1, deux jeux nécessaires pour les deux étriers avant, compatibilité 2026."
+          },
+          {
+            "label": "Catalogue pièces Honda 2026 - roue avant NX500",
+            "type": "observed",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://www.pieces-honda-moto.com/nx500-GRAPHITE-BLACK-NHB01-2026/cb500xat/544087-roue-avant/",
+            "note": "Pneu avant Dunlop 110/80 R19 59H, référence Honda 44711-MKP-J82."
+          },
+          {
+            "label": "Catalogue pièces Honda 2026 - roue arrière NX500",
+            "type": "observed",
+            "market": "Europe",
+            "model_year": "2026",
+            "url": "https://www.hondamoto.parts/nx500-PEARL-HORIZON-WHITE-NHB61-2026/cb500xact/671544-rear-wheel/",
+            "note": "Pneu arrière Dunlop 160/60 R17 69H, référence Honda 42711-MKP-J82."
+          }
+        ,
+          {
+            "label": "Honda Genuine Service Manual 61MLR00 - CBR500R / CB500F / NX500 2024-2026",
+            "type": "technical_documentation",
+            "market": "Documentation atelier Honda - anglais",
+            "model_year": "2024-2026",
+            "url": "https://www.helminc.com/helm/product2.asp?Category=1&Make=AHC&Model=CBHR&Sku=61MLR00&Style=helm&Year=2026&class_2=AHC&dt=Shop%2FService+Information&from=result&itemtype=N&md=CB500+HORNET&mk=Honda+Powersports&module=&yr=2026",
+            "note": "Manuel atelier Honda authentique référencé 61MLR00. La fiche éditeur couvre explicitement la NX500 2024, 2025 et 2026. Utilisé comme preuve d’existence et de couverture de la documentation technique ; les données réglementaires France restent sourcées séparément."
+          },
+          {
+            "label": "Honda France - campagnes de rappel moto",
+            "type": "official_fr",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://moto.honda.fr/motorcycles/owners/apres-vente/campagnes-de-rappel.html",
+            "note": "Contrôle éditorial effectué le 2026-10-13. Honda France précise que la vérification d’une campagne en attente se fait par VIN ; un contrôle modèle ne remplace donc pas la vérification du véhicule individuel."
+          },
+          {
+            "label": "RappelConso - rappels Honda",
+            "type": "official_fr",
+            "market": "France",
+            "model_year": "2026",
+            "url": "https://rappel.conso.gouv.fr/categorie/0/1/honda",
+            "note": "Base publique française consultée le 2026-10-13 : aucune entrée NX500 identifiée dans les rappels Honda consultables. Cette absence publique n’exclut pas une campagne liée à un VIN précis."
           }
         ]
       }

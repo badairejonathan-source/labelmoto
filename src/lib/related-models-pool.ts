@@ -82,7 +82,7 @@ export const RELATED_MODELS_POOL: RelatedModel[] = [
   { id: 'cfmoto-450mt-2024-plus',            name: 'CFMOTO 450MT',             cc: 449, category: 'trail' },
   { id: 'honda-cb500f-2022-plus',            name: 'Honda CB500 Hornet',       cc: 471, category: 'roadster' },
   { id: 'honda-cbr500r-2022-plus',           name: 'Honda CBR500R',            cc: 471, category: 'sportive' },
-  { id: 'honda-nx500-cb500x-2022-plus',      name: 'Honda NX500',              cc: 471, category: 'trail' },
+  { id: 'honda-nx500-2024-plus',      name: 'Honda NX500',              cc: 471, category: 'trail' },
   { id: 'kawasaki-ninja-500-se-2024-plus',   name: 'Kawasaki Ninja 500 SE',    cc: 451, category: 'sportive' },
   { id: 'voge-500r-525r-2022-plus',          name: 'VOGE 500R / 525R',         cc: 494, category: 'roadster' },
   { id: 'voge-ds525x-2024-plus',             name: 'VOGE DS525X',              cc: 494, category: 'trail' },

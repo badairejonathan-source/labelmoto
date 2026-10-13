@@ -34,6 +34,9 @@ export const hondaCb500fDraftV2: MotorcycleSheetV2 = {
   }
 ],
   layout_version: 2,
+  "license_fr": "A2",
+  "license_fr_source": "https://hondanews.eu/fr/fr/motorcycles/media/pressreleases/343319/dossier-de-presse-honda-cb500f-2022",
+  "license_fr_verified_at": "2026-10-13",
   hero_subtitle: "Honda CB500F 2022 - brouillon entretien V2",
   data_quality: {
   "market": "Europe - France a confirmer",
@@ -57,8 +60,15 @@ export const hondaCb500fDraftV2: MotorcycleSheetV2 = {
   ]
 },
   budget: {
-  "title": "Budget entretien - estimation a confirmer",
-  "note": "Les tarifs de la fiche historique Label Moto ne sont pas encore verifies. Aucun cout chiffre n'est valide dans ce brouillon."
+  "title": "Budget entretien a 30 000 km - CB500F 2022",
+  "summary": {
+    "horizon_km": 30000,
+    "total_cost": "750 € - 1 160 €",
+    "cost_per_km": "0,025 - 0,039 €/km",
+    "interval_rule": "Revisions des 1 000, 12 000 et 24 000 km, pieces et main-d'oeuvre incluses dans les estimations.",
+    "note": "Estimation editoriale Label Moto, non devis constructeur. Hors pneus, plaquettes, kit chaine, reparations et interventions calendaires supplementaires."
+  },
+  "note": "Fourchettes indicatives non confirmees par devis d'ateliers francais. A actualiser avant publication."
 },
   faq: [
   {
@@ -231,6 +241,9 @@ export const hondaCb500fDraftV2: MotorcycleSheetV2 = {
     {
       conclusion: "Notre choix pour une premiere A2 d'occasion est une CB500F 2022 bien suivie plutot qu'une Hornet plus recente mais mal entretenue. La fourche Showa et le double disque avant lui donnent deja une partie-cycle serieuse ; vous ne perdez donc pas l'essentiel de la qualite routiere en renoncant au TFT ou au controle de traction de 2024. En revanche, ne payez pas une prime pour le seul logo Honda : a partir de 24 000 km, exigez la preuve de la revision majeure, puis examinez pneus, freins et transmission. Si l'usage est surtout urbain, periurbain et sur routes secondaires, c'est une proposition coherente. Si vous roulez souvent en duo charge ou sur autoroute, essayez-la suffisamment longtemps avant de vous decider.",
       label: "CB500F 2022",
+      "license_fr": "A2",
+      "license_fr_source": "https://hondanews.eu/fr/fr/motorcycles/media/pressreleases/343319/dossier-de-presse-honda-cb500f-2022",
+      "license_fr_verified_at": "2026-10-13",
       quick_facts: [
       {
     "label": "Modèle",
@@ -725,6 +738,9 @@ export const hondaCb500fDraftV2: MotorcycleSheetV2 = {
     {
       conclusion: "Nous recommandons la CB500 Hornet 2024 si vous recherchez un roadster A2 a conserver, avec une interface moderne et un controle de traction, plutot qu'une simple moto de transition avant le permis A. Mais n'achetez pas le nom Hornet en imaginant les accelerations d'une CB750 : la puissance reste de 35 kW. Avant de signer, comparez une CB500F 2022 equivalente en kilometrage et historique ; si la difference de prix est importante, le TFT et le HSTC ne suffisent pas a eux seuls a compenser une moto moins bien entretenue. Sur l'exemplaire choisi, faites un essai assez long pour juger confort, reprises et exposition au vent, puis controlez le programme d'entretien, les pneus, les freins et les aides electroniques.",
       label: "CB500 Hornet 2024",
+      "license_fr": "A2",
+      "license_fr_source": "https://hondanews.eu/fr/fr/motorcycles/media/pressreleases/461165/dossier-de-presse-honda-cb500-hornet-2024",
+      "license_fr_verified_at": "2026-10-13",
       quick_facts: [
       {
     "label": "Modèle",

@@ -32,6 +32,9 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
   }
 ],
   "layout_version": 2,
+  "license_fr": "A2",
+  "license_fr_source": "https://hondanews.eu/lu/fr/motorcycles/media/pressreleases/555533/honda-cbr500r-2026",
+  "license_fr_verified_at": "2026-10-13",
   "display_title": "Honda CBR500R",
   "hero_subtitle": "Sportive A2 de 471 cm? - 2026 standard et E-Clutch",
   "variants": [
@@ -503,6 +506,9 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
     "note": "Estimation editoriale construite à partir des cycles Honda et de tarifs de fournitures observes. Aucun forfait officiel Honda 2026 confirme."
   },
   "label": "CBR500R 2026 standard",
+  "license_fr": "A2",
+  "license_fr_source": "https://hondanews.eu/lu/fr/motorcycles/media/pressreleases/555533/honda-cbr500r-2026",
+  "license_fr_verified_at": "2026-10-13",
   "quick_facts": [
     {
       "label": "Modèle",
@@ -1187,6 +1193,9 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
     "note": "Estimation editoriale alignee sur les operations d'entretien de la version standard. Aucun surcout E-Clutch documente dans les tarifs disponibles. Tarifs reels a confirmer aupres du concessionnaire Honda."
   },
   "label": "CBR500R 2026 E-Clutch",
+  "license_fr": "A2",
+  "license_fr_source": "https://hondanews.eu/lu/fr/motorcycles/media/pressreleases/555533/honda-cbr500r-2026",
+  "license_fr_verified_at": "2026-10-13",
   "quick_facts": [
     {
       "label": "Modèle",
