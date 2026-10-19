@@ -778,7 +778,7 @@ export default function ArticleClient({
         <div className="flex w-full max-w-full min-w-0 items-stretch snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 md:gap-5 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500">
         {cards.map((card, idx) => {
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
-          const ficheId = getFicheIdFromTitle(String(modelLabel));
+          const ficheId = card.card_kind === 'accessory' ? null : getFicheIdFromTitle(String(modelLabel));
 
           const motorcycleImage = ficheId
             ? (
@@ -837,6 +837,7 @@ export default function ArticleClient({
                   </div>
                 )}
                 {summary && <p className="text-sm font-bold text-foreground leading-relaxed italic border-l-4 border-brand/30 pl-4">{summary}</p>}
+                {card.price && <p className="mt-2 text-xs font-medium text-muted-foreground">{card.price}</p>}
                 {listItems && Array.isArray(listItems) && (
                   <ul className="space-y-2">
                     {listItems.map((item: any, i: number) => (
@@ -874,6 +875,13 @@ export default function ArticleClient({
                   )}
                 </div>
               </CardContent>
+              {card.card_kind === 'accessory' && typeof card.link_url === 'string' && /^https:\/\//i.test(card.link_url) && (
+                <CardFooter className="mt-auto border-t border-border/60 bg-brand/5 p-4">
+                  <a href={card.link_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-black text-brand hover:underline">
+                    {card.link_label || 'Consulter la source'} <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </CardFooter>
+              )}
               {ficheId && (
                 <CardFooter className="mt-auto bg-brand p-3 border-t-0">
                   <Link href={`/fiches/${ficheId}`} onClick={() => { if (typeof window !== 'undefined') window.sessionStorage.setItem(`labelmoto:fiche-return:${ficheId}`, `/info/${id}`); }} className="text-[10px] font-black uppercase tracking-widest text-white mx-auto hover:underline flex items-center gap-2">Voir la fiche technique <ChevronRight className="h-3 w-3" /></Link>
@@ -1180,6 +1188,22 @@ export default function ArticleClient({
         )}
         {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
         
+        {section.legal_text && (
+          <aside className="my-6 rounded-2xl border-l-4 border-brand bg-brand/5 p-5" aria-label="Réglementation et sources officielles">
+            <p className="text-sm leading-6 text-foreground">{section.legal_text}</p>
+            {Array.isArray(section.legal_links) && section.legal_links.length > 0 && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {section.legal_links.map((item: any, sourceIndex: number) =>
+                  typeof item.href === 'string' && /^https:\/\//i.test(item.href) ? (
+                    <a key={sourceIndex} href={item.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-brand/20 bg-background px-3 py-2 text-xs font-bold text-brand hover:underline">
+                      {item.label || 'Source officielle'} <ExternalLink className="h-3 w-3" />
+                    </a>
+                  ) : null
+                )}
+              </div>
+            )}
+          </aside>
+        )}
         {isChineseModelSlide && renderedSectionImage && (
           <div className="hidden clear-both md:block" />
         )}
@@ -1250,6 +1274,12 @@ export default function ArticleClient({
           )
         )}
         
+        {section.accessory_note && (
+          <p className="my-4 text-sm leading-6 text-muted-foreground">{section.accessory_note}</p>
+        )}
+        {section.accessory_tip && (
+          <div className="my-5 rounded-2xl border border-brand/20 bg-brand/5 px-5 py-4 text-sm font-medium leading-6 text-foreground">{section.accessory_tip}</div>
+        )}
         {(section.note || isBudgetNote || isAssuranceNote || isGabaritNote) && (
           <>
             {isBudgetNote ? (

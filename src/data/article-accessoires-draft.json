@@ -1,0 +1,738 @@
+{
+  "id": "premiere-moto-accessoires-indispensables-conseils-a2",
+  "slug": "premiere-moto-accessoires-indispensables-conseils-a2",
+  "type": "article",
+  "status": "draft",
+  "language": "fr",
+  "category": "TIPS",
+  "title": "Première moto : les bons accessoires, sans achats inutiles",
+  "display_title": "Première moto : les bons accessoires, sans achats inutiles",
+  "author": "L’équipe Label Moto",
+  "imageUrl": "/images/achat-occasion.webp",
+  "intro": [
+    "Tu viens d’acheter ta première moto ? Avant de remplir ton panier, regarde ce qui sera vraiment utile pour tes trajets : protéger ta moto contre le vol, suivre ton GPS sans abîmer ton téléphone et rouler confortablement toute l’année.",
+    "Dans ce guide, on t’aide à distinguer les accessoires utiles, les protections demandées par l’assurance et les obligations prévues par la loi. Les modèles présentés sont des exemples à comparer, pas un classement officiel des ventes."
+  ],
+  "sections": [
+    {
+      "id": "antivols",
+      "title": "Quel antivol choisir pour sa première moto ?",
+      "subtitle": "Antivol et sécurité",
+      "legal_text": "Que dit la loi ? Ta moto doit avoir un dispositif antivol, généralement le verrouillage de direction. En revanche, la loi ne t’oblige pas à acheter un U ou un bloque-disque classé SRA. Ton assurance peut, elle, demander un antivol supplémentaire précis pour la garantie vol. Vérifie ton contrat avant de passer commande.",
+      "legal_links": [
+        {
+          "label": "Lire la règle sur le dispositif antivol",
+          "href": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032401427"
+        },
+        {
+          "label": "Vérifier une référence dans la liste SRA",
+          "href": "https://www.sra.asso.fr/protection-vol"
+        }
+      ],
+      "accessory_tip": "Le conseil Label Moto : En stationnement extérieur, privilégie une bonne protection mécanique et un point fixe. Garde la facture et la référence de l’antivol : ton assureur peut les demander après un vol.",
+      "cards": [
+        {
+          "card_kind": "accessory",
+          "title": "Top Block Mini U 10.10",
+          "subtitle": "Mini-U / bloque-disque",
+          "description": "Tu veux quelque chose de compact pour les arrêts de la journée ? Ce mini-U français se transporte facilement et peut aussi servir de cadenas avec une chaîne adaptée. Il est présenté comme classé SRA.",
+          "watch_out": [
+            "Vérifie qu’il passe sur ton disque. Et attention : « 10.10 » est son nom, pas une note SRA."
+          ],
+          "price": "49 à 63 € • prix indicatif",
+          "link_url": "https://www.equipmoto.fr/accessoires-moto-bloques-disques-top-block-1010-homologue-classe-sra-121310",
+          "link_label": "Voir la fiche produit"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Urban UR75 + chaîne 10.120L",
+          "subtitle": "Mini-U + chaîne lasso",
+          "description": "Tu stationnes longtemps dehors ? Ce pack réunit un mini-U UR75 classé SRA et une chaîne lasso de 120 cm, pratique pour attacher ta moto à un point fixe.",
+          "watch_out": [
+            "Le classement SRA annoncé concerne le mini-U UR75. Vérifie avec ton assureur qu’il accepte cet ensemble et contrôle la longueur de chaîne."
+          ],
+          "price": "85 à 100 € • kit U + chaîne",
+          "link_url": "https://www.urbansecurity.info/chain-lock-sra-urban-ur75-10-120l/",
+          "link_label": "Voir la fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "ABUS GRANIT Power 58",
+          "subtitle": "Grand antivol en U",
+          "description": "Si tu cherches un U solide pour stationner régulièrement au même endroit, ce modèle à double verrouillage est une piste sérieuse. ABUS affiche le classement SRA.",
+          "watch_out": [
+            "Plus encombrant qu’un mini-U. Mesure la place disponible sur ta moto et réfléchis à la façon de le transporter."
+          ],
+          "price": "90 à 105 € • prix indicatif",
+          "link_url": "https://www.abus.com/ch_fr/Particuliers/Moto-Scooter/Antivols-U-Moto/GRANIT-Power-58",
+          "link_label": "Voir la fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Xena XX15 Bluetooth (XX15BLE)",
+          "subtitle": "Bloque-disque connecté + alarme",
+          "description": "Tu souhaites une alarme réglable depuis ton téléphone ? Le XX15BLE propose le Bluetooth, une alarme annoncée à 120 dB et un classement SRA indiqué par son distributeur.",
+          "watch_out": [
+            "Vérifie qu’il s’adapte à ton disque et pense à la pile. Un bloque-disque seul n’attache pas la moto à un point fixe."
+          ],
+          "price": "115 à 125 € • prix indicatif",
+          "link_url": "https://www.moraco.fr/bloque-disque-alarme-xena-xx15-bluetooth-sra.html",
+          "link_label": "Voir la fiche distributeur"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Auvray XTREM Mini Alert",
+          "subtitle": "Bloque-disque + alarme",
+          "description": "Tu cherches un bloque-disque avec une alarme, sans fonction Bluetooth ? Ce modèle annonce une sirène de 120 dB et un classement SRA.",
+          "watch_out": [
+            "Contrôle la compatibilité du disque et les conditions de ton assurance ; un bloque-disque peut ne pas suffire pour le vol."
+          ],
+          "price": "85 à 90 € • prix indicatif",
+          "link_url": "https://www.auvray-security.com/fr/produit/xtrem-mini-alert-bloque-disque-universel/",
+          "link_label": "Voir la fiche fabricant"
+        }
+      ],
+      "content": [
+        "Tu te gares souvent dehors ? Le U bloque une roue, la chaîne permet d’attacher la moto à un point fixe et le bloque-disque se transporte facilement. Choisis surtout une protection adaptée à ton stationnement et acceptée par ton assurance."
+      ],
+      "accessory_note": "Cinq références à comparer, sans classement des ventes. Prix indicatifs : vérifie le classement SRA de la référence exacte et les exigences de ton contrat. Les notes des marques ne remplacent pas le classement SRA."
+    },
+    {
+      "id": "navigation",
+      "title": "Support téléphone moto : lequel choisir pour protéger ton smartphone ?",
+      "subtitle": "Téléphone et navigation",
+      "legal_text": "Que dit la loi ? Tu n’as pas le droit de tenir ton téléphone en main en roulant. Les écrans sont également réglementés, avec une exception pour les aides à la navigation. Place le support là où il ne masque pas les compteurs, ne gêne pas les commandes et ne te détourne pas de la route.",
+      "legal_links": [
+        {
+          "label": "Téléphone en roulant : article R412-6-1",
+          "href": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041910422"
+        },
+        {
+          "label": "Écrans et navigation : article R412-6-2",
+          "href": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025111520"
+        },
+        {
+          "label": "Apple : vibrations et appareil photo",
+          "href": "https://support.apple.com/fr-fr/102175"
+        }
+      ],
+      "accessory_tip": "Le conseil Label Moto : Choisis un kit avec amortisseur compatible, sans croire qu’il supprime tous les risques. Vérifie aussi que ton téléphone se retire facilement et ne surchauffe pas au soleil.",
+      "cards": [
+        {
+          "card_kind": "accessory",
+          "title": "Quad Lock Handlebar Mount Pro + Vibration Dampener",
+          "subtitle": "Fixation verrouillable",
+          "description": "Si tu veux un support qui se verrouille fermement, Quad Lock est une option solide. Ajoute son amortisseur de vibrations au montage.",
+          "watch_out": [
+            "Le support, la coque dédiée et l’amortisseur peuvent être vendus séparément. Vérifie le prix du kit complet."
+          ],
+          "price": "135 à 145 € • kit complet avec coque",
+          "link_url": "https://www.quadlockcase.eu/fr/products/motorcycle-mount",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Shapeheart PRO BOOST + module antivibration",
+          "subtitle": "Pochette magnétique",
+          "description": "Pratique si tu veux enlever ton téléphone rapidement. La pochette protège de la pluie et un amortisseur compatible existe pour ce support.",
+          "watch_out": [
+            "Prends le module antivibration adapté, surtout si tu utilises la plaque métallique. Surveille la chauffe du téléphone sous la pochette en été."
+          ],
+          "price": "60 à 70 € • kit avec pochette et antivibration",
+          "link_url": "https://shapeheart.com/products/pro-boost-motorcycle-phone-mount-pack/",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "SP Connect Moto Mount Pro + Anti Vibration Module",
+          "subtitle": "Fixation par rotation",
+          "description": "Un montage discret avec verrouillage par rotation. Tu peux l’associer à un module antivibration SP Connect.",
+          "watch_out": [
+            "Vérifie le type de coque et la génération SPC ou SPC+ : les pièces ne sont pas toutes interchangeables."
+          ],
+          "price": "150 à 160 € • kit complet avec coque SPC+",
+          "link_url": "https://sp-connect.eu/fr/collections/motorcycle/sport-bike",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "RAM Mounts X-Grip avec Vibe-Safe",
+          "subtitle": "Pince universelle",
+          "description": "Tu préfères une pince sans changer de coque ? Choisis la version X-Grip livrée avec l’amortisseur Vibe-Safe.",
+          "watch_out": [
+            "Le X-Grip classique n’atténue pas forcément les vibrations. Vérifie la présence de Vibe-Safe et utilise l’attache de sécurité fournie."
+          ],
+          "price": "130 à 140 € • kit complet sans coque dédiée",
+          "link_url": "https://rammount.com/products/ram-hol-un7-462-400",
+          "link_label": "Fiche fabricant"
+        }
+      ],
+      "content": [
+        "Tu utilises ton téléphone comme GPS ? Un support peut bien tenir au guidon tout en transmettant des vibrations capables d’abîmer son appareil photo. Regarde donc la fixation et l’amortisseur, pas seulement la marque."
+      ],
+      "accessory_note": "Quatre supports et cinq écrans à comparer, sans classement des ventes. Les prix des supports comprennent fixation, antivibration et coque ou pochette si nécessaire. Pour les écrans, regarde aussi les options et les frais de 4G du Chigee LTE.",
+      "subsections": [
+        {
+          "id": "navigation-2",
+          "title": "Écrans CarPlay et Android Auto",
+          "content": [
+            "Un écran dédié garde ton téléphone à l’abri des vibrations du guidon. Vérifie le montage, l’alimentation, la visibilité et le prix des options. Les Carpuride W702S Pro et W502S Pro utilisent une fixation BM05 pour certains guidons de 12 à 28 mm : vérifie la compatibilité avec ta moto."
+          ],
+          "cards": [
+            {
+              "card_kind": "accessory",
+              "title": "Chigee AIO-6 LTE",
+              "subtitle": "Premium • 6 pouces • 4G",
+              "description": "Tu roules beaucoup et tu veux plus qu’une simple carte GPS ? Ce modèle réunit navigation, suivi 4G et alertes à distance. Tu peux ajouter des caméras avant et arrière.",
+              "watch_out": [
+                "Les caméras sont en option, tout comme certains autres accessoires. La 4G demande une carte SIM et peut entraîner des frais récurrents. Regarde le prix du système complet avant de commander."
+              ],
+              "price": "650 à 660 € • support standard inclus, options en supplément",
+              "link_url": "https://www.chigee.com/products/aio-6-lte",
+              "link_label": "Fiche fabricant"
+            },
+            {
+              "card_kind": "accessory",
+              "title": "Carpuride W702S Pro",
+              "subtitle": "Grand écran • 7 pouces • universel",
+              "description": "Tu prévois de longues balades ? L’écran de 7 pouces laisse de la place à la carte et aux indications du GPS. Son support BM05 à retrait rapide s’adapte à de nombreux guidons.",
+              "watch_out": [
+                "Il prend plus de place qu’un 5 pouces. Mesure le diamètre du guidon (12 à 28 mm pour la fixation BM05 prévue) et vérifie qu’il ne cache pas le compteur."
+              ],
+              "price": "230 à 250 € • version BM05, hors options",
+              "link_url": "https://carpuride.com/products/carpuride-w702s-motorcycle-stereo-with-universal-mounting-bracket-bm05",
+              "link_label": "Fiche fabricant"
+            },
+            {
+              "card_kind": "accessory",
+              "title": "Carpuride W502S Pro",
+              "subtitle": "Compact • 5 pouces • universel",
+              "description": "Tu roules en roadster ou tu as peu de place au guidon ? Ce modèle reprend l’essentiel du W702S Pro dans un format plus discret, avec la fixation universelle BM05.",
+              "watch_out": [
+                "Tu gagneras de la place, mais la carte sera moins grande. Vérifie la fixation, l’alimentation et la compatibilité avec ton intercom avant de commander."
+              ],
+              "price": "300 à 320 € • version BM05, hors options",
+              "link_url": "https://carpuride.com/products/carpuride-w702s-motorcycle-stereo-with-universal-mounting-bracket-bm05",
+              "link_label": "Fiche fabricant"
+            },
+            {
+              "card_kind": "accessory",
+              "title": "Midland BikePlay Pro",
+              "subtitle": "Polyvalent • 5,5 pouces",
+              "description": "Tu veux surtout afficher ton trajet sans laisser ton téléphone sur le guidon ? Son écran étanche, son support universel fourni et son système de retrait rapide en font une solution pratique au quotidien.",
+              "watch_out": [
+                "Assure-toi que ton téléphone et ton intercom fonctionnent bien ensemble. Les caméras et les capteurs de pression, si tu en as besoin, font partie d’un kit supplémentaire."
+              ],
+              "price": "235 à 250 € • support fourni, options en supplément",
+              "link_url": "https://fr.midlandeurope.com/fr_FR/produits/bikeplay-pro",
+              "link_label": "Fiche fabricant"
+            },
+            {
+              "card_kind": "accessory",
+              "title": "INNOVV N1 Pro",
+              "subtitle": "Caméras incluses • 5,99 pouces",
+              "description": "Tu souhaites une navigation CarPlay ou Android Auto avec l’enregistrement de tes trajets ? L’INNOVV N1 Pro associe un écran de 5,99 pouces et deux caméras 1080p.",
+              "watch_out": [
+                "Prévois une installation plus complète qu’un simple écran : il faut positionner les deux caméras et raccorder le système à la moto. Les capteurs de pression sont optionnels."
+              ],
+              "price": "270 à 280 € • tarif promotionnel indicatif",
+              "link_url": "https://innovv.com/products/n1-pro-navigation-camera-system",
+              "link_label": "Fiche fabricant"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intercom",
+      "title": "Intercom moto : comment choisir sans te ruiner ?",
+      "subtitle": "Intercom moto",
+      "legal_text": "Que dit la loi ? Tu peux utiliser un intercom avec des haut-parleurs intégrés au casque. En revanche, les écouteurs et oreillettes portés à l’oreille sont interdits lorsque tu conduis. L’infraction est sanctionnée par une amende forfaitaire de 135 € et un retrait de 3 points. Même avec un intercom autorisé, règle-le avant de partir et garde ton attention sur la route.",
+      "legal_links": [
+        {
+          "label": "Code de la route, article R412-6-1",
+          "href": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041910422"
+        },
+        {
+          "label": "Service Public : intercom intégré au casque",
+          "href": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34168"
+        }
+      ],
+      "accessory_tip": "Le conseil Label Moto : Vérifie la fixation sur ton casque et la compatibilité avec les intercoms de tes amis. Si tu roules surtout seul ou en duo, le Mesh est rarement nécessaire.",
+      "cards": [
+        {
+          "card_kind": "accessory",
+          "title": "Sena SMH5",
+          "subtitle": "Bluetooth • duo",
+          "description": "Jusqu’à 400 m • portée annoncée",
+          "watch_out": [
+            "C’est un modèle simple. Si tu roules souvent à plusieurs, regarde une gamme supérieure."
+          ],
+          "price": "95 à 105 € • kit Solo",
+          "link_url": "https://www.sena.com/en-eu/product/smh5/",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Cardo Freecom 2X",
+          "subtitle": "Bluetooth • duo",
+          "description": "Jusqu’à 800 m • portée annoncée",
+          "watch_out": [
+            "Il relie deux motards. Inutile de payer pour un Mesh si c’est ton usage principal."
+          ],
+          "price": "190 à 200 € • kit Solo",
+          "link_url": "https://cardosystems.com/products/freecom-2x",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Cardo Freecom 4X",
+          "subtitle": "Bluetooth • jusqu’à 4 motards",
+          "description": "Jusqu’à 1,2 km • portée annoncée",
+          "watch_out": [
+            "Avant de commander, vérifie avec quels intercoms roulent tes amis : se connecter entre marques peut demander des réglages."
+          ],
+          "price": "210 à 225 € • kit Solo",
+          "link_url": "https://cardosystems.com/products/freecom-4x",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Sena 50S",
+          "subtitle": "Mesh • balades de groupe",
+          "description": "Jusqu’à 2 km • portée annoncée",
+          "watch_out": [
+            "Sa portée est annoncée en terrain dégagé. Si tu roules surtout seul, ses fonctions seront largement sous-utilisées."
+          ],
+          "price": "330 à 345 € • kit Solo",
+          "link_url": "https://www.sena.com/en-eu/product/50s/",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Cardo Packtalk Edge",
+          "subtitle": "Mesh • groupe régulier",
+          "description": "Jusqu’à 1,6 km • portée annoncée",
+          "watch_out": [
+            "C’est un modèle haut de gamme. Vérifie que tes compagnons pourront communiquer avec toi avant d’investir."
+          ],
+          "price": "330 à 345 € • kit Solo",
+          "link_url": "https://cardosystems.com/products/packtalk-edge",
+          "link_label": "Fiche fabricant"
+        }
+      ],
+      "content": [
+        "Pour écouter ton GPS ou discuter en roulant, pars de ton usage : seul, en duo ou en groupe ? Le Bluetooth suffit souvent à deux ou en petit groupe. Le Mesh facilite les échanges entre motards plus nombreux ou dispersés.",
+        "Les portées annoncées sont des maxima en conditions favorables : virages, bâtiments et relief réduisent souvent la distance réelle."
+      ],
+      "accessory_note": "Cinq références à comparer par usage, pas par ventes. Les portées affichées sont celles annoncées par les fabricants."
+    },
+    {
+      "id": "gants",
+      "title": "Gants moto : comment choisir selon la saison et ton utilisation ?",
+      "subtitle": "Gants selon la saison",
+      "legal_text": "Que dit la loi ? En France, toi et ton passager devez porter des gants conformes à la réglementation des équipements de protection individuelle, avec marquage CE. Sans gants conformes, le conducteur risque notamment une amende forfaitaire de 68 € et la perte d’un point. La norme EN 13594 distingue deux niveaux de protection. La mention « KP » signifie que la protection des articulations satisfait aux essais d’impact ; cela n’oblige pas la coque à être rigide.",
+      "legal_links": [
+        {
+          "label": "Code de la route — article R431-1-2",
+          "href": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033132243"
+        },
+        {
+          "label": "Service Public — gants à moto",
+          "href": "https://www.service-public.gouv.fr/particuliers/vosdroits/F34168"
+        },
+        {
+          "label": "Sécurité routière — niveaux de protection",
+          "href": "https://www.securite-routiere.gouv.fr/operations/equipezvous/"
+        }
+      ],
+      "accessory_tip": "Le conseil Label Moto : Des sous-gants peuvent aider contre le froid si tes gants restent assez amples. Pour rouler toute l’année, deux paires adaptées valent souvent mieux qu’une seule paire « toutes saisons ».",
+      "cards": [
+        {
+          "card_kind": "accessory",
+          "title": "Alpinestars Reef V2",
+          "subtitle": "Été • trajets urbains",
+          "description": "Tu roules souvent en ville quand il fait chaud ? Ces gants courts sont souples, ventilés et certifiés CE niveau 1 KP, avec une protection des articulations en TPU souple.",
+          "watch_out": [
+            "Ils sont conçus pour le temps doux ou chaud : prévois une autre paire pour la pluie et le froid."
+          ],
+          "price": "40 à 50 € • la paire",
+          "link_url": "https://fr.alpinestars.com/products/reef-v2-gloves-black-black",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "REV’IT! Mosca 2 H2O",
+          "subtitle": "Mi-saison • pluie",
+          "description": "Si tu prends ta moto même quand la météo se gâte, leur membrane imperméable et leur certification EN 13594 niveau 1 KP sont intéressantes au quotidien.",
+          "watch_out": [
+            "Ils résistent à la pluie, mais ne remplacent pas des gants bien isolés quand les températures chutent."
+          ],
+          "price": "60 à 70 € • la paire",
+          "link_url": "https://revitsport.com/fr_fr/gants-moto-mosca-2-h2o-noir",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Ixon Pro Russel 2",
+          "subtitle": "Hiver • trajets quotidiens",
+          "description": "Pour les matins froids, ces gants associent une doublure chaude, un insert étanche et une paume en cuir. Ils sont certifiés EN 13594 niveau 1 KP.",
+          "watch_out": [
+            "La manchette est courte : essaie-les avec ton blouson pour vérifier que ton poignet reste bien protégé."
+          ],
+          "price": "65 à 75 € • la paire",
+          "link_url": "https://www.ixon.com/fra-fr/pro-russel-2",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Furygan Jet D3O Evo",
+          "subtitle": "Été • ville et balade",
+          "description": "Un choix simple pour rouler à la belle saison : paume en cuir de chèvre, protection souple D3O sur les articulations et matière ventilée.",
+          "watch_out": [
+            "Ce sont des gants légers : regarde plutôt un modèle étanche et isolé si tu roules toute l’année."
+          ],
+          "price": "45 à 55 € • la paire",
+          "link_url": "https://www.furygan.com/produit/jet-d3o-evo/",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Dainese Tempest 2 D-Dry Short",
+          "subtitle": "Hiver • trajets plus longs",
+          "description": "Tu fais régulièrement de la route par temps froid ? Ces gants courts associent une membrane imperméable D-Dry, une isolation thermique et des renforts de protection.",
+          "watch_out": [
+            "Plus coûteux et plus chauds : essaie-les pour vérifier que tu conserves un bon ressenti des leviers."
+          ],
+          "price": "105 à 115 € • la paire",
+          "link_url": "https://www.dainese.com/fr/fr/tempest-2-d-dry-short-thermal-gloves-2018100006001007.html",
+          "link_label": "Fiche fabricant"
+        }
+      ],
+      "content": [
+        "Adapte tes gants à tes trajets : ventilés en été, étanches sous la pluie, isolés en hiver. Le modèle le plus cher n’est pas toujours celui dont tu as besoin.",
+        "Vérifie le marquage CE et la norme EN 13594, le maintien au poignet, les renforts de paume et la souplesse des doigts. Cuir, textile et mesh ont chacun leurs atouts, mais la matière seule ne garantit pas la protection."
+      ],
+      "accessory_note": "Cinq références à comparer, sans classement des ventes. Prix indicatifs relevés en octobre 2026, susceptibles d’évoluer."
+    },
+    {
+      "id": "gravage",
+      "title": "Gravage moto : ton assurance peut-elle te l’imposer ?",
+      "subtitle": "Gravage et assurances",
+      "legal_text": "Que dit la loi ? Faire graver sa moto n’est pas une obligation prévue pour tous les motards. En revanche, ton assureur peut en faire une condition de la garantie vol ou prévoir un effet sur ta franchise. Les règles varient selon la compagnie, la formule et parfois le modèle de moto.",
+      "legal_links": [
+        {
+          "label": "Assurance : lire l’obligation de responsabilité civile",
+          "href": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048523650"
+        },
+        {
+          "label": "En savoir plus sur le gravage",
+          "href": "https://www.amvsecurite.fr/gravage/pages/view/gravage.xhtml"
+        }
+      ],
+      "accessory_tip": "Le conseil Label Moto : Demande par écrit si le gravage est nécessaire à ta garantie vol. Sur une moto d’occasion déjà gravée, vérifie le changement de titulaire avant de payer un nouveau marquage.",
+      "cards": [
+        {
+          "card_kind": "accessory",
+          "title": "Macif",
+          "subtitle": "Parfois obligatoire",
+          "description": "Chez Macif, le gravage est demandé pour certaines cylindrées, mais pas forcément pour toutes les motos.",
+          "watch_out": [
+            "Demande si ta cylindrée et ta formule sont concernées, puis garde la réponse écrite."
+          ],
+          "link_url": "https://www.macif.fr/assurance/particuliers/faq?buildName=particuliers&question=gravage-vehicule-obligatoire&tag=particuliers-59",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "AMV",
+          "subtitle": "Peut réduire la franchise",
+          "description": "Chez AMV, associer gravage SRA et antivol SRA peut te permettre de réduire ta franchise en cas de vol.",
+          "watch_out": [
+            "Vérifie les conditions de ta formule avant de faire graver ta moto."
+          ],
+          "link_url": "https://www.amv.fr/besoin-daide/?question=sont-mesures-securite-contre-vol-preconisees-amv",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Allianz",
+          "subtitle": "Selon ton contrat",
+          "description": "Allianz conseille le gravage pour limiter les risques de vol. Mais pour savoir s’il est nécessaire sur ta moto, c’est ton contrat qui compte.",
+          "watch_out": [
+            "Pose la question pour ton modèle et ta garantie vol."
+          ],
+          "link_url": "https://www.allianz.fr/assurance-particulier/vehicules/assurance-2-roues/conseils-pratiques/vol-moto.html",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "APRIL Moto",
+          "subtitle": "Antivol à contrôler",
+          "description": "Chez APRIL Moto, fais surtout attention aux exigences concernant l’antivol SRA. Le gravage n’est pas présenté comme obligatoire pour toutes les motos.",
+          "watch_out": [
+            "Regarde les conditions remises avec ton devis."
+          ],
+          "link_url": "https://cdn.april-moto.com/wp-content/uploads/2025/05/DG-APRIL_Moto-Moto_et_Scooter-V0425.pdf",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Mutuelle des Motards",
+          "subtitle": "Plusieurs protections possibles",
+          "description": "À la Mutuelle des Motards, le gravage peut compter parmi plusieurs protections contre le vol et jouer sur la franchise.",
+          "watch_out": [
+            "Regarde quelles protections sont prises en compte pour ta formule."
+          ],
+          "link_url": "https://www.mutuelledesmotards.fr/actualites/garantie-vol-nouvelles-evolutions",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "AXA Passion",
+          "subtitle": "Gravage non systématique",
+          "description": "AXA Passion recommande le gravage et évoque aussi les antivols SRA. Ce n’est pas la même chose qu’une obligation de gravage pour tous.",
+          "watch_out": [
+            "Demande la liste des protections exigées sur ton contrat."
+          ],
+          "link_url": "https://passion.axa.fr/deux-roues/faq/comment-proteger-moto-scooter-vol",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "MAAF",
+          "subtitle": "À confirmer",
+          "description": "Tu es chez MAAF ? Avant de faire graver ta moto, demande si cette protection est nécessaire pour ta garantie vol. La réponse peut varier selon ton contrat.",
+          "watch_out": [
+            "Demande les protections exigées pour être couvert en cas de vol."
+          ],
+          "link_url": "https://www.maaf.fr/fr/assurance-moto/proteger-sa-moto",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "GMF",
+          "subtitle": "Selon ton contrat",
+          "description": "Chez GMF, ton contrat peut prévoir un antivol supplémentaire pour la garantie vol. Et le gravage ? Ne pars pas du principe qu’il est obligatoire pour toutes les motos.",
+          "watch_out": [
+            "Regarde ce qui est demandé pour la tienne, par écrit."
+          ],
+          "link_url": "https://www.gmf.fr/files/live/sites/gmf/files/documents-reglementaires/assurance-moto/cg-motopass.pdf",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Matmut",
+          "subtitle": "À confirmer",
+          "description": "Matmut conseille le gravage comme moyen de protection. Cela ne suffit pas à dire qu’il est exigé pour ta moto.",
+          "watch_out": [
+            "Vérifie ta garantie vol avant de payer le gravage."
+          ],
+          "link_url": "https://www.matmut.fr/assurance/moto/conseils/protection-contre-vol",
+          "link_label": "Voir la source officielle"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "MAIF",
+          "subtitle": "À confirmer",
+          "description": "Tu es chez MAIF ? Avant de faire graver ta moto, demande si cette protection fait partie des conditions de ta garantie vol.",
+          "watch_out": [
+            "Fais préciser par écrit les protections demandées pour ta moto."
+          ],
+          "link_url": "https://www.maif.fr/vehicule-mobilite/assurance-moto",
+          "link_label": "Voir la source officielle"
+        }
+      ],
+      "content": [
+        "Le gravage marque certaines pièces et enregistre leur identifiant pour faciliter leur identification. Il ne remplace pas un antivol : vérifie d’abord si ton assurance l’exige.",
+        "Selon ton contrat, la garantie vol peut aussi exiger un antivol SRA, un garage fermé ou un traceur GPS. Seules les conditions de ta formule font foi."
+      ],
+      "accessory_note": "Sources consultées le 18 octobre 2026. Ton contrat fait foi : « à confirmer » ne signifie pas « facultatif ».",
+      "subsections": [
+        {
+          "id": "services-gravage",
+          "title": "Où faire graver sa moto ?",
+          "content": [
+            "Trois exemples de services à comparer après avoir vérifié les exigences de ton assurance."
+          ],
+          "cards": [
+            {
+              "card_kind": "accessory",
+              "title": "AMV Sécurité",
+              "subtitle": "Service de gravage",
+              "description": "Tu cherches un prestataire de gravage ? AMV Sécurité propose un marquage et un enregistrement, notamment via des concessionnaires.",
+              "link_url": "https://www.amvsecurite.fr/gravage/pages/view/gravage.xhtml",
+              "link_label": "Voir le service"
+            },
+            {
+              "card_kind": "accessory",
+              "title": "Auvray Speed Marking",
+              "subtitle": "Service de gravage",
+              "description": "Auvray propose le marquage Speed Marking et les démarches de traçabilité associées.",
+              "link_url": "https://www.auvray-security.com/fr/gravage-moto/",
+              "link_label": "Voir le service"
+            },
+            {
+              "card_kind": "accessory",
+              "title": "Honda Secure",
+              "subtitle": "Service de gravage",
+              "description": "Si tu roules en Honda, renseigne-toi sur le service Honda Secure et sa disponibilité chez ton concessionnaire.",
+              "link_url": "https://moto.honda.fr/motorcycles/owners/garantie/le-gravage-Honda-Secure.html",
+              "link_label": "Voir le service"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "crash",
+      "title": "Crash bars : un bon investissement pour ton trail ?",
+      "subtitle": "Protection du trail",
+      "legal_text": "Que dit la loi ? Les crash bars ne sont pas obligatoires. En revanche, comme pour tout accessoire fixé à la moto, il faut respecter la sécurité du véhicule. Les transformations notables sont encadrées par le Code de la route ; une protection correctement adaptée n’entre pas automatiquement dans cette catégorie.",
+      "legal_links": [
+        {
+          "label": "Transformations de la moto : voir la loi",
+          "href": "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006841763"
+        }
+      ],
+      "accessory_tip": "Le conseil Label Moto : Vérifie le modèle, le millésime et les fixations prévues. Deux versions d’une même Ténéré 700 ne sont pas forcément compatibles avec les mêmes crash bars.",
+      "cards": [
+        {
+          "card_kind": "accessory",
+          "title": "SW-MOTECH • Honda NX500",
+          "subtitle": "Honda NX500",
+          "description": "Un pare-carter pensé pour la NX500. Utile pour un trail du quotidien si tu veux protéger certaines parties du moteur lors d’une petite chute.",
+          "watch_out": [
+            "Vérifie le millésime et la place laissée aux autres accessoires."
+          ],
+          "price": "225 à 235 € • kit NX500, hors pose",
+          "link_url": "https://sw-motech.com/en/p/4052572269664",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Givi TN1171 • Honda CB500X",
+          "subtitle": "Honda CB500X • 2019–2023",
+          "description": "Un ensemble tubulaire conçu pour la CB500X. Un exemple concret si tu roules sur un trail A2 d’occasion.",
+          "watch_out": [
+            "Ce modèle concerne la CB500X 2019 à 2023, pas automatiquement la NX500. Givi conseille le montage par un professionnel."
+          ],
+          "price": "140 à 160 € • kit TN1171, hors pose",
+          "link_url": "https://www.givi.it/my-motorcycle/product/honda/cb-500-x-19--23/optionals/tn1171",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Hepco & Becker 5014564 • Ténéré 700",
+          "subtitle": "Yamaha Ténéré 700 • 2019–2024",
+          "description": "Des protections moteur tubulaires pour les Ténéré 700 standard de 2019 à 2024.",
+          "watch_out": [
+            "Le fabricant précise que cette référence ne convient pas à la version Rally. Regarde la version de ta moto avant de commander."
+          ],
+          "price": "235 à 245 € • kit 5014564, hors pose",
+          "link_url": "https://www.hepco-becker.de/en/engine-protection-bar-black-for-yamaha-tenere-700-2019.html",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Puig 21192N • Ténéré 700",
+          "subtitle": "Yamaha Ténéré 700 • 2024",
+          "description": "Un pare-carter en tube d’acier de 25 mm prévu pour la Ténéré 700 version 2024.",
+          "watch_out": [
+            "Vérifie bien le code modèle XTZ690, ton millésime et les instructions de montage."
+          ],
+          "price": "210 à 220 € • kit 21192N, hors pose",
+          "link_url": "https://puighitechparts.de/en/tuning-motos/engine-guards/engine-guards?bike=35486",
+          "link_label": "Fiche fabricant"
+        },
+        {
+          "card_kind": "accessory",
+          "title": "Heavy Duties Enduro • Ténéré 700",
+          "subtitle": "Yamaha Ténéré 700 • version Enduro",
+          "description": "Des protections plus basses qui visent d’abord le moteur et le bas du carter, pour ceux qui veulent limiter l’encombrement.",
+          "watch_out": [
+            "Le fabricant indique une incompatibilité avec le sabot Rally d’origine. Demande confirmation pour l’année et l’équipement de ta moto."
+          ],
+          "price": "139 à 155 € TTC • kit Enduro, hors livraison et pose",
+          "link_url": "https://heavyduties.ro/product/yamaha-tenere-700-crash-bars-enduro/",
+          "link_label": "Fiche fabricant"
+        }
+      ],
+      "content": [
+        "Sur un trail, les crash bars peuvent limiter les dégâts au moteur et aux carénages lors d’une petite chute, notamment pendant une manœuvre. Elles ne protègent pas de tout et doivent être adaptées à la moto."
+      ],
+      "accessory_note": "Cinq fabricants à comparer, sans classement des ventes. Les prix concernent des références précises et excluent la pose."
+    },
+    {
+      "id": "faq",
+      "title": "FAQ — premières dépenses après le permis A2",
+      "subtitle": "Les réponses aux questions que tu te poses après le permis",
+      "content": [
+        "Le gilet de haute visibilité, on y pense aussi. Tu dois l’avoir à portée de main sur la moto et le porter dans les situations d’arrêt d’urgence prévues par la réglementation. Voir les règles sur Service Public ↗"
+      ],
+      "faq": [
+        {
+          "question": "Comment savoir si un écran CarPlay s’adapte à ma moto ?",
+          "answer": "Ne te fie pas seulement à la mention « universel ». Vérifie le diamètre du guidon, la place autour des compteurs, le raccordement électrique et la compatibilité avec ton intercom. Certains supports nécessitent un adaptateur."
+        },
+        {
+          "question": "Un antivol SRA est-il obligatoire pour assurer ma moto ?",
+          "answer": "Pas pour toutes les motos. C’est ton contrat de garantie vol qui peut te demander un U, une chaîne ou un autre antivol classé SRA. Vérifie avant d’acheter."
+        },
+        {
+          "question": "Un bloque-disque SRA suffit-il à mon assurance ?",
+          "answer": "Pas toujours. Certains contrats demandent une chaîne, un U ou un point fixe. Le fait qu’un bloque-disque soit classé SRA ne suffit pas à répondre à la question."
+        },
+        {
+          "question": "Dois-je faire graver ma moto ?",
+          "answer": "Pas systématiquement. Certaines assurances le demandent, parfois seulement pour certaines motos. Le meilleur réflexe est de poser la question par écrit avant de payer le gravage."
+        },
+        {
+          "question": "Un support antivibration protège-t-il mon téléphone à coup sûr ?",
+          "answer": "Non. Il peut limiter les vibrations, mais pas supprimer tous les risques. Si tu roules beaucoup, regarde aussi les écrans CarPlay ou Android Auto dédiés à la moto."
+        },
+        {
+          "question": "Puis-je rouler avec un intercom ?",
+          "answer": "Oui, si le système est intégré au casque. En revanche, les écouteurs portés dans les oreilles sont interdits pendant la conduite."
+        },
+        {
+          "question": "Le Mesh est-il indispensable pour rouler à trois motos ?",
+          "answer": "Non. Certains intercoms Bluetooth, comme le Cardo Freecom 4X, peuvent déjà relier quatre motards. Le Mesh est surtout pratique si votre groupe s’agrandit ou si vous vous séparez puis vous retrouvez souvent."
+        },
+        {
+          "question": "Les crash bars sont-elles nécessaires sur un trail ?",
+          "answer": "Elles ne sont pas obligatoires. Elles peuvent aider à limiter certains dégâts lors de petites chutes, à condition d’être adaptées à ta moto."
+        },
+        {
+          "question": "Qu’est-ce que je vérifie avant de partir ?",
+          "answer": "Retire le bloque-disque, vérifie tes pneus, tes feux, tes freins et la fixation des accessoires. Et garde ton gilet de haute visibilité à disposition, comme le prévoit la réglementation."
+        },
+        {
+          "question": "Que signifie « 1 KP » ou « 2 KP » sur des gants moto ?",
+          "answer": "« KP » signifie que la zone des articulations a passé des essais de résistance aux chocs prévus par la norme EN 13594. Le niveau 2 correspond à des exigences supérieures. Vérifie aussi le marquage CE et, surtout, essaie les gants : ils doivent rester bien ajustés sans bloquer les mouvements."
+        },
+        {
+          "question": "Faut-il choisir des gants en cuir plutôt qu’en textile ?",
+          "answer": "Pas automatiquement. Le cuir et le textile peuvent tous deux être adaptés à la moto selon leur conception et leur certification. Pour l’été, la ventilation compte ; pour l’hiver, l’isolation et l’étanchéité. Commence par vérifier la protection CE, les renforts et le maintien au poignet."
+        }
+      ]
+    }
+  ],
+  "seo": {
+    "meta_title": "Première moto : accessoires indispensables et conseils A2",
+    "meta_description": "Antivol SRA, support téléphone, CarPlay, intercom et gants : les accessoires utiles pour ta première moto, avec règles, assurances et conseils.",
+    "keywords": [
+      "accessoires moto débutant",
+      "accessoires indispensables moto",
+      "accessoires moto A2",
+      "antivol moto SRA",
+      "support téléphone moto antivibration",
+      "intercom moto"
+    ]
+  },
+  "data_quality": {
+    "status": "draft",
+    "source": "labelmoto octobre 2026; links to revalidate before publication",
+    "sales_claim": "selection, not verified top 5 sales"
+  }
+}
