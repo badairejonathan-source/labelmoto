@@ -21,7 +21,7 @@ const PUBLIC_POINTS_REMOTE_URL =
 let publicMapPointsPromise: Promise<PublicMapPoint[]> | null = null;
 
 async function fetchPointsJson(url: string): Promise<any[]> {
-  const response = await fetch(url, { cache: 'force-cache' });
+  const response = await fetch(url, { cache: url === PUBLIC_POINTS_REMOTE_URL ? 'no-cache' : 'force-cache' });
 
   if (!response.ok) {
     throw new Error(`points.json HTTP ${response.status}`);
@@ -38,8 +38,8 @@ async function fetchPointsJson(url: string): Promise<any[]> {
 
 export function loadPublicMapPoints(): Promise<PublicMapPoint[]> {
   if (!publicMapPointsPromise) {
-    publicMapPointsPromise = fetchPointsJson(PUBLIC_POINTS_URL)
-      .catch(() => fetchPointsJson(PUBLIC_POINTS_REMOTE_URL))
+    publicMapPointsPromise = fetchPointsJson(PUBLIC_POINTS_REMOTE_URL)
+      .catch(() => fetchPointsJson(PUBLIC_POINTS_URL))
       .then(data =>
         data
           .map((p: any) => ({
