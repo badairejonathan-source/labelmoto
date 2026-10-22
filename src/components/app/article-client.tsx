@@ -1168,9 +1168,7 @@ export default function ArticleClient({
                 "mx-auto bg-white md:float-right md:ml-8 md:mb-4 md:w-[42%] md:max-w-[460px] xl:w-[40%]"
             )}
             style={{
-              aspectRatio: isChineseModelSlide
-                ? '16/9'
-                : '4/5'
+              aspectRatio: (isChineseModelSlide || id === 'premiere-moto-accessoires-indispensables-conseils-a2') ? '16/9' : '4/5'
             }}
           >
             <img
