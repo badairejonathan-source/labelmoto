@@ -1164,13 +1164,13 @@ export default function ArticleClient({
           </h2>
         )}
         {/* LABELMOTO_CHINESE_FLOAT_V2 */}
-        {/* LABELMOTO_PREMIERE_MOTO_LAYOUT_V3: mise en page uniquement pour le guide premiere moto */}
-        {id === 'premiere-moto-accessoires-indispensables-conseils-a2' && ['antivols', 'navigation', 'intercom', 'gants', 'gravage', 'crash'].includes(sectionId) && !!renderedSectionImage ? (
+        {/* LABELMOTO_PREMIERE_MOTO_LAYOUT_V4: garde fiable par chemin des six images de rubrique */}
+        {id === 'premiere-moto-accessoires-indispensables-conseils-a2' && typeof renderedSectionImage === 'string' && /(?:^|\/)premiere-moto-(?:antivol|support-telephone|intercom|gants|gravage|crash-bars)\.webp(?:\?.*)?$/.test(renderedSectionImage) ? (
           <div className="mb-7 grid min-w-0 grid-cols-1 items-start gap-5 md:grid-cols-2 md:gap-6 lg:gap-8">
-            <div className={['navigation', 'gants', 'crash'].includes(sectionId) ? 'min-w-0 md:order-2' : 'min-w-0 md:order-1'}>
+            <div className={/(?:^|\/)premiere-moto-(?:support-telephone|gants|crash-bars)\.webp(?:\?.*)?$/.test(String(renderedSectionImage || '')) ? 'min-w-0 md:order-2' : 'min-w-0 md:order-1'}>
               {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
             </div>
-            <div className={['navigation', 'gants', 'crash'].includes(sectionId) ? 'min-w-0 md:order-1' : 'min-w-0 md:order-2'}>
+            <div className={/(?:^|\/)premiere-moto-(?:support-telephone|gants|crash-bars)\.webp(?:\?.*)?$/.test(String(renderedSectionImage || '')) ? 'min-w-0 md:order-1' : 'min-w-0 md:order-2'}>
               <div className="relative aspect-video w-full overflow-hidden rounded-[1.4rem] border-2 border-white bg-muted shadow-md">
                 <img
                   src={renderedSectionImage}
