@@ -249,6 +249,10 @@ export default function ArticleClient({
   const imageUrl = useMemo(() => {
     if (!article) return "https://images.unsplash.com/photo-1515777315835-281b94c9589f?q=80&w=2070";
     const articleId = id.toLowerCase();
+    // LABELMOTO_PREMIERE_MOTO_LAYOUT_V3: l image publiee prime sur les heuristiques de titre.
+    if (articleId === 'premiere-moto-accessoires-indispensables-conseils-a2' && typeof article.imageUrl === 'string' && article.imageUrl.trim().startsWith('/images/')) {
+      return article.imageUrl.trim();
+    }
     const title = (article.display_title || article.title || "").toLowerCase();
 
     if (
@@ -1160,7 +1164,27 @@ export default function ArticleClient({
           </h2>
         )}
         {/* LABELMOTO_CHINESE_FLOAT_V2 */}
-        {renderedSectionImage && (
+        {/* LABELMOTO_PREMIERE_MOTO_LAYOUT_V3: mise en page uniquement pour le guide premiere moto */}
+        {id === 'premiere-moto-accessoires-indispensables-conseils-a2' && ['antivols', 'navigation', 'intercom', 'gants', 'gravage', 'crash'].includes(sectionId) && !!renderedSectionImage ? (
+          <div className="mb-7 grid min-w-0 grid-cols-1 items-start gap-5 md:grid-cols-2 md:gap-6 lg:gap-8">
+            <div className={['navigation', 'gants', 'crash'].includes(sectionId) ? 'min-w-0 md:order-2' : 'min-w-0 md:order-1'}>
+              {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
+            </div>
+            <div className={['navigation', 'gants', 'crash'].includes(sectionId) ? 'min-w-0 md:order-1' : 'min-w-0 md:order-2'}>
+              <div className="relative aspect-video w-full overflow-hidden rounded-[1.4rem] border-2 border-white bg-muted shadow-md">
+                <img
+                  src={renderedSectionImage}
+                  alt={section.title || ''}
+                  loading="lazy"
+                  decoding="async"
+                  className="block h-full w-full object-contain"
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <>
+            {renderedSectionImage && (
           <div
             className={cn(
               "relative w-full overflow-hidden rounded-[2rem] mb-6 bg-[#f8f7f5] shadow-md",
@@ -1184,7 +1208,9 @@ export default function ArticleClient({
             />
           </div>
         )}
-        {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
+            {bodyText && (Array.isArray(bodyText) ? (bodyText.map((p: string, i: number) => <p key={`p-${sectionId}-${i}`} className="text-lg text-foreground font-normal leading-relaxed mb-6">{p}</p>)) : (<p className="text-lg text-foreground font-normal leading-relaxed mb-6">{bodyText}</p>))}
+          </>
+        )}
         
         {section.legal_text && (
           <aside className="my-6 rounded-2xl border-l-4 border-brand bg-brand/5 p-5" aria-label="Réglementation et sources officielles">
