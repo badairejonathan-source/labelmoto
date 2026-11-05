@@ -1,3 +1,7 @@
+// Ne pas prerendre des pages vides lorsque l'index distant est indisponible.
+// Lecture de l'index autoritatif a la requete, sans fallback obsolete.
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -7,6 +11,7 @@ import { professionalMatchesCategory } from '@/app/lib/professional-categories';
 import fsNode from 'fs';
 import pathNode from 'path';
 import { loadSeoPros, type SeoPro } from '@/lib/seo-pros';
+import { loadPublicMapPoints } from '@/lib/public-map-points';
 
 interface PageProps {
   params: Promise<{ ville: string; marque: string }>;
@@ -57,7 +62,6 @@ interface GeoPoint {
   b?: string[];
 }
 
-let _cachedPoints: GeoPoint[] | null = null;
 
 let _cachedCoords:
   Record<
@@ -65,25 +69,13 @@ let _cachedCoords:
     { lat: number; lng: number }
   > | null = null;
 
-function loadPointsData(): GeoPoint[] {
-  if (!_cachedPoints) {
-    const filePath =
-      pathNode.join(
-        process.cwd(),
-        'public',
-        'points.json'
-      );
-
-    _cachedPoints =
-      JSON.parse(
-        fsNode.readFileSync(
-          filePath,
-          'utf8'
-        )
-      );
-  }
-
-  return _cachedPoints!;
+async function loadPointsData(): Promise<GeoPoint[]> {
+  const live = await loadPublicMapPoints();
+  return live.map(p => ({
+    id: p.id, lat: p.latitude, lng: p.longitude,
+    t: p.title, s: p.slug, a: p.appSection, c: p.category,
+    d: p.departement || '', b: p.brands,
+  }));
 }
 
 function loadCityCoordsData():
@@ -224,17 +216,16 @@ function isParisGarageSeoPoint(
   return false;
 }
 
-function getPointsNearCity(
+async function getPointsNearCity(
   city: GarageCity
-): GeoPoint[] {
+): Promise<GeoPoint[]> {
   const coordsMap =
     loadCityCoordsData();
 
   const cityCoord =
     coordsMap[city.slug];
 
-  const points =
-    loadPointsData();
+  const points = await loadPointsData();
 
   /*
    * Paris garde exactement le perimetre SEO
@@ -375,8 +366,7 @@ async function getCityScopedPros(
     );
   }
 
-  const nearby =
-    getPointsNearCity(city);
+  const nearby = await getPointsNearCity(city);
 
   if (nearby.length === 0) {
     return [];

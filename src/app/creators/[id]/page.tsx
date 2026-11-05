@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+// Une fiche retiree ne doit jamais etre servie depuis une page prerendue.
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 import { notFound, permanentRedirect } from 'next/navigation';
 import { getAdminFirestore } from '@/lib/firebase-admin';
 import Image from 'next/image';

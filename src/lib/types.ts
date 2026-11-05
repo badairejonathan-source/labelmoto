@@ -8,6 +8,7 @@ export interface MapPoint {
   title: string;
   slug?: string;
   geohash?: string;
+  locationMode?: 'physical' | 'city';
   imgUrl?: string;
   rating?: string | number;
   brands?: string[];
@@ -25,6 +26,7 @@ export interface Dealership {
   description?: string;
   departement?: string;
   city?: string;
+  locationMode?: 'physical' | 'city';
   phoneNumber: string;
   pnoneNumber?: string;
   email: string;

@@ -108,6 +108,7 @@ const ArticleCard = ({ article, priority = false, eager = false }: { article: an
         if (id.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";
         if (id.includes('zfe') || title.includes('zfe')) return "/images/motardZFEarticle2.webp";
         if (id.includes('assurance') || title.includes('assurance')) return "/images/motard-article-assurance20262.webp";
+        if (id === 'premiere-moto-accessoires-indispensables-conseils-a2') return "/images/premiere-moto-accessoires-hero.webp";
         if (id.includes('a2') || title.includes('a2')) return "/images/achat-occasion.webp";
         if (id.includes('taille') || title.includes('taille') || title.includes('hauteur')) return "/images/motard-articles-hauteurdeselle.webp";
         if (id.includes('occasion') || id.includes('pieges') || title.includes('pièges')) return "/images/evitelespieges.webp";

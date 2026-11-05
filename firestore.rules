@@ -25,7 +25,7 @@ service cloud.firestore {
       allow read: if true; 
       allow write: if isAdmin();
       // Stats publiques (clics téléphone, site web)
-      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stats_tel','stats_web','stats_vues']); 
+      // Les compteurs sont ecrits via /api/track-stat (Admin SDK), pas directement par le client.
       match /comments/{commentId} {
         // Une sous-collection subsiste après la suppression du document parent.
         // Les avis de cette fiche ne doivent alors plus être lisibles publiquement.

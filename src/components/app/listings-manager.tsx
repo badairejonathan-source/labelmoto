@@ -924,8 +924,8 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
               {cacheCount > 0 && <span className="ml-2 text-muted-foreground font-medium text-xs">({cacheCount} points)</span>}
             </p>
             {cacheUpdatedAt && allListings.length > cacheCount && (
-              <p className="text-[10px] text-orange-600 font-black mt-1">
-                ⚠️ {allListings.length - cacheCount} fiche(s) non synchronisée(s)
+              <p className="text-[10px] text-muted-foreground font-medium mt-1">
+                ℹ️ Écart annuaire / carte : {allListings.length - cacheCount} fiche(s) de plus que de points (GPS manquant, ID partagé ou décalage de cache).
               </p>
             )}
           </div>

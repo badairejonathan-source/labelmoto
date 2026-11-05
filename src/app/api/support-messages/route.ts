@@ -66,6 +66,7 @@ function serializeMessage(
     email: cleanText(data.email, 320),
     subject: cleanText(data.subject, 300),
     message: cleanText(data.message, 12000),
+    initiatedBy: data.initiatedBy === 'labelmoto' ? 'labelmoto' : 'user',
     senderType:
       data.senderType === 'pro'
         ? 'pro'

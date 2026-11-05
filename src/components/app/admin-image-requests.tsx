@@ -1,12 +1,11 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useFirebase } from '@/firebase/client';
-import { collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, orderBy, getDocs, doc, updateDoc, serverTimestamp, runTransaction, limit, type DocumentReference } from 'firebase/firestore';
 import { getStorage, ref, deleteObject } from 'firebase/storage';
 import { CheckCircle, X, ImageIcon, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { updateDocumentNonBlocking } from '@/firebase/client';
 
 interface ImageRequest {
   id: string;
@@ -76,56 +75,110 @@ export default function AdminImageRequests() {
     };
   }, [previewRequest]);
 
+  // Aucune photo ne doit être approuvée sans fiche destinataire UNIQUE et existante.
+  // L'association est inscrite dans image_requests au même commit que l'image de la fiche.
   const approve = async (req: ImageRequest) => {
     if (!firestore) return;
     setProcessing(req.id);
     try {
-      // Mettre à jour le document image_request
-      await updateDoc(doc(firestore, 'image_requests', req.id), {
-        status: 'approved',
-        approvedAt: serverTimestamp(),
-      });
-
-      // Mettre à jour la fiche dans toutes les collections
-      const cols = ['concessions', 'associations', 'relais', 'creators'];
-      for (const col of cols) {
-        const snap = await getDocs(query(collection(firestore, col), where('slug', '==', req.concessionSlug)));
-        if (!snap.empty) {
-          await updateDoc(snap.docs[0].ref, { imageUrl: req.imageUrl });
-          break;
-        }
+      if (!req.concessionSlug || !req.imageUrl || !req.storagePath || !req.userId ||
+          !req.storagePath.startsWith(`pending_images/${req.userId}/`) ||
+          req.storagePath.slice(`pending_images/${req.userId}/`.length).includes('/')) {
+        throw new Error('Demande incomplète ou chemin Storage incohérent : examen manuel nécessaire.');
       }
+
+      const matches: { collectionName: string; targetRef: DocumentReference }[] = [];
+      for (const collectionName of ['concessions', 'associations', 'relais', 'creators']) {
+        // Requête ciblée par slug, limitée à deux résultats pour détecter les doublons.
+        const snap = await getDocs(query(
+          collection(firestore, collectionName),
+          where('slug', '==', req.concessionSlug),
+          limit(2)
+        ));
+        for (const item of snap.docs) matches.push({ collectionName, targetRef: item.ref });
+        if (matches.length > 1) break;
+      }
+      if (matches.length !== 1) {
+        throw new Error(matches.length === 0
+          ? 'Aucune fiche correspondante : image non approuvée.'
+          : 'Plusieurs fiches ont ce slug : image non approuvée, vérifier manuellement.');
+      }
+
+      const target = matches[0];
+      const requestRef = doc(firestore, 'image_requests', req.id);
+      await runTransaction(firestore, async (tx) => {
+        // Toutes les lectures sont effectuées avant les écritures.
+        const currentRequest = await tx.get(requestRef);
+        const currentTarget = await tx.get(target.targetRef);
+        if (!currentRequest.exists() || !currentTarget.exists()) {
+          throw new Error('Demande ou fiche supprimée entre-temps : approbation annulée.');
+        }
+        const requestData = currentRequest.data();
+        const targetData = currentTarget.data();
+        if (requestData.status !== 'pending' ||
+            requestData.concessionSlug !== req.concessionSlug ||
+            requestData.userId !== req.userId ||
+            requestData.storagePath !== req.storagePath ||
+            requestData.imageUrl !== req.imageUrl ||
+            targetData.slug !== req.concessionSlug) {
+          throw new Error('Demande ou fiche modifiée entre-temps : approbation annulée.');
+        }
+        if (requestData.targetId || requestData.targetCollection) {
+          throw new Error('Cette demande possède déjà une association : vérification manuelle.');
+        }
+        // Conserver l'ancienne référence pour le retrait futur de tous les médias.
+        const previousImageUrl = typeof targetData.imageUrl === 'string'
+          ? targetData.imageUrl : null;
+        tx.update(target.targetRef, { imageUrl: req.imageUrl });
+        tx.update(requestRef, {
+          status: 'approved',
+          approvedAt: serverTimestamp(),
+          targetCollection: target.collectionName,
+          targetId: target.targetRef.id,
+          approvedStoragePath: req.storagePath,
+          previousImageUrl,
+        });
+      });
 
       setRequests(prev => prev.filter(r => r.id !== req.id));
       toast({ title: '✅ Image approuvée', description: `${req.concessionTitle}` });
     } catch (e: any) {
-      toast({ title: 'Erreur', description: e.message, variant: 'destructive' });
+      toast({ title: 'Image non approuvée', description: e.message, variant: 'destructive' });
+    } finally {
+      setProcessing(null);
     }
-    setProcessing(null);
   };
 
   const reject = async (req: ImageRequest) => {
     if (!firestore) return;
     setProcessing(req.id);
     try {
-      // Supprimer du Storage
+      const prefix = `pending_images/${req.userId}/`;
+      if (!req.userId || !req.storagePath || !req.storagePath.startsWith(prefix) ||
+          req.storagePath.slice(prefix.length).includes('/')) {
+        throw new Error('Chemin Storage ambigu : refus interrompu pour protéger les autres fichiers.');
+      }
       const storage = getStorage();
       try {
         await deleteObject(ref(storage, req.storagePath));
-      } catch {}
-
-      // Mettre à jour le statut
+      } catch (e: any) {
+        // Un objet déjà absent ne peut plus être diffusé depuis ce chemin.
+        if (e?.code !== 'storage/object-not-found') {
+          throw new Error('Suppression Storage non confirmée : demande maintenue en attente.');
+        }
+      }
       await updateDoc(doc(firestore, 'image_requests', req.id), {
         status: 'rejected',
         rejectedAt: serverTimestamp(),
+        storageDeletionConfirmed: true,
       });
-
       setRequests(prev => prev.filter(r => r.id !== req.id));
       toast({ title: '🗑️ Image refusée', description: `${req.concessionTitle}` });
     } catch (e: any) {
-      toast({ title: 'Erreur', description: e.message, variant: 'destructive' });
+      toast({ title: 'Refus incomplet', description: e.message, variant: 'destructive' });
+    } finally {
+      setProcessing(null);
     }
-    setProcessing(null);
   };
 
   const pending = requests.filter(r => r.status === 'pending').length;

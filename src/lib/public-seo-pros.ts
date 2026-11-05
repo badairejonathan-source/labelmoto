@@ -1,4 +1,3 @@
-import { loadPublicMapPoints } from '@/lib/public-map-points';
 
 export interface PublicSeoPro {
   id: string;
@@ -24,6 +23,8 @@ const PUBLIC_SEO_PROS_URL =
   'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/seo-pros.json';
 
 let publicSeoProsPromise: Promise<PublicSeoPro[]> | null = null;
+let publicSeoProsExpiresAt = 0;
+const PUBLIC_INDEX_TTL_MS = 30_000;
 
 function collectionFromSection(
   section: string
@@ -36,9 +37,7 @@ function collectionFromSection(
 }
 
 async function fetchSeoPros(): Promise<PublicSeoPro[]> {
-  const response = await fetch(PUBLIC_SEO_PROS_URL, {
-    cache: 'force-cache',
-  });
+  const response = await fetch(PUBLIC_SEO_PROS_URL, { cache: 'no-cache' });
 
   if (!response.ok) {
     throw new Error(
@@ -102,35 +101,10 @@ async function fetchSeoPros(): Promise<PublicSeoPro[]> {
   }));
 }
 
-async function fallbackFromMapPoints(): Promise<PublicSeoPro[]> {
-  const points = await loadPublicMapPoints();
-
-  return points.map(point => ({
-    id: point.id,
-    collection: collectionFromSection(point.appSection),
-    title: point.title,
-    slug: point.slug,
-    address: point.address,
-    category: point.category,
-    rating:
-      point.rating === null
-        ? null
-        : Number(point.rating),
-    reviewCount: null,
-    brands: point.brands,
-    departement: '',
-    country: '',
-    appSection: point.appSection,
-    latitude: point.latitude,
-    longitude: point.longitude,
-    isMultibrand: point.brands.length >= 2,
-  }));
-}
-
 export function loadPublicSeoPros(): Promise<PublicSeoPro[]> {
-  if (!publicSeoProsPromise) {
+  if (!publicSeoProsPromise || Date.now() >= publicSeoProsExpiresAt) {
+    publicSeoProsExpiresAt = Date.now() + PUBLIC_INDEX_TTL_MS;
     publicSeoProsPromise = fetchSeoPros()
-      .catch(() => fallbackFromMapPoints())
       .then(pros =>
         pros
           .filter(pro => pro.id && pro.collection)
@@ -140,6 +114,7 @@ export function loadPublicSeoPros(): Promise<PublicSeoPro[]> {
       )
       .catch(error => {
         publicSeoProsPromise = null;
+        publicSeoProsExpiresAt = 0;
         throw error;
       });
   }

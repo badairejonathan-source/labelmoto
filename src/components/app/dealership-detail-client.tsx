@@ -1126,8 +1126,8 @@ export default function DealershipDetailClient({ pro, hasCityPage = false }: Dea
                 <div className="flex items-start gap-3 p-6 bg-muted/30 rounded-2xl border-2 border-dashed">
                   <MapPin className="h-6 w-6 text-brand shrink-0" />
                   <div>
-                    <p className="font-black text-lg uppercase tracking-tight">{pro.address}</p>
-                    <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_itineraire', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_itineraire', { pro: pro.title, source: 'fiche' }); trackStat('stats_itineraire'); }}>Calculer l'itinéraire</a></Button>
+                    <p className="font-black text-lg uppercase tracking-tight">{pro.locationMode === 'city' ? (pro.city || pro.address) : pro.address}</p>
+                    {pro.locationMode !== 'city' && <Button asChild variant="link" className="p-0 h-auto text-brand font-black uppercase text-[10px]"><a href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`} target="_blank" rel="noopener noreferrer" onClick={() => { trackBeacon('clic_itineraire', { pro: pro.title, source: 'fiche', slug: pro.slug || pro.id || '' }); trackEvent('clic_itineraire', { pro: pro.title, source: 'fiche' }); trackStat('stats_itineraire'); }}>Calculer l'itinéraire</a></Button>}
                   </div>
                 </div>
               </div>

@@ -697,6 +697,17 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
           <p className="text-sm font-black uppercase text-brand italic">{pro.category || 'Expert moto'}</p>
         </div>
         
+        {pro.locationMode === 'city' ? (
+          <div className="block bg-muted/30 p-5 rounded-3xl border-2 border-dashed">
+            <div className="flex items-start gap-3">
+              <MapPin className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-sm font-bold leading-snug">{pro.city || pro.address || 'Ville de rattachement'}</p>
+                <p className="text-xs text-muted-foreground mt-1">Professionnel sans accueil du public</p>
+              </div>
+            </div>
+          </div>
+        ) : (
         <a
           href={`https://www.google.com/maps/dir/?api=1&destination=${pro.latitude},${pro.longitude}`}
           target="_blank"
@@ -716,6 +727,7 @@ const SidebarDetailView = ({ dealershipId, point, onBack }: { dealershipId: stri
             </div>
           </div>
         </a>
+        )}
         <div className="grid grid-cols-3 gap-2">
           {pro.phoneNumber && (
             <Button asChild variant="outline" className="h-14 rounded-2xl font-black uppercase text-[8px] md:text-[9px] border-2 px-1">
@@ -1139,6 +1151,8 @@ function MapPageComponent() {
                     data.address ||
                     ''
                   ),
+                locationMode:
+                  data.lm === 'city' ? 'city' : (data.lm === 'physical' ? 'physical' : undefined),
                 brands:
                   Array.isArray(data.b)
                     ? data.b

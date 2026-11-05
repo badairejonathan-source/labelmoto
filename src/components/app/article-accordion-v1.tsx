@@ -72,40 +72,40 @@ function ModelCard({ model }: { model: ArticleModel }) {
     });
 
   const body = (
-    <div className="w-[260px] shrink-0 snap-start overflow-hidden rounded-[1.6rem] border border-border/60 bg-background shadow-sm sm:w-[280px]">
-      <div className="relative aspect-[4/3] bg-muted/30">
+    <div className="flow-root h-full w-[86vw] max-w-[430px] min-w-0 shrink-0 snap-start rounded-3xl border-2 border-brand/20 bg-card p-6 shadow-md transition-all hover:border-brand/50 sm:w-[420px] md:w-[480px] md:max-w-[480px]">
+      <div
+        data-labelmoto-moto-preview-image="true"
+        className="relative float-right mb-4 ml-4 flex aspect-[8/5] w-[48%] min-w-[150px] max-w-[220px] items-center justify-center overflow-hidden rounded-2xl border border-brand/25 bg-[#faf8f5] p-2.5 shadow-sm sm:ml-5"
+      >
         {image ? (
           <Image
             src={image}
             alt={model.name}
             fill
-            className="object-contain p-4 sm:p-5"
-            sizes="(max-width: 640px) 76vw, 280px"
+            className="object-contain p-2.5"
+            sizes="(max-width: 640px) 48vw, 220px"
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Bike className="h-16 w-16 text-muted-foreground/25" />
+            <Bike className="h-12 w-12 text-muted-foreground/25" />
           </div>
         )}
       </div>
 
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h4 className="font-black text-base leading-tight text-foreground">
-              {model.name}
-            </h4>
-            <p className="mt-1 text-xs font-bold text-brand">
-              {model.system}
-            </p>
-          </div>
+      <div>
+        <h4 className="text-xl font-black uppercase tracking-tight text-foreground leading-tight">
+          {model.name}
+        </h4>
 
-          {model.badge ? (
-            <span className="shrink-0 rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-brand">
-              {model.badge}
-            </span>
-          ) : null}
-        </div>
+        <p className="mt-2 text-[10px] font-black uppercase tracking-widest text-brand">
+          {model.system}
+        </p>
+
+        {model.badge ? (
+          <span className="mt-3 inline-flex rounded-full bg-brand/10 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-brand">
+            {model.badge}
+          </span>
+        ) : null}
       </div>
     </div>
   );
@@ -113,7 +113,7 @@ function ModelCard({ model }: { model: ArticleModel }) {
   if (!model.href) return body;
 
   return (
-    <Link href={model.href} className="block w-[260px] shrink-0 sm:w-[280px]">
+    <Link href={model.href} className="block h-full shrink-0">
       {body}
     </Link>
   );
@@ -133,7 +133,7 @@ function ModelCarousel({ models = [] }: { models?: ArticleModel[] }) {
         </span>
       </div>
 
-      <div className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-4 overscroll-x-contain">
+      <div className="flex w-full max-w-full min-w-0 items-stretch snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 overscroll-x-contain md:gap-5 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500">
         {models.map((model) => (
           <ModelCard
             key={`${model.name}-${model.system}`}

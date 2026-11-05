@@ -34,6 +34,11 @@ export interface ProfessionalListingFormValues {
   appSection: ProfessionalAppSection;
   category: string;
   address: string;
+  locationMode?: 'physical' | 'city';
+  streetNumber?: string;
+  street?: string;
+  postalCode?: string;
+  city?: string;
   phone: string;
   email: string;
   website: string;
@@ -245,6 +250,11 @@ function buildInitialValues(
     appSection: initialValues?.appSection || 'shopping',
     category: initialValues?.category || '',
     address: initialValues?.address || '',
+    locationMode: initialValues?.locationMode || 'physical',
+    streetNumber: initialValues?.streetNumber || '',
+    street: initialValues?.street || '',
+    postalCode: initialValues?.postalCode || '',
+    city: initialValues?.city || '',
     phone: initialValues?.phone || '',
     email: initialValues?.email || accountEmail || '',
     website: initialValues?.website || '',
@@ -292,6 +302,65 @@ export default function ProfessionalListingForm({
   const [isImportingMaps, setIsImportingMaps] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [adminToolError, setAdminToolError] = useState('');
+  // Communes officielles associees au code postal (sans modification du mode admin).
+  const [communesForPostalCode, setCommunesForPostalCode] = useState<Array<{ code: string; nom: string }>>([]);
+  const [isLoadingPostalCommunes, setIsLoadingPostalCommunes] = useState(false);
+  const [citySuggestionsOpen, setCitySuggestionsOpen] = useState(false);
+  const [confirmedCity, setConfirmedCity] = useState('');
+  const [cityLookupError, setCityLookupError] = useState('');
+
+  useEffect(() => {
+    if (adminMode) return;
+    const postalCode = (values.postalCode || '').trim();
+    setCommunesForPostalCode([]);
+    setConfirmedCity('');
+    setCitySuggestionsOpen(false);
+    setCityLookupError('');
+    if (!/^\d{5}$/.test(postalCode)) {
+      setIsLoadingPostalCommunes(false);
+      return;
+    }
+    const majorCityName = postalCode === '75000' || /^750(0[1-9]|1[0-9]|20)$/.test(postalCode)
+      ? 'Paris'
+      : postalCode === '69000' || /^6900[1-9]$/.test(postalCode)
+        ? 'Lyon'
+        : postalCode === '13000' || /^130(0[1-9]|1[0-6])$/.test(postalCode)
+          ? 'Marseille'
+          : null;
+    if (majorCityName) {
+      setCommunesForPostalCode([{ code: postalCode, nom: majorCityName }]);
+      setCitySuggestionsOpen(true);
+      setIsLoadingPostalCommunes(false);
+      return;
+    }
+    const controller = new AbortController();
+    setIsLoadingPostalCommunes(true);
+    void (async () => {
+      try {
+        const params = new URLSearchParams({ codePostal: postalCode, fields: 'nom,code,codesPostaux', format: 'json' });
+        const response = await fetch('https://geo.api.gouv.fr/communes?' + params.toString(), { signal: controller.signal });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const json: unknown = await response.json();
+        if (!Array.isArray(json)) throw new Error('Reponse invalide');
+        const items = json.filter((item: any) =>
+          typeof item?.nom === 'string' && typeof item?.code === 'string' &&
+          Array.isArray(item.codesPostaux) && item.codesPostaux.includes(postalCode)
+        ).map((item: any) => ({ code: String(item.code), nom: String(item.nom) }));
+        items.sort((a, b) => a.nom.localeCompare(b.nom, 'fr'));
+        if (!controller.signal.aborted) {
+          setCommunesForPostalCode(items);
+          setCitySuggestionsOpen(true);
+          if (!items.length) setCityLookupError('Aucune commune trouvee pour ce code postal.');
+        }
+      } catch (error) {
+        if (!controller.signal.aborted) setCityLookupError('Impossible de charger les communes. Reessayez.');
+      } finally {
+        if (!controller.signal.aborted) setIsLoadingPostalCommunes(false);
+      }
+    })();
+    return () => controller.abort();
+  }, [adminMode, values.postalCode]);
+
 
   useEffect(() => {
     setValues(initial);
@@ -324,6 +393,11 @@ export default function ProfessionalListingForm({
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!adminMode && (!confirmedCity || confirmedCity !== (values.city || '').trim())) {
+      setCityLookupError('Selectionne une ville dans la liste des communes correspondant au code postal.');
+      setCitySuggestionsOpen(true);
+      return;
+    }
     setIsSubmitting(true);
     try {
       const formatted = DAYS.reduce<Record<DayKey, string>>((acc, day) => {
@@ -331,8 +405,22 @@ export default function ProfessionalListingForm({
         return acc;
       }, {} as Record<DayKey, string>);
 
+      const mode = values.locationMode || 'physical';
+      const city = (values.city || '').trim();
+      const postalCode = (values.postalCode || '').trim();
+      const street = (values.street || '').trim();
+      const streetNumber = (values.streetNumber || '').trim();
+      const formattedAddress = adminMode
+        ? values.address
+        : [
+            ...(mode === 'physical' ? [[streetNumber, street].filter(Boolean).join(' ')] : []),
+            [postalCode, city].filter(Boolean).join(' '),
+          ].filter(Boolean).join(', ');
+
       await onSubmit({
         ...values,
+        address: formattedAddress,
+        locationMode: mode,
         email: emailReadOnly ? (accountEmail || values.email) : values.email,
         horaires: formatted,
       });
@@ -533,16 +621,94 @@ export default function ProfessionalListingForm({
             </div>
           )}
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Adresse complète</label>
-            <Textarea
-              value={values.address}
-              onChange={event => update('address', event.target.value)}
-              required
-              placeholder="Numéro, rue, code postal et ville"
-              className="font-bold min-h-[80px] rounded-xl"
-            />
-          </div>
+          {adminMode ? (
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Adresse complète</label>
+              <Textarea value={values.address} onChange={event => update('address', event.target.value)} required
+                placeholder="Numéro, rue, code postal et ville" className="font-bold min-h-[80px] rounded-xl" />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Localisation professionnelle</label>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="flex items-start gap-2 rounded-xl border p-3 text-sm font-semibold cursor-pointer">
+                    <input type="radio" name="locationMode" value="physical" checked={values.locationMode !== 'city'}
+                      onChange={() => update('locationMode', 'physical')} />
+                    <span>Adresse physique accessible au public</span>
+                  </label>
+                  <label className="flex items-start gap-2 rounded-xl border p-3 text-sm font-semibold cursor-pointer">
+                    <input type="radio" name="locationMode" value="city" checked={values.locationMode === 'city'}
+                      onChange={() => update('locationMode', 'city')} />
+                    <span>Ville uniquement (sans accueil du public)</span>
+                  </label>
+                </div>
+              </div>
+              {values.locationMode !== 'city' && (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold">Numéro (facultatif)</label>
+                    <Input value={values.streetNumber || ''} onChange={e => update('streetNumber', e.target.value)} placeholder="14" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold">Rue ou lieu-dit</label>
+                    <Input required value={values.street || ''} onChange={e => update('street', e.target.value)} placeholder="Rue Moussard" />
+                  </div>
+                </div>
+              )}
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Code postal</label>
+                  <Input required value={values.postalCode || ''} maxLength={5} pattern="[0-9]{5}"
+                    onChange={e => {
+                      const nextPostal = e.target.value.replace(/\D/g, '').slice(0, 5);
+                      setValues(previous => ({ ...previous, postalCode: nextPostal, city: '' }));
+                      setConfirmedCity('');
+                    }}
+                    placeholder="13400" inputMode="numeric" autoComplete="postal-code" className="h-12 rounded-xl font-bold" />
+                </div>
+                <div className="space-y-2 relative">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground px-1">Ville</label>
+                  <Input required value={values.city || ''}
+                    disabled={!/^\d{5}$/.test(values.postalCode || '') || isLoadingPostalCommunes}
+                    onFocus={() => setCitySuggestionsOpen(true)}
+                    onChange={e => {
+                      update('city', e.target.value);
+                      setConfirmedCity('');
+                      setCityLookupError('');
+                      setCitySuggestionsOpen(true);
+                    }}
+                    role="combobox" aria-autocomplete="list" aria-expanded={citySuggestionsOpen}
+                    aria-controls="professional-city-suggestions" autoComplete="off"
+                    placeholder={isLoadingPostalCommunes ? 'Chargement des villes...' : 'Commence a taper une ville'} className="h-12 rounded-xl font-bold" />
+                  {citySuggestionsOpen && !isLoadingPostalCommunes && communesForPostalCode.length > 0 && (
+                    <div id="professional-city-suggestions" role="listbox"
+                      className="absolute left-0 right-0 top-full z-[80] mt-1 max-h-64 overflow-y-auto rounded-xl border border-border bg-white p-1 shadow-xl">
+                      {communesForPostalCode.filter(commune =>
+                        commune.nom.toLocaleLowerCase('fr').includes((values.city || '').trim().toLocaleLowerCase('fr'))
+                      ).map(commune => (
+                        <button type="button" role="option" aria-selected={confirmedCity === commune.nom}
+                          key={commune.code} onMouseDown={e => e.preventDefault()}
+                          onClick={() => {
+                            update('city', commune.nom);
+                            setConfirmedCity(commune.nom);
+                            setCitySuggestionsOpen(false);
+                            setCityLookupError('');
+                          }}
+                          className="block w-full min-h-11 rounded-lg px-3 py-3 text-left text-sm font-bold text-foreground hover:bg-muted focus:bg-muted focus:outline-none transition-colors">
+                          {commune.nom}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {cityLookupError && <p role="alert" className="text-xs text-red-600">{cityLookupError}</p>}
+                </div>
+              </div>
+              {values.locationMode === 'city' && (
+                <p className="text-xs text-muted-foreground">Seule la ville de rattachement sera indiquée. Aucun itinéraire vers une adresse privée ne doit être proposé.</p>
+              )}
+            </div>
+          )}
 
           {adminMode && (
             <div className="rounded-2xl border border-blue-200 bg-blue-50/60 p-4 space-y-3">

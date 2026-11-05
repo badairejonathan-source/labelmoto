@@ -173,7 +173,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
           "value": "3,2 L ; ce n'est pas une quantité de vidange"
         },
         {
-          "label": "Filtre ? huile",
+          "label": "Filtre à huile",
           "value": "Référence OEM 2026 à confirmer par VIN"
         },
         {
@@ -181,7 +181,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
           "value": "1 000 km, puis tous les 12 000 km"
         },
         {
-          "label": "Filtre ? huile",
+          "label": "Filtre à huile",
           "value": "1 000, 24 000 et 48 000 km"
         }
       ],
@@ -189,7 +189,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
     },
     {
       "id": "filtre-air",
-      "title": "Filtre ? air",
+      "title": "Filtre à air",
       "summary": "Remplacement à 24 000 et 48 000 km",
       "rows": [
         {
@@ -414,7 +414,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
       "observed_price": "22,90 EUR TTC / litre - Motul E-TEC 10W-30, prix vendeur indicatif"
     },
     {
-      "part": "Filtre ? huile",
+      "part": "Filtre à huile",
       "specification": "Filtre Honda : référence OEM européenne 2026 à confirmer par VIN",
       "replacement_interval": "1 000, 24 000 et 48 000 km",
       "note": "Prix observé sur un catalogue vendeur ; référence OEM européenne 2026 à confirmer.",
@@ -422,7 +422,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
       "observed_price": "16,86 EUR TTC / unite - tarif catalogue vendeur Honda"
     },
     {
-      "part": "Filtre ? air",
+      "part": "Filtre à air",
       "specification": "élément de filtre à air : référence OEM 2026 à confirmer par VIN",
       "replacement_interval": "24 000 et 48 000 km",
       "note": "Tarif vendeur indicatif ; affectation OEM 2026 et E-Clutch à confirmer.",
@@ -856,7 +856,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
           "value": "3,2 L ; ce n'est pas une quantité de vidange"
         },
         {
-          "label": "Filtre ? huile",
+          "label": "Filtre à huile",
           "value": "Référence OEM 2026 à confirmer par VIN"
         },
         {
@@ -864,7 +864,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
           "value": "1 000 km, puis tous les 12 000 km"
         },
         {
-          "label": "Filtre ? huile",
+          "label": "Filtre à huile",
           "value": "1 000, 24 000 et 48 000 km"
         }
       ],
@@ -872,7 +872,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
     },
     {
       "id": "filtre-air",
-      "title": "Filtre ? air",
+      "title": "Filtre à air",
       "summary": "Remplacement à 24 000 et 48 000 km",
       "rows": [
         {
@@ -1101,7 +1101,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
       "observed_price": "22,90 EUR TTC / litre - Motul E-TEC 10W-30, prix vendeur indicatif"
     },
     {
-      "part": "Filtre ? huile",
+      "part": "Filtre à huile",
       "specification": "Filtre Honda : référence OEM européenne 2026 à confirmer par VIN",
       "replacement_interval": "1 000, 24 000 et 48 000 km",
       "note": "Prix observé sur un catalogue vendeur ; référence OEM européenne 2026 à confirmer.",
@@ -1109,7 +1109,7 @@ export const hondaCbr500rDraftV2: MotorcycleSheetV2 = {
       "observed_price": "16,86 EUR TTC / unite - tarif catalogue vendeur Honda"
     },
     {
-      "part": "Filtre ? air",
+      "part": "Filtre à air",
       "specification": "élément de filtre à air : référence OEM 2026 à confirmer par VIN",
       "replacement_interval": "24 000 et 48 000 km",
       "note": "Tarif vendeur indicatif ; affectation OEM 2026 et E-Clutch à confirmer.",

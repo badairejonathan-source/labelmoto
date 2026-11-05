@@ -9,6 +9,8 @@ export interface PublicMapPoint {
   rating: number | null;
   imgUrl: string | null;
   address: string;
+  locationMode?: 'physical' | 'city';
+  departement?: string;
   brands: string[];
 }
 
@@ -19,6 +21,8 @@ const PUBLIC_POINTS_REMOTE_URL =
   'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json';
 
 let publicMapPointsPromise: Promise<PublicMapPoint[]> | null = null;
+let publicMapPointsExpiresAt = 0;
+const PUBLIC_INDEX_TTL_MS = 30_000;
 
 async function fetchPointsJson(url: string): Promise<any[]> {
   const response = await fetch(url, { cache: url === PUBLIC_POINTS_REMOTE_URL ? 'no-cache' : 'force-cache' });
@@ -37,12 +41,18 @@ async function fetchPointsJson(url: string): Promise<any[]> {
 }
 
 export function loadPublicMapPoints(): Promise<PublicMapPoint[]> {
-  if (!publicMapPointsPromise) {
+  if (!publicMapPointsPromise || Date.now() >= publicMapPointsExpiresAt) {
+    publicMapPointsExpiresAt = Date.now() + PUBLIC_INDEX_TTL_MS;
     publicMapPointsPromise = fetchPointsJson(PUBLIC_POINTS_REMOTE_URL)
-      .catch(() => fetchPointsJson(PUBLIC_POINTS_URL))
+      .catch(error => {
+        // Une copie locale figee peut contenir une fiche retiree.
+        // On garde le mode hors-ligne UNIQUEMENT en developpement.
+        if (process.env.NODE_ENV !== 'production') return fetchPointsJson(PUBLIC_POINTS_URL);
+        throw error;
+      })
       .then(data =>
         data
-          .map((p: any) => ({
+          .map((p: any): PublicMapPoint => ({
             id: String(p.id || ''),
             latitude: Number(p.lat),
             longitude: Number(p.lng),
@@ -53,6 +63,8 @@ export function loadPublicMapPoints(): Promise<PublicMapPoint[]> {
             rating: p.r ?? null,
             imgUrl: p.i || null,
             address: String(p.addr || ''),
+            locationMode: p.lm === 'city' ? 'city' : (p.lm === 'physical' ? 'physical' : undefined),
+            departement: String(p.d || ''),
             brands: Array.isArray(p.b) ? p.b : [],
           }))
           .filter(
@@ -64,6 +76,7 @@ export function loadPublicMapPoints(): Promise<PublicMapPoint[]> {
       )
       .catch(error => {
         publicMapPointsPromise = null;
+        publicMapPointsExpiresAt = 0;
         throw error;
       });
   }

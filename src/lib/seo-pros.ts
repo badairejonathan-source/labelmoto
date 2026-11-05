@@ -1,10 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { getStorage } from 'firebase-admin/storage';
-import {
-  getAdminApp,
-  getAdminFirestore,
-} from '@/lib/firebase-admin';
+import { getAdminApp } from '@/lib/firebase-admin';
 
 export interface SeoPro {
   id: string;
@@ -29,8 +26,6 @@ export interface SeoPro {
 
 const SEO_PROS_URL =
   'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/seo-pros.json';
-
-let seoProsPromise: Promise<SeoPro[]> | null = null;
 
 let metierSeoProsPromise: Promise<SeoPro[]> | null = null;
 let metierSeoProsExpiresAt = 0;
@@ -58,10 +53,10 @@ function collectionFromSection(
   return 'concessions';
 }
 
-async function fetchSeoPros(): Promise<SeoPro[]> {
-  const response = await fetch(SEO_PROS_URL, {
-    next: { revalidate: 86400 },
-  });
+async function fetchSeoPros(fresh: boolean): Promise<SeoPro[]> {
+  const response = await fetch(SEO_PROS_URL, fresh
+    ? { cache: 'no-store' }
+    : { next: { revalidate: 30 } });
 
   if (!response.ok) {
     throw new Error(`seo-pros.json HTTP ${response.status}`);
@@ -74,72 +69,6 @@ async function fetchSeoPros(): Promise<SeoPro[]> {
   }
 
   return data as SeoPro[];
-}
-
-async function loadFromFirestore(): Promise<SeoPro[]> {
-  const db = getAdminFirestore();
-
-  const collections = [
-    'concessions',
-    'associations',
-    'relais',
-    'creators',
-  ] as const;
-
-  const snapshots = await Promise.all(
-    collections.map(collectionName =>
-      db.collection(collectionName).get()
-    )
-  );
-
-  const result: SeoPro[] = [];
-
-  snapshots.forEach((snapshot, index) => {
-    const collectionName = collections[index];
-
-    snapshot.docs.forEach(doc => {
-      const d = doc.data();
-      const lat = numberOrNull(d.latitude ?? d.position?.[0]);
-      const lng = numberOrNull(d.longitude ?? d.position?.[1]);
-      const brands = Array.isArray(d.brands) ? d.brands : [];
-
-      result.push({
-        id: doc.id,
-        collection: collectionName,
-        title: d.title || doc.id,
-        slug: d.slug || doc.id,
-        address: d.address || '',
-        category: d.category || '',
-        phoneNumber: d.phoneNumber || undefined,
-        website: d.website || undefined,
-        rating: numberOrNull(d.rating),
-        reviewCount: numberOrNull(d.reviewCount),
-        brands,
-        departement: d.departement || '',
-        country: d.country || '',
-        appSection:
-          d.appSection ||
-          (collectionName === 'associations'
-            ? 'association'
-            : collectionName === 'relais'
-              ? 'relais'
-              : collectionName === 'creators'
-                ? 'creator'
-                : 'shopping'),
-        latitude: lat,
-        longitude: lng,
-        isMultibrand:
-          d.isMultibrand === true || brands.length >= 2,
-        updatedAt:
-          d.updatedAt?.toDate?.().toISOString?.() ||
-          d.publishedAt?.toDate?.().toISOString?.() ||
-          d.timestamp?.toDate?.().toISOString?.() ||
-          null,
-      });
-    });
-  });
-
-  return result;
 }
 
 function loadFromLocalPoints(): SeoPro[] {
@@ -220,26 +149,15 @@ export async function loadMetierSeoPros(): Promise<SeoPro[]> {
 
     metierSeoProsPromise =
       loadMetierSeoProsFromStorage()
-        .catch(
-          async storageError => {
-            console.warn(
-              '[METIERS] index Storage prive indisponible, fallback Firestore:',
-              storageError
-            );
-
-            try {
-              return await loadFromFirestore();
-            }
-            catch (firestoreError) {
-              console.error(
-                '[METIERS] fallback Firestore impossible:',
-                firestoreError
-              );
-
-              return loadFromLocalPoints();
-            }
+        .catch(storageError => {
+          // Production: ne jamais lancer un scan massif Firestore ou lire
+          // l'index local potentiellement obsolete apres un retrait.
+          if (process.env.NODE_ENV === 'production') {
+            console.error('[METIERS] index indisponible : affichage interrompu');
+            throw storageError;
           }
-        )
+          return loadFromLocalPoints();
+        })
         .catch(error => {
           metierSeoProsPromise =
             null;
@@ -254,39 +172,18 @@ export async function loadMetierSeoPros(): Promise<SeoPro[]> {
   return metierSeoProsPromise;
 }
 
-export async function loadSeoPros(): Promise<SeoPro[]> {
-  if (!seoProsPromise) {
-    seoProsPromise = fetchSeoPros().catch(async remoteError => {
-      // En développement on évite volontairement un scan Firestore
-      // simplement pour afficher une page SEO locale.
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          '[SEO] index distant indisponible, fallback points.json local'
-        );
-
-        return loadFromLocalPoints();
-      }
-
-      // Premier déploiement : seo-pros.json peut ne pas encore exister.
-      // Un seul chargement Firestore par processus permet de construire
-      // les pages, puis le prochain rebuild produira l'index permanent.
-      try {
-        console.warn(
-          '[SEO] index distant indisponible, fallback Firestore:',
-          remoteError
-        );
-
-        return await loadFromFirestore();
-      } catch (firestoreError) {
-        console.error(
-          '[SEO] fallback Firestore impossible:',
-          firestoreError
-        );
-
-        return loadFromLocalPoints();
-      }
-    });
+/** Lecture fraiche pour sitemap apres retrait, cache court ailleurs. */
+export async function loadSeoPros(options: { fresh?: boolean } = {}): Promise<SeoPro[]> {
+  try {
+    return await fetchSeoPros(options.fresh === true);
+  } catch (remoteError) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[SEO] index distant indisponible, fallback local developpement');
+      return loadFromLocalPoints();
+    }
+    // Un fallback local peut ressusciter une fiche effacee.
+    // Refuser l'affichage plutot que servir un index obsolete.
+    console.error('[SEO] index distant indisponible : refus du fallback obsolete');
+    throw remoteError;
   }
-
-  return seoProsPromise;
 }

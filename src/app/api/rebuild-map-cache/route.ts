@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import * as admin from 'firebase-admin';
+import { withSharedIndexLock } from '@/lib/pro-index-coordination-v23';
+import { createHash } from 'node:crypto';
 import {
   getAdminAuth,
   getAdminFirestore,
@@ -137,6 +139,12 @@ export async function POST(request: NextRequest) {
       decodedToken.uid
     );
 
+    // Aucun balayage de fiches tant que le verrou partagé n'est pas acquis.
+    // Refus par défaut, tant que le protocole V23.2 n'est pas explicitement autorisé.
+    if (process.env.LABELMOTO_INDEX_WRITES_V23 !== 'ENABLED') {
+      return NextResponse.json({ ok: false, error: 'Reconstruction index indisponible : verrou V23.2 non activé' }, { status: 503 });
+    }
+    return await withSharedIndexLock(db, 'rebuild', async lock => {
     const cols = [
       { id: 'concessions', section: 'shopping', cat: 'concession' },
       { id: 'associations', section: 'association', cat: 'association' },
@@ -227,6 +235,9 @@ export async function POST(request: NextRequest) {
 
         if (brands.length) obj.b = brands;
         if (data.departement) obj.d = data.departement;
+        if (data.locationMode === 'city' || data.locationMode === 'physical') {
+          obj.lm = data.locationMode;
+        }
 
         points.push(obj);
       });
@@ -241,27 +252,43 @@ export async function POST(request: NextRequest) {
     const pointsFile = bucket.file('public/points.json');
     const seoFile = bucket.file('public/seo-pros.json');
 
-    await Promise.all([
-      pointsFile.save(JSON.stringify(points), {
-        contentType: 'application/json',
-        metadata: {
-          cacheControl: 'public, max-age=60',
-        },
-      }),
-
-      seoFile.save(JSON.stringify(seoPros), {
-        contentType: 'application/json',
-        metadata: {
-          cacheControl:
-            'public, max-age=3600, stale-while-revalidate=86400',
-        },
-      }),
-    ]);
-
-    await Promise.all([
-      pointsFile.makePublic(),
-      seoFile.makePublic(),
-    ]);
+    // Les deux objets sont écrits successivement : aucune transaction Storage commune.
+    // En cas d'échec après le premier, le verrou est maintenu en review_required.
+    const objects = [
+      { file: pointsFile, data: JSON.stringify(points), cacheControl: 'public, max-age=60' },
+      { file: seoFile, data: JSON.stringify(seoPros), cacheControl: 'public, max-age=3600, stale-while-revalidate=86400' },
+    ];
+    const preconditions = [];
+    for (const obj of objects) {
+      let generation = 0;
+      try {
+        const [m] = await obj.file.getMetadata();
+        const n = Number(m.generation);
+        if (!Number.isSafeInteger(n) || n <= 0) throw new Error('Génération index invalide');
+        generation = n;
+      } catch (e: any) {
+        if (e?.code !== 404) throw e;
+      }
+      preconditions.push(generation);
+    }
+    await lock.markWriteStarted();
+    for (let i = 0; i < objects.length; i++) {
+      await lock.assertHeld();
+      const obj = objects[i];
+      await obj.file.save(obj.data, {
+        contentType: 'application/json', resumable: false,
+        metadata: { cacheControl: obj.cacheControl },
+        preconditionOpts: { ifGenerationMatch: preconditions[i] },
+      });
+      await obj.file.makePublic();
+    }
+    // Vérification du contenu effectivement visible avant la libération du verrou.
+    for (const obj of objects) {
+      const [raw] = await obj.file.download();
+      const expected = createHash('sha256').update(obj.data).digest('hex');
+      const actual = createHash('sha256').update(raw).digest('hex');
+      if (actual !== expected) throw new Error('Index modifié pendant reconstruction : examen manuel');
+    }
 
     const pointsUrl =
       'https://storage.googleapis.com/studio-4801889514-40ebd.firebasestorage.app/public/points.json';
@@ -278,6 +305,8 @@ export async function POST(request: NextRequest) {
       seoUrl,
     });
 
+    await lock.assertHeld();
+    lock.markVerified();
     return NextResponse.json({
       ok: true,
       count: points.length,
@@ -285,6 +314,7 @@ export async function POST(request: NextRequest) {
       url: pointsUrl,
       seoUrl,
     });
+    }); // Fin section critique : lecture source et écritures coordonnées.
   } catch (e: any) {
     return NextResponse.json(
       {

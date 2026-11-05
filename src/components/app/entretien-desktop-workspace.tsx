@@ -20,8 +20,8 @@ import {
 import LabelMotoLogo from '@/components/app/logo';
 import UserMenu from '@/components/app/user-menu';
 import EntretienRoadBackdrop from '@/components/app/entretien-road-backdrop';
+import { LabelMotoRoadHeaderEntry } from '@/components/app/labelmoto-road-finishes';
 import { useUser } from '@/firebase/client';
-import Footer from '@/components/app/footer';
 import FicheClient from '@/components/app/fiche-client';
 
 type SheetModel = {
@@ -738,14 +738,13 @@ const closeSheet =
   return (
     <div
       className="
-        fixed
-        inset-0
+        relative
         z-[1900]
         hidden
         overflow-hidden
         bg-[#fbfcfc]
         lg:block
-          min-h-screen
+        min-h-screen
         "
     >
       {/* ==================================================
@@ -760,7 +759,7 @@ const closeSheet =
           inset-0
           z-0
           overflow-hidden
-          opacity-[0.34]
+          opacity-[1]
         "
       >
         <EntretienRoadBackdrop />
@@ -783,6 +782,7 @@ const closeSheet =
           backdrop-blur-xl
         "
       >
+        <LabelMotoRoadHeaderEntry />
         <div
           className="
             flex
@@ -908,7 +908,7 @@ const closeSheet =
           w-[394px]
           flex-col
           overflow-hidden
-          bg-transparent
+          bg-[#fbfcfc]
           pr-5
           sticky
           top-[104px]
@@ -1223,6 +1223,19 @@ const closeSheet =
                 );
               }
             )}
+            {/* Catalogue documentaire : avertissements de compatibilite conserves. */}
+              {process.env.NODE_ENV === "development" && (
+<a
+                href="/entretien/consommables"
+                aria-label="Voir tous les consommables moto"
+                className="group block rounded-[18px] border border-brand/25 bg-[#fff9f5] px-4 py-4 text-left shadow-[0_3px_14px_rgba(0,0,0,0.02)] transition-colors hover:bg-[#fff1e7] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              >
+                <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-brand">Consommables moto</span>
+                <span className="mt-1 block text-[14px] font-bold text-[#151515]">Voir tous les consommables</span>
+                <span className="mt-1 block text-[12px] leading-relaxed text-muted-foreground">Filtres, bougies, plaquettes et entretien : choisissez votre moto.</span>
+                <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-brand">Acceder au catalogue <span aria-hidden="true">→</span></span>
+              </a>
+)}
           </div>
         </div>
       </aside>
@@ -1245,7 +1258,7 @@ const closeSheet =
           min-w-0
           w-full
           overflow-y-auto
-          overscroll-contain
+          overscroll-auto
           bg-transparent
           pb-16
           pr-2
@@ -1388,6 +1401,17 @@ const closeSheet =
                 .entretien-desktop-article td {
                   font-weight: 400 !important;
                 }
+
+                /* LABELMOTO V3.17 : surface de lecture uniforme et douce.
+                   Les petits caches individuels causaient les lignes fragmentees. */
+                /* LABELMOTO V3.19.8 : fond article transparent, halo typographique conserve. */
+                .entretien-desktop-article {
+                  position: relative;
+                  background-color: transparent;
+                }
+                .entretien-desktop-article .border-dashed {
+                  background-color: #f8f3ef !important;
+                }
               `}</style>
 
               <div className="entretien-desktop-article">
@@ -1401,20 +1425,6 @@ const closeSheet =
                   </main>
       </div>
 
-{/* ===============================================
-          FOOTER DESKTOP
-      ================================================ */}
-
-      <div
-        className="
-          mt-20
-          border-t
-          border-black/[0.06]
-          bg-white
-        "
-      >
-        <Footer />
-      </div>
     </div>
   );
 }
