@@ -27,9 +27,12 @@ service cloud.firestore {
       // Stats publiques (clics téléphone, site web)
       allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['stats_tel','stats_web','stats_vues']); 
       match /comments/{commentId} {
-        allow read: if true;
-        allow create: if isSignedIn();
-        allow write: if isAdmin();
+        // Une sous-collection subsiste après la suppression du document parent.
+        // Les avis de cette fiche ne doivent alors plus être lisibles publiquement.
+        allow read: if exists(/databases/$(database)/documents/concessions/$(id));
+        allow create: if isSignedIn() &&
+          exists(/databases/$(database)/documents/concessions/$(id));
+        allow update, delete: if isAdmin();
       }
     }
     match /associations/{id} { allow read: if true; allow write: if isAdmin(); }
