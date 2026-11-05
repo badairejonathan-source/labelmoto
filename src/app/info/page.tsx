@@ -7,6 +7,7 @@ import Image from 'next/image';
 import LabelMotoLogo from '@/components/app/logo';
 import UserMenu from '@/components/app/user-menu';
 import EntretienRoadBackdrop from '@/components/app/entretien-road-backdrop';
+import { LabelMotoRoadHeaderEntry } from '@/components/app/labelmoto-road-finishes';
 import { Loader2, Map, FileText, ChevronRight, Home, Sparkles } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -183,7 +184,7 @@ function InfoPageComponent() {
     }, [allArticles, activeCategory]);
 
     return (
-        <div className="relative isolate min-h-screen overflow-hidden bg-[#fbfcfc]">
+        <div data-labelmoto-mobile-road="info" className="relative isolate min-h-screen overflow-hidden bg-[#fbfcfc]">
             {/* Courbe de fond identique à /entretien */}
             <div
                 aria-hidden="true"
@@ -242,8 +243,10 @@ function InfoPageComponent() {
           bg-white/95
           backdrop-blur-xl
           lg:block
+          relative
         "
       >
+        <LabelMotoRoadHeaderEntry />
         <div
           className="
             flex
@@ -357,7 +360,7 @@ function InfoPageComponent() {
                     before:absolute
                     before:inset-0
                     before:z-0
-                    before:bg-white/48
+                    before:bg-transparent
                     before:content-['']
 
                     [&>*]:relative
@@ -472,6 +475,7 @@ function InfoPageComponent() {
                     />
 
                     <section
+                        data-labelmoto-road-halo="info"
                         className="
                             min-h-[calc(100vh-128px)]
                             min-w-0
@@ -523,9 +527,17 @@ function InfoPageComponent() {
                         >
                             <div
                                 className="
+                                    relative
+                                    z-10
                                     mx-auto
                                     max-w-xl
                                     text-center
+                                    before:pointer-events-none
+                                    before:absolute
+                                    before:-inset-x-6
+                                    before:-inset-y-6
+                                    before:-z-10
+                                    before:bg-[#fbfcfc]
                                 "
                             >
                                 <div

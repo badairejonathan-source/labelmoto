@@ -8,6 +8,7 @@ import { Facebook, Instagram, Youtube, Shield } from 'lucide-react';
 import LabelMotoLogo from './logo';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { LabelMotoRoadFooterFinish } from './labelmoto-road-finishes';
 
 const VILLES_FOOTER = [
   { slug: 'paris',            name: 'Paris' },
@@ -55,9 +56,12 @@ const Footer = () => {
   const proRegisterLink = "/pro/register";
 
   return (
-    <footer className="border-t border-border/50 bg-muted/30">
+    <footer data-labelmoto-mobile-road-footer={pathname === '/' || pathname === '/entretien' || pathname === '/info' ? 'true' : undefined} className="relative isolate overflow-hidden border-t border-border/50 bg-muted/30">
+      <LabelMotoRoadFooterFinish pathname={pathname ?? ''} />
       <div
         className="
+          relative
+          z-10
           container
           mx-auto
           px-4
