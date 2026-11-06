@@ -24,6 +24,13 @@ const noStore = { 'Cache-Control': 'no-store' };
 const errorResponse = (msg: string, status: number) => NextResponse.json({ ok: false, error: msg }, { status, headers: noStore });
 
 export async function POST(request: NextRequest) {
+  // Fonction experimentale : aucune lecture ou suppression en production.
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { ok: false, error: 'Suppression administrative non disponible en production' },
+      { status: 403, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
   const auth = request.headers.get('authorization') || '';
   if (!auth.startsWith('Bearer ')) return errorResponse('Authentification requise', 401);
   let decoded;

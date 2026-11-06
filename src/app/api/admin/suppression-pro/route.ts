@@ -39,6 +39,13 @@ function bad(error: string, status: number) {
 }
 
 export async function POST(req: NextRequest) {
+  // Fonction experimentale : aucune lecture ou suppression en production.
+  if (process.env.NODE_ENV === 'production') {
+    return NextResponse.json(
+      { ok: false, error: 'Suppression administrative non disponible en production' },
+      { status: 403, headers: { 'Cache-Control': 'no-store' } }
+    );
+  }
   const header = req.headers.get('authorization') || '';
   if (!header.startsWith('Bearer ')) return bad('Authentification requise', 401);
 
