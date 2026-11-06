@@ -428,14 +428,14 @@ export default function FicheClient({
   };
 
   if ((!initialFiche && isLoading) || !displayData) return (
-    <div className={embedded ? "bg-background" : "min-h-screen bg-background"}>
+    <div className={embedded ? "bg-transparent" : "min-h-screen bg-background"}>
         {!embedded && <UnifiedSiteHeader />}
         <main className="container mx-auto px-4 py-8"><div className="max-w-5xl mx-auto space-y-8 pt-4"><Skeleton className="h-4 w-40" /><Skeleton className="h-12 w-full rounded-full" /><Skeleton className="aspect-video w-full rounded-[2.5rem]" /></div></main>
     </div>
   );
 
   return (
-    <div className={embedded ? "bg-background" : "min-h-screen bg-background"}>
+    <div className={embedded ? "bg-transparent" : "min-h-screen bg-background"}>
       {!embedded && <UnifiedSiteHeader />}
       {!embedded && breadcrumbLd && <Script id="breadcrumb-fiche-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />}
       

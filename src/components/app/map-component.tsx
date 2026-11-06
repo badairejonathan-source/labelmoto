@@ -430,6 +430,8 @@ const MapComponent = ({
     const map = mapRef.current;
     if (!map || !deptToFit) return;
 
+    let cancelled = false;
+
     const fitDept = async () => {
       if (!geojsonDataRef.current) {
         try {
@@ -442,11 +444,14 @@ const MapComponent = ({
         }
       }
 
+      if (cancelled || mapRef.current !== map || !map.getContainer().isConnected) return;
+
       const feature = geojsonDataRef.current?.features?.find(
         (f: any) => f.properties?.code === deptToFit
       );
       if (!feature) return;
 
+      map.stop();
       isUpdatingFromProps.current = true;
       const layer = L.geoJSON(feature);
       const bounds = layer.getBounds();
@@ -455,7 +460,7 @@ const MapComponent = ({
         map.fitBounds(bounds, {
           paddingTopLeft: [20, 60],
           paddingBottomRight: [20, 200],
-          animate: true,
+          animate: false,
           duration: 0.8,
           maxZoom: 11,
         });
@@ -463,7 +468,7 @@ const MapComponent = ({
         map.fitBounds(bounds, {
           paddingTopLeft: [leftPadding + 40, 40],
           paddingBottomRight: [60, 40],
-          animate: true,
+          animate: false,
           duration: 0.8,
         });
       }
@@ -471,6 +476,7 @@ const MapComponent = ({
       setMarkersUnlocked(true);
 
       setTimeout(() => {
+        if (cancelled || mapRef.current !== map) return;
         isUpdatingFromProps.current = false;
         // Forcer refresh des marqueurs apres zoom departement (meme pattern que bboxToFit)
         if (clusterGroupRef.current) {
@@ -480,6 +486,7 @@ const MapComponent = ({
     };
 
     fitDept();
+    return () => { cancelled = true; };
   }, [deptToFit, leftPadding, isMobile]);
 
   // Choropleth + marqueurs : machine de couches Leaflet

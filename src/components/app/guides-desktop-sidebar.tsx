@@ -251,7 +251,7 @@ export default function GuidesDesktopSidebar({
         self-start
         flex-col
         overflow-hidden
-        bg-transparent
+        bg-[#fbfcfc]
         pr-5
         lg:flex
       "

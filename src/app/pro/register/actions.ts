@@ -11,7 +11,12 @@ const submissionSchema = z.object({
   businessName: z.string().min(3, "Le nom de l'établissement est trop court"),
   categoryRequested: z.string().min(2, "Catégorie requise"),
   appSectionRequested: z.enum(['shopping', 'service', 'both', 'association', 'relais']),
-  addressRaw: z.string().min(10, "L'adresse semble incomplète"),
+  addressRaw: z.string().trim().min(5, "L'adresse semble incomplète"),
+  locationMode: z.enum(['physical', 'city']),
+  streetNumber: z.string().trim().max(20),
+  street: z.string().trim().max(180),
+  postalCode: z.string().trim().regex(/^\d{5}$/, 'Code postal français à 5 chiffres requis'),
+  city: z.string().trim().min(2, 'Ville requise').max(120),
   phone: z.string().min(10, "Numéro de téléphone invalide"),
   email: z.string().email("Adresse e-mail invalide"),
   website: z.string().url().optional().or(z.literal('')),
@@ -102,6 +107,11 @@ export async function submitProAction(formData: FormData) {
 
     addressRaw:
       getFormString('address'),
+    locationMode: getFormString('locationMode'),
+    streetNumber: getFormString('streetNumber'),
+    street: getFormString('street'),
+    postalCode: getFormString('postalCode'),
+    city: getFormString('city'),
 
     phone:
       getFormString('phone'),
@@ -139,6 +149,50 @@ export async function submitProAction(formData: FormData) {
     return { error: validated.error.errors[0].message };
   }
 
+  if (validated.data.locationMode === 'physical' && validated.data.street.length < 3) {
+    return { error: 'La rue ou le lieu-dit est requis pour une adresse physique.' };
+  }
+  const postalCode = validated.data.postalCode;
+  const majorCityName = postalCode === '75000' || /^750(0[1-9]|1[0-9]|20)$/.test(postalCode)
+      ? 'Paris'
+      : postalCode === '69000' || /^6900[1-9]$/.test(postalCode)
+        ? 'Lyon'
+        : postalCode === '13000' || /^130(0[1-9]|1[0-6])$/.test(postalCode)
+          ? 'Marseille'
+          : null;
+  if (majorCityName) {
+    if (validated.data.city !== majorCityName) {
+      return { error: 'La ville selectionnee ne correspond pas au code postal.' };
+    }
+  } else {
+    // Reference officielle : aucune demande enregistree avec une paire CP/ville invalide.
+    try {
+      const postalCode = validated.data.postalCode;
+      const params = new URLSearchParams({ codePostal: postalCode, fields: 'nom,code,codesPostaux', format: 'json' });
+      const response = await fetch('https://geo.api.gouv.fr/communes?' + params.toString(), {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(8000),
+      });
+      if (!response.ok) return { error: 'Verification de la commune indisponible. Reessayez.' };
+      const communes: unknown = await response.json();
+      const normalize = (text: string) => text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('fr').replace(/[^a-z0-9]/g, '');
+      const matching = Array.isArray(communes) && communes.some((item: any) =>
+        typeof item?.nom === 'string' && Array.isArray(item.codesPostaux) &&
+        item.codesPostaux.includes(postalCode) &&
+        normalize(item.nom) === normalize(validated.data.city)
+      );
+      if (!matching) return { error: 'La ville selectionnee ne correspond pas au code postal.' };
+    } catch {
+      return { error: 'Verification des communes indisponible. Reessayez.' };
+    }
+  }
+  const canonicalAddress = [
+    ...(validated.data.locationMode === 'physical'
+      ? [[validated.data.streetNumber, validated.data.street].filter(Boolean).join(' ')]
+      : []),
+    [validated.data.postalCode, validated.data.city].join(' '),
+  ].filter(Boolean).join(', ');
+
   if (validated.data.hp_field && validated.data.hp_field.length > 0) {
     return { error: "Erreur de validation (bot protection)" };
   }
@@ -146,7 +200,7 @@ export async function submitProAction(formData: FormData) {
   try {
     // Utilisation stricte du SDK Admin pour la base de données côté serveur
     const db = getAdminFirestore();
-    const coords = extractValidCoordinates({ address: validated.data.addressRaw });
+    const coords = extractValidCoordinates({ address: canonicalAddress });
 
     const docRef = await db.collection('listing_submissions').add({
       status: 'pending',
@@ -156,7 +210,12 @@ export async function submitProAction(formData: FormData) {
       businessName: validated.data.businessName,
       categoryRequested: validated.data.categoryRequested,
       appSectionRequested: validated.data.appSectionRequested,
-      addressRaw: validated.data.addressRaw,
+      addressRaw: canonicalAddress,
+      locationMode: validated.data.locationMode,
+      streetNumber: validated.data.locationMode === 'physical' ? validated.data.streetNumber : '',
+      street: validated.data.locationMode === 'physical' ? validated.data.street : '',
+      postalCode: validated.data.postalCode,
+      city: validated.data.city,
       phone: validated.data.phone,
       email: validated.data.email,
       website: validated.data.website || '',
@@ -178,7 +237,12 @@ export async function submitProAction(formData: FormData) {
         businessName: validated.data.businessName,
         categoryRequested: validated.data.categoryRequested,
         appSectionRequested: validated.data.appSectionRequested,
-        addressRaw: validated.data.addressRaw,
+        addressRaw: canonicalAddress,
+        locationMode: validated.data.locationMode,
+        streetNumber: validated.data.locationMode === 'physical' ? validated.data.streetNumber : '',
+        street: validated.data.locationMode === 'physical' ? validated.data.street : '',
+        postalCode: validated.data.postalCode,
+        city: validated.data.city,
         phone: validated.data.phone,
         email: verifiedEmail,
         website: validated.data.website || '',
@@ -220,7 +284,7 @@ export async function submitProAction(formData: FormData) {
       <div style="background:#fff7ed;border-left:3px solid #f97316;padding:16px 20px;border-radius:0 8px 8px 0;margin:0 0 28px;">
         <p style="color:#18181b;font-size:14px;font-weight:700;margin:0 0 4px;">Récapitulatif de votre demande</p>
         <p style="color:#71717a;font-size:13px;margin:0;">Établissement : ${validated.data.businessName}</p>
-        <p style="color:#71717a;font-size:13px;margin:4px 0 0;">Adresse : ${validated.data.addressRaw}</p>
+        <p style="color:#71717a;font-size:13px;margin:4px 0 0;">Adresse : ${canonicalAddress}</p>
       </div>
       <p style="color:#a1a1aa;font-size:13px;margin:0;text-align:center;">Vous serez contacté à cette adresse email une fois votre fiche validée.</p>
     </div>

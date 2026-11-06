@@ -82,6 +82,7 @@ function serializeMessage(
     email: cleanText(data.email, 320),
     subject: cleanText(data.subject, 300),
     message: cleanText(data.message, 12000),
+    initiatedBy: data.initiatedBy === 'labelmoto' ? 'labelmoto' : 'user',
     senderUid:
       cleanText(data.senderUid, 256) || null,
     senderType:
@@ -179,6 +180,21 @@ export async function GET(request: NextRequest) {
     await requireAdmin(request);
 
     const db = getAdminFirestore();
+
+    // Liste de comptes uniquement pour un administrateur authentifie.
+    if (request.nextUrl.searchParams.get('recipients') === '1') {
+      const snapshot = await db.collection('users').limit(1000).get();
+      const recipients = snapshot.docs
+        .filter(item => item.data()?.role === 'user' || item.data()?.role === 'pro')
+        .map(item => ({
+          uid: item.id,
+          name: cleanText(item.data()?.displayName, 160),
+          email: cleanText(item.data()?.email, 320),
+          role: item.data()?.role === 'pro' ? 'pro' : 'user',
+        }))
+        .sort((a, b) => (a.name || a.email).localeCompare(b.name || b.email, 'fr'));
+      return NextResponse.json({ ok: true, recipients });
+    }
 
     if (
       request.nextUrl.searchParams.get(
@@ -391,6 +407,63 @@ export async function POST(request: NextRequest) {
     const body =
       await request.json();
 
+    /* LABELMOTO_ADMIN_CONVERSATIONS_V1 - creation par administrateur */
+    if (body?.action === 'create') {
+      const recipientUid = cleanText(body.recipientUid, 256);
+      const subject = cleanText(body.subject, 300);
+      const message = cleanText(body.message, 12000);
+      const requestId = cleanText(body.requestId, 96);
+      if (!recipientUid || subject.length < 5 || message.length < 10 ||
+          !/^[A-Za-z0-9_-]{16,96}$/.test(requestId)) {
+        return NextResponse.json({ ok: false, error: 'Informations incomplètes.' }, { status: 400 });
+      }
+      const db = getAdminFirestore();
+      const targetSnapshot = await db.collection('users').doc(recipientUid).get();
+      const target = targetSnapshot.data();
+      if (!targetSnapshot.exists || (target?.role !== 'user' && target?.role !== 'pro')) {
+        return NextResponse.json({ ok: false, error: 'Compte destinataire introuvable.' }, { status: 404 });
+      }
+      const ref = db.collection('support_messages').doc('admin-' + requestId);
+      if ((await ref.get()).exists) {
+        return NextResponse.json({ ok: false, error: 'Cette demande a déjà été créée.' }, { status: 409 });
+      }
+      // Ne pas recreer une conversation active pour le meme compte et le meme objet.
+      const otherThreads = await db.collection('support_messages')
+        .where('senderUid', '==', recipientUid).get();
+      const duplicate = otherThreads.docs.some(item => {
+        const data = item.data();
+        return data.initiatedBy === 'labelmoto' &&
+          cleanText(data.subject, 300).toLocaleLowerCase('fr') === subject.toLocaleLowerCase('fr') &&
+          data.conversationState !== 'closed';
+      });
+      if (duplicate) {
+        return NextResponse.json({ ok: false,
+          error: 'Une conversation LabelMoto avec cet objet est déjà ouverte pour ce compte.' },
+          { status: 409 });
+      }
+      try {
+        await ref.create({
+          name: cleanText(target?.displayName, 160) || cleanText(target?.email, 320) || 'Compte LabelMoto',
+          email: cleanText(target?.email, 320),
+          subject, message, senderUid: recipientUid,
+          senderType: target?.role === 'pro' ? 'pro' : 'user',
+          initiatedBy: 'labelmoto', initiatedByAdminUid: adminToken.uid,
+          replyChannel: 'account', status: 'replied',
+          conversationState: 'waiting_user',
+          adminUnread: false, userUnread: true, replies: [],
+          submittedAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+          lastActivityAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      } catch (error: any) {
+        if (error?.code === 6 || error?.code === 'already-exists') {
+          return NextResponse.json({ ok: false, error: 'Cette demande a déjà été créée.' }, { status: 409 });
+        }
+        throw error;
+      }
+      return NextResponse.json({ ok: true, id: ref.id }, { status: 201 });
+    }
+
     const messageId =
       cleanText(
         body?.messageId,
@@ -572,5 +645,41 @@ export async function POST(request: NextRequest) {
             : 500,
       }
     );
+  }
+}
+
+/* LABELMOTO_ADMIN_SUPPRESSION_V2 - suppression individuelle reservee aux admins.
+ * Aucun effacement tant que l'administrateur ne confirme pas depuis l'interface.
+ * L'ID et la collection sont valides; les deux sources historiques sont prises en charge.
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    await requireAdmin(request);
+    const messageId = cleanText(request.nextUrl.searchParams.get('messageId'), 256);
+    const source = request.nextUrl.searchParams.get('source');
+    if ((source !== 'support' && source !== 'legacy') ||
+        !messageId || messageId === '.' || messageId === '..' ||
+        messageId.includes('/') || /[\u0000-\u001f]/.test(messageId)) {
+      return NextResponse.json({ ok: false, error: 'Conversation invalide.' }, { status: 400 });
+    }
+    const collectionName = source === 'legacy' ? 'contact_messages' : 'support_messages';
+    const ref = getAdminFirestore().collection(collectionName).doc(messageId);
+    const snapshot = await ref.get();
+    if (!snapshot.exists || !snapshot.updateTime) {
+      return NextResponse.json({ ok: false, error: 'Conversation introuvable.' }, { status: 404 });
+    }
+    // Precondition : ne jamais effacer silencieusement une reponse ajoutee entre-temps.
+    await ref.delete({ lastUpdateTime: snapshot.updateTime });
+    return NextResponse.json({ ok: true, id: messageId, source });
+  } catch (error: any) {
+    const forbidden = error?.message === 'ADMIN_REQUIRED';
+    const unauthenticated = error?.message === 'AUTH_REQUIRED';
+    const outdated = error?.code === 9 || error?.code === 'failed-precondition';
+    return NextResponse.json({ ok: false, error: forbidden
+      ? 'Droits administrateur requis.'
+      : unauthenticated ? 'Authentification requise.'
+      : outdated ? 'Conversation modifiée entre-temps. Actualise puis recommence.'
+      : 'Suppression impossible.' },
+      { status: forbidden ? 403 : unauthenticated ? 401 : outdated ? 409 : 500 });
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { getMotorcycleProductImage } from '@/data/motorcycle-product-images';
+import { RELATED_MODELS_POOL } from '@/lib/related-models-pool';
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -27,6 +28,7 @@ import Script from 'next/script';
 import Header from '@/components/app/header';
 import ArticleAccordionV1 from '@/components/app/article-accordion-v1';
 import GuidesDesktopSidebar from '@/components/app/guides-desktop-sidebar';
+import EntretienRoadBackdrop from '@/components/app/entretien-road-backdrop';
 import {
   Table,
   TableBody,
@@ -82,7 +84,41 @@ const getFicheIdFromTitle = (title: string): string | null => {
   if (t.includes('g 310 r') || t.includes('g310r')) return 'bmw-g310r-2021-plus';
 
   if (t.includes('f900r')) return 'bmw-f900r-2020-plus';
-  return null;
+
+  // Fallback générique : les correspondances manuelles ci-dessus
+  // restent prioritaires. Le pool complète seulement les modèles
+  // qui n'étaient pas encore gérés par cette liste historique.
+  const normalizeModelTitle = (value: unknown) =>
+    String(value ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ');
+
+  const normalizedTitle = normalizeModelTitle(title);
+
+  const poolMatch = RELATED_MODELS_POOL
+    .map((model) => ({
+      id: model.id,
+      normalizedName: normalizeModelTitle(model.name),
+    }))
+    .filter(({ normalizedName }) =>
+      normalizedName.length >= 5 &&
+      (
+        normalizedTitle === normalizedName ||
+        normalizedTitle.includes(normalizedName) ||
+        normalizedName.includes(normalizedTitle)
+      )
+    )
+    .sort(
+      (a, b) =>
+        b.normalizedName.length -
+        a.normalizedName.length
+    )[0];
+
+  return poolMatch?.id ?? null;
 };
 
 const InternalLinkCard = ({ title, description, link, icon: Icon }: any) => (
@@ -784,18 +820,16 @@ export default function ArticleClient({
           const modelLabel = card.title || card.recommended_models?.[0] || card.models?.[0] || '';
           const ficheId = card.card_kind === 'accessory' ? null : getFicheIdFromTitle(String(modelLabel));
 
-          const motorcycleImage = ficheId
-            ? (
-                getMotorcycleProductImage({
-                  modelId: ficheId,
-                  model: modelLabel,
-                  displayTitle: modelLabel,
-                  slug: ficheId,
-                }) ||
-                card.image ||
-                null
-              )
-            : null;
+          const mappedMotorcycleImage = card.card_kind === 'accessory' ? null : getMotorcycleProductImage({
+            modelId: ficheId || String(modelLabel),
+            model: modelLabel,
+            displayTitle: modelLabel,
+            slug: ficheId || undefined,
+          });
+
+          const motorcycleImage =
+            mappedMotorcycleImage ||
+            (ficheId ? card.image || null : null);
           const listItems = card.models || card.recommended_models || card.items || card.points || card.guarantees || card.list;
           const strengths = card.strengths || card.advantages || card.pros || card.points_forts;
           const weaknesses = card.weaknesses || card.watch_out || card.cons || card.points_vigilance || card.limits;
@@ -816,7 +850,7 @@ export default function ArticleClient({
                 </div>
                 {ficheId && <ExternalLink className="h-4 w-4 text-brand/40 group-hover/card:text-brand" />}
               </CardHeader>
-              {card.image && !ficheId && (
+              {card.image && !ficheId && !mappedMotorcycleImage && (
                 <div className="relative w-full overflow-hidden bg-[#f8f7f5]" style={{aspectRatio:'4/3'}}>
                   <img
                     src={card.image}
@@ -1137,6 +1171,14 @@ export default function ArticleClient({
     const isAssuranceNote = !isAssuranceArticle && !cta && ((section.note && (section.note.includes("Assurance") || section.note.includes("formule"))) || (sectionId.includes("assurance")));
     const isGabaritNote = !isGabaritArticle && !cta && ((section.note && (section.note.includes("gabarit") || section.note.includes("tailles"))) || (sectionId.includes("taille") || sectionId.includes("hauteur") || sectionId.includes("gabarit")));
 
+    const isAssuranceProfileSection =
+      isAssuranceArticle &&
+      sectionId === 'quelle-formule-choisir-selon-votre-profil';
+
+    const isAssuranceMotoSection =
+      isAssuranceArticle &&
+      sectionId === 'quelle-formule-pour-quelle-moto';
+
     return (
       <div
         key={key || sectionId}
@@ -1334,6 +1376,41 @@ export default function ArticleClient({
             ) : null}
           </>
         )}
+        {isAssuranceProfileSection && (
+          <div
+            data-labelmoto-assurance-related-links="profile"
+            className="mt-6 grid gap-4 md:grid-cols-2"
+          >
+            <InternalLinkCard
+              title="Quelle moto choisir pour débuter en A2 ?"
+              description="Découvrez notre sélection de motos adaptées pour bien débuter avec le permis A2."
+              link="/info/meilleure-moto-a2-quelle-moto-choisir-pour-debuter"
+              icon={Bike}
+            />
+
+            <InternalLinkCard
+              title="Les meilleures motos 125 cc en 2026"
+              description="Comparez les principales 125 cc selon votre usage, votre expérience et votre budget."
+              link="/info/meilleures-motos-125cc-2026-guide-complet"
+              icon={Bike}
+            />
+          </div>
+        )}
+
+        {isAssuranceMotoSection && (
+          <div
+            data-labelmoto-assurance-related-links="budget"
+            className="mt-6"
+          >
+            <InternalLinkCard
+              title="Combien coûte vraiment une moto par mois ?"
+              description="Assurance, entretien, carburant et imprévus : estimez le budget réel avant de choisir votre moto."
+              link="/info/combien-coute-vraiment-une-moto-par-mois"
+              icon={Wallet}
+            />
+          </div>
+        )}
+
       </div>
     );
   };
@@ -1412,7 +1489,12 @@ export default function ArticleClient({
     Array.isArray(article.intro) && article.intro.length > 0;
 
   return (
-    <div className={showHeader ? "min-h-screen relative bg-background" : "min-h-screen relative bg-transparent"}>
+    <div className={showHeader ? "relative isolate min-h-screen overflow-x-clip bg-background" : "min-h-screen relative bg-transparent"}>
+      {showHeader && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-[0.66]">
+          <EntretienRoadBackdrop />
+        </div>
+      )}
       {showHeader && (
         <div className="lg:sticky lg:top-0 lg:z-[2200]">
           <Header
@@ -1510,6 +1592,7 @@ export default function ArticleClient({
       <main
         className={cn(
           "container mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10",
+          showHeader && "max-lg:bg-[#fbfcfc]/[0.97]",
           showHeader &&
             "lg:max-w-none lg:mx-0 lg:px-0 lg:py-0"
         )}
@@ -1534,10 +1617,11 @@ export default function ArticleClient({
             className={cn(
               "min-w-0",
               showHeader &&
-                "lg:h-[calc(100vh-104px)] lg:overflow-y-auto lg:overscroll-contain lg:pr-12 xl:pr-14 2xl:pr-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                "lg:relative lg:h-[calc(100vh-104px)] lg:overflow-y-auto lg:overscroll-contain lg:pr-12 xl:pr-14 2xl:pr-16 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
             )}
           >
-          <div className={showHeader ? "guides-desktop-article" : undefined}>
+          {/* LABELMOTO V3.19.22b : fond commun Guides, sans second SVG dans la gouttiere. */}
+          <div className={showHeader ? "guides-desktop-article relative z-10 lg:bg-background" : undefined}>
           <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-6 md:pt-8">
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>

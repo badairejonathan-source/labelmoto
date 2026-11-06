@@ -55,6 +55,7 @@ interface SupportMessage {
   id: string;
   subject: string;
   message: string;
+  initiatedBy?: 'labelmoto' | 'user';
   status: 'new' | 'replied';
   conversationState:
     | 'waiting_labelmoto'
@@ -117,6 +118,8 @@ function conversationLabel(
 }
 
 export default function SupportMessagesAccount() {
+  // LABELMOTO_MESSAGES_MOBILE_DROPDOWN
+  const [mobileMessagesOpen, setMobileMessagesOpen] = useState(false);
   const {
     user,
   } = useUser();
@@ -497,7 +500,13 @@ export default function SupportMessagesAccount() {
       id="messages-labelmoto"
       className="mt-8 overflow-hidden rounded-[2.5rem] border-none bg-white shadow-xl"
     >
-      <CardHeader className="border-b bg-muted/20">
+      <CardHeader
+        className={
+          mobileMessagesOpen
+            ? "relative border-b bg-muted/20"
+            : "relative border-b-0 bg-white sm:border-b sm:bg-muted/20"
+        }
+      >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
@@ -505,7 +514,7 @@ export default function SupportMessagesAccount() {
               Messages LabelMoto
             </CardTitle>
 
-            <CardDescription className="mt-1">
+            <CardDescription className="mt-1 hidden sm:block">
               Vos échanges avec l’équipe LabelMoto.
             </CardDescription>
           </div>
@@ -514,7 +523,7 @@ export default function SupportMessagesAccount() {
             asChild
             variant="outline"
             size="sm"
-            className="rounded-xl font-black uppercase text-[9px] tracking-widest"
+            className="hidden rounded-xl font-black uppercase text-[9px] tracking-widest sm:inline-flex"
           >
             <Link href="/contact">
               <Send className="mr-2 h-3.5 w-3.5" />
@@ -522,9 +531,61 @@ export default function SupportMessagesAccount() {
             </Link>
           </Button>
         </div>
-      </CardHeader>
+              <button
+          type="button"
+          className="absolute inset-0 z-10 sm:hidden"
+          aria-label={
+            mobileMessagesOpen
+              ? 'Fermer Messages LabelMoto'
+              : 'Ouvrir Messages LabelMoto'
+          }
+          aria-expanded={mobileMessagesOpen}
+          onClick={() =>
+            setMobileMessagesOpen(
+              current => !current
+            )
+          }
+        >
+          <span className="sr-only">
+            {mobileMessagesOpen
+              ? 'Fermer Messages LabelMoto'
+              : 'Ouvrir Messages LabelMoto'}
+          </span>
+        </button>
 
-      <CardContent className="space-y-4 p-6">
+        <ChevronDown
+          className={
+            mobileMessagesOpen
+              ? "pointer-events-none absolute right-5 top-5 z-20 h-5 w-5 rotate-180 text-muted-foreground transition-transform duration-200 sm:hidden"
+              : "pointer-events-none absolute right-5 top-5 z-20 h-5 w-5 text-muted-foreground transition-transform duration-200 sm:hidden"
+          }
+        />
+</CardHeader>
+
+      <CardContent
+        className={
+          mobileMessagesOpen
+            ? "space-y-4 p-6"
+            : "hidden space-y-4 p-6 sm:block"
+        }
+      >
+        <div className="mb-4 space-y-3 sm:hidden">
+          <p className="text-sm text-muted-foreground">
+            Vos échanges avec l’équipe LabelMoto.
+          </p>
+
+          <Button
+            asChild
+            variant="outline"
+            size="sm"
+            className="w-full rounded-xl font-black uppercase text-[9px] tracking-widest"
+          >
+            <Link href="/contact">
+              <Send className="mr-2 h-3.5 w-3.5" />
+              Nouveau message
+            </Link>
+          </Button>
+        </div>
         {loading ? (
           <div className="flex justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-brand" />
@@ -580,8 +641,8 @@ export default function SupportMessagesAccount() {
                       : 'rounded-2xl border-2 p-4'
                   }
                 >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="w-full min-w-0 sm:flex-1">
                       <h3 className="font-black">
                         {item.subject ||
                           'Message LabelMoto'}
@@ -594,7 +655,7 @@ export default function SupportMessagesAccount() {
                       </p>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-end gap-2">
+                    <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end">
                       <Badge
                         variant={
                           item.userUnread ||
@@ -603,7 +664,7 @@ export default function SupportMessagesAccount() {
                             ? 'default'
                             : 'secondary'
                         }
-                        className="text-[8px] font-black uppercase"
+                        className="shrink-0 text-[8px] font-black uppercase"
                       >
                         {conversationLabel(
                           item
@@ -619,7 +680,7 @@ export default function SupportMessagesAccount() {
                             item
                           )
                         }
-                        className="h-8 rounded-full px-3 text-[8px] font-black uppercase tracking-widest"
+                        className="h-9 min-w-0 flex-1 justify-center rounded-full px-3 text-[8px] font-black uppercase tracking-widest sm:h-8 sm:flex-none"
                       >
                         {isExpanded ? (
                           <ChevronUp className="mr-1.5 h-3.5 w-3.5" />
@@ -656,7 +717,7 @@ export default function SupportMessagesAccount() {
                       >
                         <div className="rounded-xl bg-muted/30 p-4">
                           <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                            Votre message
+                            {item.initiatedBy === 'labelmoto' ? 'Message initial LabelMoto' : 'Votre message'}
                           </p>
 
                           <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-6">

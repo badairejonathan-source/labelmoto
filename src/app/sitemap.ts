@@ -10,7 +10,7 @@ import { loadSeoPros } from '@/lib/seo-pros';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://labelmoto.fr';
 
-  const seoPros = await loadSeoPros();
+  const seoPros = await loadSeoPros({ fresh: true });
 
   const concessionUrls: MetadataRoute.Sitemap = seoPros
     .filter(pro => pro.collection === 'concessions')

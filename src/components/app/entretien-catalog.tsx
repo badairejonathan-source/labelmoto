@@ -216,6 +216,27 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
           </section>
         );
       })}
+      {/* CTA en fin de liste mobile, identique au lien desktop. */}
+        {process.env.NODE_ENV === "development" && (
+<Link
+          href="/entretien/consommables"
+          aria-label="Voir tous les consommables moto"
+          className="group block rounded-2xl border border-brand/25 bg-[#fff9f5] px-5 py-5 text-left shadow-sm transition-colors hover:bg-[#fff1e7] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+        >
+          <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-brand">
+            Consommables moto
+          </span>
+          <span className="mt-1 block text-base font-bold text-[#151515]">
+            Voir tous les consommables
+          </span>
+          <span className="mt-1 block text-sm leading-relaxed text-muted-foreground">
+            Filtres, bougies, plaquettes et entretien : choisissez votre moto.
+          </span>
+          <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand">
+            Accéder au catalogue <span aria-hidden="true">→</span>
+          </span>
+        </Link>
+)}
     </div>
   );
 }

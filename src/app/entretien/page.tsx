@@ -103,7 +103,7 @@ export default async function EntretienPage() {
         {/* Mobile : rendu actuel strictement conservé */}
         <div className="lg:hidden">
           {(
-    <div className="relative isolate min-h-screen overflow-hidden bg-[#fbfcfc]">
+    <div data-labelmoto-mobile-road="entretien" className="relative isolate min-h-screen overflow-hidden bg-[#fbfcfc]">
 
       {/* LABELMOTO ENTRETIEN LAYERING V2 */}
       <div
@@ -116,7 +116,7 @@ export default async function EntretienPage() {
           opacity-[0.66]
         "
       >
-        <EntretienRoadBackdrop />
+        <EntretienRoadBackdrop variant="entretien" />
       </div>
 
       {/* HEADER — même logique visuelle que la homepage */}
@@ -177,28 +177,22 @@ export default async function EntretienPage() {
           [&_h1]:z-20
           [&_h1]:w-fit
           [&_h1]:max-w-full
-          [&_h1]:bg-[#fbfcfc]/95
-          [&_h1]:shadow-[0_0_0_7px_rgba(251,252,252,0.95)]
 
           [&_h2]:relative
           [&_h2]:z-20
           [&_h2]:w-fit
           [&_h2]:max-w-full
-          [&_h2]:bg-[#fbfcfc]/95
-          [&_h2]:shadow-[0_0_0_6px_rgba(251,252,252,0.95)]
 
           [&_h3]:relative
           [&_h3]:z-20
           [&_h3]:w-fit
           [&_h3]:max-w-full
-          [&_h3]:bg-[#fbfcfc]/92
-          [&_h3]:shadow-[0_0_0_5px_rgba(251,252,252,0.92)]
           before:content-['']
           before:pointer-events-none
           before:absolute
           before:inset-0
           before:z-0
-          before:bg-white/48
+          before:bg-transparent
 
           [&>*]:relative
           [&>*]:z-10

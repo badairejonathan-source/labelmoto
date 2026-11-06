@@ -1,3 +1,7 @@
+// Ne pas prerendre des pages vides lorsque l'index distant est indisponible.
+// Lecture de l'index autoritatif a la requete, sans fallback obsolete.
+export const dynamic = 'force-dynamic';
+
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -10,6 +14,7 @@ function toSlug(str: string): string {
     .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 import { loadSeoPros } from '@/lib/seo-pros';
+import { loadPublicMapPoints } from '@/lib/public-map-points';
 import fsNode from 'fs';
 import pathNode from 'path';
 
@@ -41,16 +46,17 @@ interface GeoPoint {
   id: string; lat: number; lng: number; t: string; s: string;
   a: string; c: string; r?: string; d?: string; b?: string[];
 }
-let _cachedPoints: GeoPoint[] | null = null;
 let _cachedCoords: Record<string, { lat: number; lng: number }> | null = null;
 
-function loadPointsData(): GeoPoint[] {
-  if (!_cachedPoints) {
-    const filePath = pathNode.join(process.cwd(), 'public', 'points.json');
-    _cachedPoints = JSON.parse(fsNode.readFileSync(filePath, 'utf8'));
-  }
-  return _cachedPoints!;
+async function loadPointsData(): Promise<GeoPoint[]> {
+  const live = await loadPublicMapPoints();
+  return live.map(p => ({
+    id: p.id, lat: p.latitude, lng: p.longitude,
+    t: p.title, s: p.slug, a: p.appSection, c: p.category,
+    d: p.departement || '', b: p.brands,
+  }));
 }
+
 function loadCityCoordsData(): Record<string, { lat: number; lng: number }> {
   if (!_cachedCoords) {
     const filePath = pathNode.join(process.cwd(), 'src/app/lib/cities-coords.json');
@@ -128,10 +134,10 @@ function isParisGarageSeoPoint(p: GeoPoint): boolean {
   return false;
 }
 
-function getPointsNearCity(city: { slug: string; departement: string }): GeoPoint[] {
+async function getPointsNearCity(city: { slug: string; departement: string }): Promise<GeoPoint[]> {
   const coordsMap = loadCityCoordsData();
   const cityCoord = coordsMap[city.slug];
-  const points = loadPointsData();
+  const points = await loadPointsData();
 
   // Paris SEO only: keep /garages-moto/paris inside department 75.
   // Other cities keep the radius logic below.
@@ -175,7 +181,7 @@ async function getProsForCityNearby(
   city: NonNullable<ReturnType<typeof getCityBySlug>>
 ): Promise<Pro[]> {
   try {
-    const nearby = getPointsNearCity(city);
+    const nearby = await getPointsNearCity(city);
 
     if (nearby.length === 0) return [];
 
@@ -220,7 +226,7 @@ async function getProsForCityNearby(
       err
     );
 
-    return [];
+    throw err;
   }
 }
 
@@ -230,7 +236,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!city) return { title: 'Page introuvable | LabelMoto' };
 
   // Compte réel depuis Firestore (dynamique à chaque build)
-  const count = getPointsNearCity(city).length;
+  const count = (await getProsForCityNearby(city)).length;
   const countStr = count > 0 ? `${count}` : '';
   
   // Titre dynamique avec le vrai nombre de pros

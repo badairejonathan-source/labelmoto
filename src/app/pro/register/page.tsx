@@ -55,6 +55,11 @@ function RegisterProContent() {
     formData.set('category', values.category);
     formData.set('appSection', values.appSection);
     formData.set('address', values.address);
+    formData.set('locationMode', values.locationMode || 'physical');
+    formData.set('streetNumber', values.streetNumber || '');
+    formData.set('street', values.street || '');
+    formData.set('postalCode', values.postalCode || '');
+    formData.set('city', values.city || '');
     formData.set('phone', values.phone);
     formData.set('email', user.email);
     formData.set('website', values.website);

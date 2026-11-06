@@ -1051,6 +1051,12 @@ export default function AdminPage() {
     try {
       const data = editDraft;
 
+      // Pour une fiche sans accueil du public, publier la ville uniquement.
+      const cityOnly = data.type !== 'creator' && data.locationMode === 'city';
+      if (cityOnly && !String(data.city || '').trim()) {
+        throw new Error('Publication impossible : ville de rattachement absente.');
+      }
+
       const geocodeAddress =
         data.type === 'creator'
           ? (
@@ -1070,8 +1076,9 @@ export default function AdminPage() {
                   )
             )
           : (
-              data.addressRaw ||
-              ''
+              cityOnly
+                ? String(data.city || '').trim() + ', France'
+                : (data.addressRaw || '')
             );
 
       /*
@@ -1080,10 +1087,8 @@ export default function AdminPage() {
        * =====================================================
        */
 
-      let coords =
-        extractValidCoordinates(
-          data
-        );
+      // Ne jamais reutiliser des coordonnees privees pour le mode ville.
+      let coords = cityOnly ? null : extractValidCoordinates(data);
 
       if (!coords) {
         try {
@@ -1105,10 +1110,10 @@ export default function AdminPage() {
                       geocodeAddress,
 
                     placeUrl:
-                      data.placeUrl,
+                      cityOnly ? '' : data.placeUrl,
 
                     googleMapsUrl:
-                      data.googleMapsUrl,
+                      cityOnly ? '' : data.googleMapsUrl,
                   }),
               }
             );
@@ -1462,7 +1467,19 @@ export default function AdminPage() {
               : data.appSectionRequested,
 
           address:
-            data.addressRaw,
+            cityOnly ? String(data.city || '').trim() : data.addressRaw,
+
+          // PHASE2B1_LOCATION_METADATA : nouveaux professionnels seulement.
+          // Aucun champ ajoute aux anciennes demandes sans mode explicite.
+          ...(data.locationMode === 'physical' || data.locationMode === 'city'
+            ? {
+                locationMode: data.locationMode,
+                city: String(data.city || '').trim(),
+                postalCode: String(data.postalCode || '').trim(),
+                ...(cityOnly ? { hasPublicLocation: false, publicAddress: '' } : {}),
+              }
+            : {}),
+
 
           departement:
             (() => {
@@ -1543,8 +1560,7 @@ export default function AdminPage() {
             '',
 
           googleMapsUrl:
-            data.googleMapsUrl ||
-            '',
+            cityOnly ? '' : (data.googleMapsUrl || ''),
 
           horaires:
             data.horaires ||
@@ -1686,6 +1702,12 @@ export default function AdminPage() {
           )
             ? publishedData.brands
             : [],
+
+        // PHASE2B1_LOCATION_METADATA : indicateur dans le cache live.
+        ...(data.type !== 'creator' &&
+          (data.locationMode === 'physical' || data.locationMode === 'city')
+          ? { lm: data.locationMode }
+          : {}),
 
         updatedAt:
           new Date(),

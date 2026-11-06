@@ -13,8 +13,10 @@ import {
   Loader2,
   Mail,
   MessageSquare,
+  Plus,
   RefreshCw,
   Send,
+  Trash2,
   UserRound,
 } from 'lucide-react';
 
@@ -46,6 +48,7 @@ interface ContactMessage {
   subject?: string;
   message?: string;
   senderUid?: string | null;
+  initiatedBy?: 'labelmoto' | 'user';
   senderType?: 'guest' | 'user' | 'pro';
   replyChannel?: 'email' | 'account';
   status?: 'new' | 'replied';
@@ -181,6 +184,112 @@ export default function AdminContactMessages() {
     useState<
       Record<string, boolean>
     >({});
+
+  /* LABELMOTO_ADMIN_CONVERSATIONS_V1 : composition et conversations compactes */
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [recipients, setRecipients] = useState<Array<{
+    uid: string; name: string; email: string; role: 'user' | 'pro';
+  }>>([]);
+  const [recipientsLoading, setRecipientsLoading] = useState(false);
+  const [recipientUid, setRecipientUid] = useState('');
+  const [newSubject, setNewSubject] = useState('');
+  const [newBody, setNewBody] = useState('');
+  const [creating, setCreating] = useState(false);
+  /* LABELMOTO_ADMIN_SUPPRESSION_V2 : suppression individuelle confirmee */
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const toggleComposer = async () => {
+    if (composerOpen) { setComposerOpen(false); return; }
+    setComposerOpen(true);
+    if (!user || recipients.length) return;
+    setRecipientsLoading(true);
+    try {
+      const token = await user.getIdToken();
+      const response = await fetch('/api/admin/support-messages?recipients=1', {
+        headers: { Authorization: 'Bearer ' + token }, cache: 'no-store',
+      });
+      const payload = await response.json();
+      if (!response.ok) throw Error(payload?.error || 'Comptes indisponibles.');
+      setRecipients(Array.isArray(payload.recipients) ? payload.recipients : []);
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Destinataires indisponibles',
+        description: error?.message || 'Chargement impossible.' });
+    } finally { setRecipientsLoading(false); }
+  };
+
+  const createConversation = async () => {
+    if (!user || creating) return;
+    if (!recipientUid || newSubject.trim().length < 5 || newBody.trim().length < 10) {
+      toast({ variant: 'destructive', title: 'Informations incomplètes',
+        description: 'Choisis un compte, un objet (5 caractères) et un message (10 caractères).' });
+      return;
+    }
+    setCreating(true);
+    try {
+      const token = await user.getIdToken(true);
+      const response = await fetch('/api/admin/support-messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ action: 'create', recipientUid,
+          subject: newSubject.trim(), message: newBody.trim(), requestId: crypto.randomUUID() }),
+      });
+      const payload = await response.json();
+      if (!response.ok) throw Error(payload?.error || 'Création impossible.');
+      setComposerOpen(false);
+      setRecipientUid(''); setNewSubject(''); setNewBody('');
+      await loadMessages();
+      if (payload?.id) setExpandedIds(current => ({ ...current, [payload.id]: true }));
+      toast({ title: 'Conversation créée', description: 'Visible dans l’espace du destinataire.' });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Création impossible',
+        description: error?.message || 'Une erreur est survenue.' });
+    } finally { setCreating(false); }
+  };
+
+  const deleteConversation = async (contact: ContactMessage) => {
+    if (!user || deletingId) return;
+    const source = contact.source === 'legacy' ? 'legacy' : 'support';
+    const key = source + ':' + contact.id;
+    const subject = contact.subject || 'Message LabelMoto';
+    const confirmed = window.confirm(
+      'Supprimer définitivement la conversation « ' + subject + ' » ?\n\n' +
+      'Son historique sera effacé de la messagerie LabelMoto et, pour un compte inscrit, de son espace client.\n' +
+      'Cette action est irréversible.'
+    );
+    if (!confirmed) return;
+    setDeletingId(key);
+    try {
+      const token = await user.getIdToken(true);
+      const query = new URLSearchParams({ messageId: contact.id, source });
+      const response = await fetch('/api/admin/support-messages?' + query, {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer ' + token },
+        cache: 'no-store',
+      });
+      const payload = await response.json();
+      if (!response.ok) throw Error(payload?.error || 'Suppression impossible.');
+      setMessages(current => current.filter(item =>
+        !(item.id === contact.id && (item.source || 'support') === source)
+      ));
+      setExpandedIds(current => {
+        const next = { ...current };
+        delete next[contact.id];
+        return next;
+      });
+      setDrafts(current => {
+        const next = { ...current };
+        delete next[contact.id];
+        return next;
+      });
+      window.dispatchEvent(new Event('labelmoto:admin-support-unread-changed'));
+      toast({ title: 'Conversation supprimée', description: 'L’historique a été retiré.' });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Suppression impossible',
+        description: error?.message || 'Une erreur est survenue.' });
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const markAdminRead =
     useCallback(
@@ -560,7 +669,13 @@ export default function AdminContactMessages() {
           </div>
         </div>
 
-        <Button
+        <div className="flex flex-wrap items-center gap-2">
+          <Button type="button" size="sm" onClick={() => void toggleComposer()}
+            className="rounded-full font-black uppercase text-[9px] tracking-widest">
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
+            {composerOpen ? 'Fermer' : 'Nouvelle conversation'}
+          </Button>
+          <Button
           type="button"
           variant="outline"
           size="sm"
@@ -577,8 +692,37 @@ export default function AdminContactMessages() {
           )}
 
           Actualiser
-        </Button>
+          </Button>
+        </div>
       </div>
+
+      {composerOpen && (
+        <div className="space-y-3 rounded-2xl border border-brand/20 bg-white p-4 shadow-sm">
+          <h3 className="text-sm font-black">Nouvelle conversation · espace client</h3>
+          <p className="text-xs text-muted-foreground">Envoi dans la messagerie d’un compte inscrit. Aucun e-mail automatique.</p>
+          <label className="block text-xs font-bold" htmlFor="admin-new-recipient">Destinataire</label>
+          <select id="admin-new-recipient" value={recipientUid} onChange={event => setRecipientUid(event.target.value)}
+            disabled={recipientsLoading || creating}
+            className="w-full rounded-xl border bg-white px-3 py-2 text-sm">
+            <option value="">{recipientsLoading ? 'Chargement des comptes…' : 'Sélectionner un compte'}</option>
+            {recipients.map(item => (
+              <option key={item.uid} value={item.uid}>{item.name || item.email} · {item.email} ({item.role === 'pro' ? 'Pro' : 'Utilisateur'})</option>
+            ))}
+          </select>
+          <label className="block text-xs font-bold" htmlFor="admin-new-subject">Objet</label>
+          <input id="admin-new-subject" value={newSubject} onChange={event => setNewSubject(event.target.value)}
+            maxLength={300} disabled={creating} placeholder="Objet de la conversation"
+            className="w-full rounded-xl border px-3 py-2 text-sm" />
+          <label className="block text-xs font-bold" htmlFor="admin-new-body">Message</label>
+          <Textarea id="admin-new-body" value={newBody} onChange={event => setNewBody(event.target.value)}
+            maxLength={12000} rows={4} disabled={creating} placeholder="Votre premier message…" />
+          <Button type="button" disabled={creating || recipientsLoading} onClick={() => void createConversation()}
+            className="rounded-xl font-black uppercase text-[9px] tracking-widest">
+            {creating ? <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" /> : <Send className="mr-2 h-3.5 w-3.5" />}
+            Créer et envoyer
+          </Button>
+        </div>
+      )}
 
       {loading ? (
         <div className="flex justify-center py-20">
@@ -593,7 +737,7 @@ export default function AdminContactMessages() {
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {messages.map(
             contact => {
               const email =
@@ -621,26 +765,13 @@ export default function AdminContactMessages() {
                   ? contact.replies
                   : [];
 
-              const lastReply =
-                replies.length > 0
-                  ? replies[
-                      replies.length -
-                        1
-                    ]
-                  : null;
-
-              const preview =
-                lastReply?.body ||
-                contact.message ||
-                '';
-
               return (
                 <article
                   key={contact.id}
                   className={
                     contact.adminUnread
-                      ? 'rounded-2xl border border-brand/40 bg-brand/[0.02] p-5 shadow-sm'
-                      : 'rounded-2xl border bg-white p-5 shadow-sm'
+                      ? 'rounded-xl border border-brand/40 bg-brand/[0.02] px-4 py-3 shadow-sm'
+                      : 'rounded-xl border bg-white px-4 py-3 shadow-sm'
                   }
                 >
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -682,7 +813,7 @@ export default function AdminContactMessages() {
                         )}
                       </p>
 
-                      {email && (
+                      {isExpanded && email && (
                         <button
                           type="button"
                           onClick={() =>
@@ -697,16 +828,9 @@ export default function AdminContactMessages() {
                         </button>
                       )}
 
-                      <p className="mt-3 font-black">
-                        {contact.subject ||
-                          'Message LabelMoto'}
+                      <p className={isExpanded ? 'mt-3 font-black' : 'mt-1 truncate text-sm font-semibold text-foreground/75'}>
+                        {contact.subject || 'Message LabelMoto'}
                       </p>
-
-                      {!isExpanded && (
-                        <p className="mt-1 line-clamp-2 text-sm text-foreground/70">
-                          {preview}
-                        </p>
-                      )}
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -725,6 +849,22 @@ export default function AdminContactMessages() {
                           : 'Réponse espace client'}
                       </Badge>
 
+                      {isExpanded && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          title="Supprimer définitivement cette conversation"
+                          disabled={deletingId !== null || sendingId === contact.id}
+                          onClick={() => void deleteConversation(contact)}
+                          className="h-8 rounded-full px-3 text-[8px] font-black uppercase tracking-widest text-red-600 hover:text-red-700"
+                        >
+                          {deletingId === ((contact.source || 'support') + ':' + contact.id)
+                            ? <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                            : <Trash2 className="mr-1.5 h-3.5 w-3.5" />}
+                          Supprimer
+                        </Button>
+                      )}
                       <Button
                         type="button"
                         variant="outline"
@@ -759,7 +899,7 @@ export default function AdminContactMessages() {
                       >
                         <div>
                           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">
-                            Message initial
+                              {contact.initiatedBy === 'labelmoto' ? 'Message initial LabelMoto' : 'Message initial'}
                           </p>
 
                           <p className="mt-1 whitespace-pre-wrap break-words text-sm leading-6 text-foreground/80">

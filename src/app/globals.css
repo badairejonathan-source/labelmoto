@@ -116,3 +116,131 @@
   text-align: center;
   line-height: 1.2;
 }
+
+/* LABELMOTO V3.19.7 HALO TYPOGRAPHIQUE DESKTOP */
+/* La route reste en arriere-plan : seul le contour des caracteres est protege. */
+@media (min-width: 1024px) {
+  :is(.entretien-desktop-article, [data-labelmoto-road-halo="info"])
+    :is(h1, h2, h3, h4, h5, h6, p, li, dt, dd, blockquote),
+  [data-labelmoto-sheet-panel="true"] section > div.mb-3 :is(h1, p) {
+    text-shadow:
+      -2.5px 0 0 #fbfcfc, 2.5px 0 0 #fbfcfc,
+      0 -2.5px 0 #fbfcfc, 0 2.5px 0 #fbfcfc,
+      -1.8px -1.8px 0 #fbfcfc, 1.8px -1.8px 0 #fbfcfc,
+      -1.8px 1.8px 0 #fbfcfc, 1.8px 1.8px 0 #fbfcfc,
+      0 0 5px #fbfcfc, 0 0 9px rgba(251,252,252,.98) !important;
+  }
+
+  /* V3.11 posait des bandes opaques : on les remplace par un halo de lettres. */
+  .entretien-desktop-article :is(h1, h2, h3, h4),
+  .entretien-desktop-article .my-8.space-y-4 > p {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Le sommaire et les cartes conservent leur propre surface de lecture. */
+  .entretien-desktop-article .border-dashed :is(h1, h2, h3, h4, p, li) {
+    text-shadow: none !important;
+  }
+}
+
+/* LABELMOTO V3.19.17 - HALO TEXTE SECTION PRO ACCUEIL */
+@media (min-width: 1024px) {
+  [data-labelmoto-home-pro-halo="true"] :is(h2, h3, h4, p, li) {
+    text-shadow:
+      -4px 0 0 #ffffff, 4px 0 0 #ffffff,
+      0 -4px 0 #ffffff, 0 4px 0 #ffffff,
+      -2.8px -2.8px 0 #ffffff, 2.8px -2.8px 0 #ffffff,
+      -2.8px 2.8px 0 #ffffff, 2.8px 2.8px 0 #ffffff,
+      0 0 6px #ffffff, 0 0 12px rgba(255,255,255,.99) !important;
+  }
+  /* Contour peint derriere le remplissage des titres, pas de bande blanche. */
+  [data-labelmoto-home-pro-halo="true"] :is(h2, h3, h4) {
+    -webkit-text-stroke: 4px #ffffff;
+    paint-order: stroke fill;
+  }
+}
+
+/* LABELMOTO V3.19.21 - HALO HOME AU-DESSUS DU SVG */
+/* Texte au-dessus du SVG et halo autour des caracteres, sans aplat blanc.
+   On ne change ni le rendu des boutons colores ni les surfaces des cartes. */
+@media (min-width: 1024px) {
+  [data-labelmoto-home-halo="true"] {
+    isolation: isolate;
+  }
+  [data-labelmoto-home-halo="true"] svg[data-labelmoto-home-road-segment] {
+    z-index: 0 !important;
+  }
+  [data-labelmoto-home-halo="true"] > div.relative.z-10 {
+    z-index: 10 !important;
+  }
+  [data-labelmoto-home-halo="true"] :is(h1,h2,h3,h4,h5,h6,p,li,blockquote,dt,dd,small,label),
+  [data-labelmoto-home-halo="true"] a:not([class*="bg-"]),
+  [data-labelmoto-home-halo="true"] span:not([class*="bg-"]) {
+    position: relative;
+    z-index: 1;
+    text-shadow:
+      -5.5px 0 0 #fff, 5.5px 0 0 #fff,
+      0 -5.5px 0 #fff, 0 5.5px 0 #fff,
+      -3.9px -3.9px 0 #fff, 3.9px -3.9px 0 #fff,
+      -3.9px 3.9px 0 #fff, 3.9px 3.9px 0 #fff,
+      0 0 7px #fff, 0 0 13px rgba(255,255,255,.99) !important;
+    -webkit-text-stroke: 3px #fff !important;
+    paint-order: stroke fill;
+  }
+  [data-labelmoto-home-halo="true"] :is(h1,h2,h3,h4,h5,h6) {
+    -webkit-text-stroke: 5.8px #fff !important;
+    filter: drop-shadow(0 0 3px #fff);
+  }
+  /* Aucun halo force sur les icones SVG ni les boutons a fond colore. */
+  [data-labelmoto-home-halo="true"] :is(button,[class*="bg-brand"],[class*="bg-orange"]) :is(span,small) {
+    text-shadow: none !important;
+    -webkit-text-stroke: 0 !important;
+    filter: none !important;
+  }
+}
+
+/* LABELMOTO_MOBILE_ROAD_TEXT_HALO_V1 */
+/* Protect glyphs, not text blocks. Route remains behind the page content. */
+@media (max-width: 1023px) {
+  [data-labelmoto-mobile-road] > [aria-hidden="true"] {
+    z-index: 0 !important;
+  }
+  [data-labelmoto-mobile-road] :is(h1, h2, h3, h4, p, li, blockquote) {
+    text-shadow:
+      -3.5px 0 0 #fbfcfc, 3.5px 0 0 #fbfcfc,
+      0 -3.5px 0 #fbfcfc, 0 3.5px 0 #fbfcfc,
+      -2.5px -2.5px 0 #fbfcfc, 2.5px -2.5px 0 #fbfcfc,
+      -2.5px 2.5px 0 #fbfcfc, 2.5px 2.5px 0 #fbfcfc,
+      0 0 6px rgba(251,252,252,.99), 0 0 10px rgba(251,252,252,.90);
+  }
+}
+
+/* LABELMOTO_FOOTER_MOBILE_TEXT_HALO_V1 */
+/* Only Entretien and Info; lettering stays legible over the decorative road. */
+@media (max-width: 1023px) {
+  [data-labelmoto-mobile-road-footer="true"] :is(h1, h2, h3, h4, p, li, summary, small, a:not([class*="bg-"])) {
+    text-shadow:
+      -3.5px 0 0 #fbfcfc, 3.5px 0 0 #fbfcfc,
+      0 -3.5px 0 #fbfcfc, 0 3.5px 0 #fbfcfc,
+      -2.5px -2.5px 0 #fbfcfc, 2.5px -2.5px 0 #fbfcfc,
+      -2.5px 2.5px 0 #fbfcfc, 2.5px 2.5px 0 #fbfcfc,
+      0 0 6px rgba(251,252,252,.99), 0 0 10px rgba(251,252,252,.90);
+  }
+}
+
+/* LABELMOTO_HOME_ENTRETIEN_HALO_CIBLE_V3 */
+@media (max-width: 1023px) {
+  /* Interdire uniquement les surfaces opaques des titres, pas celles des cartes. */
+  [data-labelmoto-mobile-road="home"] h1,
+  [data-labelmoto-mobile-road="entretien"] :is(h1,h2,h3) {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    text-shadow:
+      -3.5px 0 0 #fbfcfc, 3.5px 0 0 #fbfcfc,
+      0 -3.5px 0 #fbfcfc, 0 3.5px 0 #fbfcfc,
+      -2.5px -2.5px 0 #fbfcfc, 2.5px -2.5px 0 #fbfcfc,
+      -2.5px 2.5px 0 #fbfcfc, 2.5px 2.5px 0 #fbfcfc,
+      0 0 6px rgba(251,252,252,.99), 0 0 10px rgba(251,252,252,.90);
+  }
+}

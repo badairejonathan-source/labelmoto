@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { useFirebase } from '@/firebase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +11,9 @@ import { Loader2, Search, Edit, Trash2, MapPin, MapPinOff, X, Save, RefreshCw, H
 import ImageUploadRequest from '@/components/app/image-upload-request';
 import { loadPublicSeoPros } from '@/lib/public-seo-pros';
 import ProfessionalListingForm, { ProfessionalAppSection, ProfessionalListingFormValues } from '@/components/app/professional-listing-form';
+import ProDeletionReviewV20 from '@/components/app/pro-deletion-review-v20';
+import { parseProDeletionReviewV20 } from '@/lib/pro-deletion-review-v20';
+import type { ProDeletionReviewV20 as ProDeletionReviewReportV20 } from '@/lib/pro-deletion-review-v20';
 
 
 interface ListingItem {
@@ -69,6 +72,33 @@ function allowedSectionsForCollection(collectionName: string): ProfessionalAppSe
   return ['shopping', 'service', 'both'];
 }
 
+type PublicRemovalPreview = {
+  target: { collection: string; id: string };
+  fichePresente: boolean;
+  cacheLivePresente: boolean;
+  cacheLiveConflit: boolean;
+  indexes: {path:string; entreesRetirables:number}[];
+  urlsImagesPossibles: number;
+  nonVerifies: string[];
+  actionAutorisee: boolean;
+  mediaAudit?: {urlsFiche:number;urlsSousControleLabelMoto:number;demandesImagesLiees:number;
+    demandesActivesAExaminer:number;verificationIncomplete:boolean;retraitBloque:boolean};
+};
+type PublicRemovalResult = {
+  ok: boolean;
+  publicFirestoreAndIndexesRemoved: boolean;
+  publicLiveCacheRemoved: boolean;
+  fullyInvisibleOnInternet: boolean;
+  remaining: string[];
+};
+
+type WithdrawalHistoryEntry = {
+  id: string; collection: string; docId: string; title: string; city: string;
+  oldPath: string; reason: 'owner_request'|'other';
+  status: 'pending_review'|'sources_removed_to_verify';
+  createdAt: number; verifiedAt: number|null;
+};
+
 interface ListingsManagerProps {
   initialEditTarget?: { collection: string; id: string } | null;
   onInitialEditHandled?: () => void;
@@ -91,11 +121,38 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
   const [isSaving, setIsSaving] = useState(false);
   const [isGeocoding, setIsGeocoding] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<ListingItem | null>(null);
+  const [deleteReport, setDeleteReport] = useState<ProDeletionReviewReportV20 | null>(null);
+  const [deleteReportError, setDeleteReportError] = useState('');
+  const [deleteImpactLoading, setDeleteImpactLoading] = useState(false);
+  const [publicRemovalPreview, setPublicRemovalPreview] = useState<PublicRemovalPreview | null>(null);
+  const [publicRemovalPreviewLoading, setPublicRemovalPreviewLoading] = useState(false);
+  const [publicRemovalPreviewError, setPublicRemovalPreviewError] = useState('');
+  const [publicRemovalApplying, setPublicRemovalApplying] = useState(false);
+  const [publicRemovalApplyError, setPublicRemovalApplyError] = useState('');
+  const [publicRemovalResult, setPublicRemovalResult] = useState<PublicRemovalResult | null>(null);
+  // Ignore les réponses tardives après fermeture ou changement de fiche.
+  const deletePreviewSequence = React.useRef(0);
+  const publicRemovalSequence = React.useRef(0);
   const [isImporting, setIsImporting] = useState(false);
   const [importUrl, setImportUrl] = useState('');
   const [importLoading, setImportLoading] = useState(false);
   const [cacheUpdatedAt, setCacheUpdatedAt] = useState<Date | null>(null);
   const [cacheCount, setCacheCount] = useState<number>(0);
+  const [withdrawalHistoryVisible,setWithdrawalHistoryVisible]=useState(false);
+  const [withdrawalHistoryConsent,setWithdrawalHistoryConsent]=useState(false);
+  const [withdrawalHistoryLoading,setWithdrawalHistoryLoading]=useState(false);
+  const [withdrawalHistoryLoaded,setWithdrawalHistoryLoaded]=useState(false);
+  const [withdrawalHistoryError,setWithdrawalHistoryError]=useState('');
+  const [withdrawalHistoryRecords,setWithdrawalHistoryRecords]=useState<WithdrawalHistoryEntry[]>([]);
+  const [withdrawalDiagnoses,setWithdrawalDiagnoses] = useState<Record<string, {
+    state:'sources_removed_to_verify'|'manual_review'|'no_record';
+    history:{exists:boolean;status:string|null};
+    backup:{exists:boolean;status:string|null};
+    sharedIndexLock:{exists:boolean;status:string|null;scope:string};
+    automaticRetryAllowed:boolean;
+  }>>({});
+  const [withdrawalDiagnosisBusy,setWithdrawalDiagnosisBusy] = useState<string|null>(null);
+  const [withdrawalDiagnosisErrors,setWithdrawalDiagnosisErrors] = useState<Record<string,string>>({});
   const [isRebuilding, setIsRebuilding] = useState(false);
 
   useEffect(() => {
@@ -151,6 +208,59 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
       setIsRebuilding(false);
     }
   };
+  // Historique chargé uniquement sur demande pour limiter les lectures facturables.
+  // Diagnostic explicite : 1 verification de role + 3 lectures documentaires ciblees.
+  // Aucun scan, aucun effacement et aucune tentative de reprise.
+  const inspectWithdrawal = async (entry: WithdrawalHistoryEntry) => {
+    if(!withdrawalHistoryConsent || !user || withdrawalDiagnosisBusy) return;
+    const key=entry.id;
+    setWithdrawalDiagnosisBusy(key);
+    setWithdrawalDiagnosisErrors(old=>({...old,[key]:''}));
+    try {
+      const token=await user.getIdToken();
+      const params=new URLSearchParams({collection:entry.collection,id:entry.docId});
+      const response=await fetch(`/api/admin/retrait-public-diagnostic?${params}`,{
+        method:'GET',cache:'no-store',headers:{Authorization:`Bearer ${token}`},
+      });
+      const value:unknown=await response.json();
+      if(!response.ok || !value || typeof value!=='object' || !('ok' in value) || value.ok!==true || !('target' in value) || !('state' in value))
+        throw new Error('Diagnostic indisponible : aucune nouvelle suppression autorisee');
+      const data=value as unknown as {target:{collection:string;id:string};state:string;
+        history:{exists:boolean;status:string|null}; backup:{exists:boolean;status:string|null};
+        sharedIndexLock:{exists:boolean;status:string|null;scope:string}; automaticRetryAllowed:boolean};
+      if(data.target.collection!==entry.collection || data.target.id!==entry.docId ||
+        !['sources_removed_to_verify','manual_review','no_record'].includes(data.state) ||
+        data.automaticRetryAllowed!==false || !data.history || !data.backup || !data.sharedIndexLock)
+        throw new Error('Reponse diagnostic invalide');
+      setWithdrawalDiagnoses(old=>({...old,[key]:data as typeof old[string]}));
+    }catch(e:unknown){
+      setWithdrawalDiagnosisErrors(old=>({...old,[key]:e instanceof Error?e.message:'Diagnostic indisponible'}));
+    }finally {setWithdrawalDiagnosisBusy(null);}
+  };
+
+  const loadWithdrawalHistory = async () => {
+    if (!withdrawalHistoryConsent || !user || withdrawalHistoryLoading) return;
+    setWithdrawalHistoryLoading(true);
+    setWithdrawalHistoryError('');
+    try {
+      const token=await user.getIdToken();
+      const response=await fetch('/api/admin/retrait-public-history',{
+        method:'GET',cache:'no-store',headers:{Authorization:`Bearer ${token}`},
+      });
+      const data:unknown=await response.json();
+      if(!response.ok || !data || typeof data!=='object' || !('entries' in data)
+        || !Array.isArray(data.entries)) throw new Error('Historique indisponible ou accès refusé');
+      const entries=data.entries as WithdrawalHistoryEntry[];
+      if(entries.length>20 || entries.some(x=> !x || typeof x.id!=='string' || typeof x.title!=='string'
+        || typeof x.createdAt!=='number' || !['pending_review','sources_removed_to_verify'].includes(x.status)))
+        throw new Error('Réponse d’historique invalide');
+      setWithdrawalHistoryRecords(entries);
+      setWithdrawalHistoryLoaded(true);
+    } catch (e:unknown) {
+      setWithdrawalHistoryError(e instanceof Error?e.message:'Erreur de chargement');
+    } finally {setWithdrawalHistoryLoading(false);}
+  };
+
   const [importError, setImportError] = useState('');
 
   const loadListings = useCallback(async () => {
@@ -650,16 +760,142 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
     setIsGeocoding(false);
   };
 
-  const handleDelete = async () => {
-    if (!firestore || !confirmDelete) return;
+  const openDeletionReview = (listing: ListingItem) => {
+    deletePreviewSequence.current += 1;
+    publicRemovalSequence.current += 1;
+    setDeleteReport(null);
+    setDeleteReportError('');
+    setDeleteImpactLoading(false);
+    setPublicRemovalPreview(null);
+    setPublicRemovalPreviewLoading(false);
+    setPublicRemovalPreviewError('');
+    setPublicRemovalApplying(false);
+    setPublicRemovalApplyError('');
+    setPublicRemovalResult(null);
+    setConfirmDelete(listing);
+  };
+
+  const closeDeletionReview = () => {
+    deletePreviewSequence.current += 1;
+    publicRemovalSequence.current += 1;
+    setConfirmDelete(null);
+    setDeleteReport(null);
+    setDeleteReportError('');
+    setDeleteImpactLoading(false);
+    setPublicRemovalPreview(null);
+    setPublicRemovalPreviewLoading(false);
+    setPublicRemovalPreviewError('');
+    setPublicRemovalApplying(false);
+    setPublicRemovalApplyError('');
+    setPublicRemovalResult(null);
+  };
+
+  const handlePreviewPublicRemoval = async () => {
+    const target=confirmDelete;
+    if(!target || publicRemovalPreviewLoading || publicRemovalApplying) return;
+    const requestId=++publicRemovalSequence.current;
+    setPublicRemovalPreview(null);
+    setPublicRemovalPreviewError('');
+    setPublicRemovalPreviewLoading(true);
     try {
-      await deleteDoc(doc(firestore, confirmDelete.collection, confirmDelete.id));
-      setAllListings(prev => prev.filter(l => !(l.id === confirmDelete.id && l.collection === confirmDelete.collection)));
-      toast({ title: 'Fiche supprimée' });
-      setConfirmDelete(null);
-      if (editing && editing.id === confirmDelete.id) setEditing(null);
-    } catch (e: any) {
-      toast({ title: 'Erreur', description: e.message, variant: 'destructive' });
+      if(!user) throw new Error('Session absente.');
+      const token=await user.getIdToken();
+      if(requestId!==publicRemovalSequence.current) return;
+      const response=await fetch('/api/admin/retrait-public',{
+        method:'POST',cache:'no-store',
+        headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},
+        body:JSON.stringify({action:'preview',collection:target.collection,id:target.id}),
+      });
+      const body:unknown=await response.json();
+      if(requestId!==publicRemovalSequence.current) return;
+      if(!response.ok || !body || typeof body!=='object' || !('ok' in body) || body.ok!==true)
+        throw new Error(body && typeof body==='object' && 'error' in body && typeof body.error==='string'
+          ? body.error : 'Contrôle ciblé indisponible');
+      const plan=body as unknown as PublicRemovalPreview;
+      if(!plan.target || plan.target.collection!==target.collection || plan.target.id!==target.id
+        || typeof plan.fichePresente!=='boolean' || typeof plan.cacheLiveConflit!=='boolean'
+        || !Array.isArray(plan.indexes) || plan.indexes.length!==2 || !Array.isArray(plan.nonVerifies)
+        || typeof plan.cacheLivePresente!=='boolean' || typeof plan.actionAutorisee!=='boolean'
+        || !plan.mediaAudit || typeof plan.mediaAudit.retraitBloque!=='boolean'
+        || typeof plan.mediaAudit.urlsSousControleLabelMoto!=='number'
+        || typeof plan.mediaAudit.demandesActivesAExaminer!=='number')
+        throw new Error('Réponse du contrôle public invalide');
+      setPublicRemovalPreview(plan);
+    }catch(e:unknown){
+      if(requestId===publicRemovalSequence.current)
+        setPublicRemovalPreviewError(e instanceof Error?e.message:'Contrôle indisponible');
+    }finally{
+      if(requestId===publicRemovalSequence.current) setPublicRemovalPreviewLoading(false);
+    }
+  };
+
+  const handleApplyPublicRemoval = async (reason: 'owner_request'|'other') => {
+    const target=confirmDelete;
+    if(!target || !publicRemovalPreview?.actionAutorisee || publicRemovalApplying || publicRemovalResult) return;
+    const requestId=++publicRemovalSequence.current;
+    setPublicRemovalApplying(true);
+    setPublicRemovalApplyError('');
+    try {
+      if(!user) throw new Error('Session absente.');
+      const token=await user.getIdToken();
+      if(requestId!==publicRemovalSequence.current) return;
+      const response=await fetch('/api/admin/retrait-public',{
+        method:'POST',cache:'no-store',
+        headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},
+        body:JSON.stringify({action:'apply',collection:target.collection,id:target.id,
+          confirm:`RETIRER_PUBLIC:${target.collection}/${target.id}`,reason}),
+      });
+      const body:unknown=await response.json();
+      if(requestId!==publicRemovalSequence.current) return;
+      if(!response.ok || !body || typeof body!=='object' || !('ok' in body) || body.ok!==true)
+        throw new Error(body && typeof body==='object' && 'error' in body && typeof body.error==='string'
+          ? body.error : 'Retrait interrompu : examen manuel nécessaire');
+      const result=body as PublicRemovalResult;
+      if(!result.publicFirestoreAndIndexesRemoved || !result.publicLiveCacheRemoved
+        || result.fullyInvisibleOnInternet!==false || !Array.isArray(result.remaining))
+        throw new Error('Réponse de vérification incomplète : examen manuel nécessaire');
+      setPublicRemovalResult(result);
+      setAllListings(previous=>previous.filter(item=>
+        !(item.collection===target.collection && item.id===target.id)));
+      toast({title:'Sources publiques retirées',description:'Médias, caches externes et Google restent à vérifier.'});
+    }catch(e:unknown){
+      if(requestId===publicRemovalSequence.current)
+        setPublicRemovalApplyError(e instanceof Error?e.message:'État incertain : revue nécessaire');
+    }finally{
+      if(requestId===publicRemovalSequence.current) setPublicRemovalApplying(false);
+    }
+  };
+
+  const handlePreviewProDeletion = async () => {
+    if (!confirmDelete) return;
+    const requestId = ++deletePreviewSequence.current;
+    setDeleteImpactLoading(true);
+    setDeleteReport(null);
+    setDeleteReportError('');
+    try {
+      if (!user) throw new Error('Session absente. Reconnecte-toi.');
+      const token = await user.getIdToken();
+      if (requestId !== deletePreviewSequence.current) return;
+      const response = await fetch('/api/admin/suppression-pro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ action: 'preview', collection: confirmDelete.collection, id: confirmDelete.id }),
+      });
+      const result: unknown = await response.json();
+      if (requestId !== deletePreviewSequence.current) return;
+      if (!response.ok) {
+        const msg = result && typeof result === 'object' && 'error' in result && typeof result.error === 'string'
+          ? result.error : 'Pré-audit impossible';
+        throw new Error(msg);
+      }
+      const report = parseProDeletionReviewV20(result, confirmDelete.collection, confirmDelete.id);
+      setDeleteReport(report);
+      toast({ title: 'Pré-audit partiel affiché', description: 'Lecture seule. Aucune suppression autorisée.' });
+    } catch (error: unknown) {
+      if (requestId !== deletePreviewSequence.current) return;
+      setDeleteReportError(error instanceof Error ? error.message : 'Pré-audit indisponible');
+    } finally {
+      if (requestId === deletePreviewSequence.current) setDeleteImpactLoading(false);
     }
   };
 
@@ -688,8 +924,8 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
               {cacheCount > 0 && <span className="ml-2 text-muted-foreground font-medium text-xs">({cacheCount} points)</span>}
             </p>
             {cacheUpdatedAt && allListings.length > cacheCount && (
-              <p className="text-[10px] text-orange-600 font-black mt-1">
-                ⚠️ {allListings.length - cacheCount} fiche(s) non synchronisée(s)
+              <p className="text-[10px] text-muted-foreground font-medium mt-1">
+                ℹ️ Écart annuaire / carte : {allListings.length - cacheCount} fiche(s) de plus que de points (GPS manquant, ID partagé ou décalage de cache).
               </p>
             )}
           </div>
@@ -698,6 +934,94 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
           </Button>
         </div>
       </div>
+
+      {/* Historique privé des retraits, intégré à cette même page d'administration. */}
+      {!editorOnly && (
+        <section className="mb-6 rounded-2xl border bg-background p-4" aria-label="Historique des suppressions">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <History className="h-5 w-5 text-brand shrink-0" />
+              <div>
+                <p className="text-sm font-black">Historique des suppressions</p>
+                <p className="text-xs text-muted-foreground">Archives privées des retraits publics, sur cette page.</p>
+              </div>
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={()=>{
+              setWithdrawalHistoryVisible(!withdrawalHistoryVisible);
+              if(withdrawalHistoryVisible) setWithdrawalHistoryConsent(false);
+            }}>{withdrawalHistoryVisible?'Masquer':'Afficher'}</Button>
+          </div>
+          {withdrawalHistoryVisible && (
+            <div className="mt-4 space-y-3">
+              <p className="text-xs text-muted-foreground">
+                Consultation limitée aux 20 derniers retraits. Une lecture Firestore peut être facturée ;
+                rien n'est chargé automatiquement.
+              </p>
+              <label className="flex items-start gap-2 text-xs">
+                <input type="checkbox" className="mt-0.5" checked={withdrawalHistoryConsent}
+                  onChange={e=>setWithdrawalHistoryConsent(e.target.checked)} />
+                J'autorise la lecture ciblée de l'historique (20 entrées maximum).
+              </label>
+              <Button type="button" variant="outline" size="sm"
+                disabled={!withdrawalHistoryConsent || withdrawalHistoryLoading}
+                onClick={loadWithdrawalHistory}>
+                {withdrawalHistoryLoading?<Loader2 className="mr-2 h-4 w-4 animate-spin" />:<RefreshCw className="mr-2 h-4 w-4" />}
+                {withdrawalHistoryLoaded?'Actualiser l’historique':'Charger l’historique'}
+              </Button>
+              {withdrawalHistoryError && (
+                <p role="alert" className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-800">
+                  {withdrawalHistoryError}
+                </p>
+              )}
+              {withdrawalHistoryLoaded && withdrawalHistoryRecords.length===0 && (
+                <p className="text-xs text-muted-foreground">Aucun retrait enregistré dans ce nouveau journal.
+                  Les anciennes suppressions n'y sont pas ajoutées automatiquement.</p>
+              )}
+              {withdrawalHistoryLoaded && withdrawalHistoryRecords.length>0 && (
+                <div className="space-y-2">
+                  {withdrawalHistoryRecords.map(item=>(
+                    <div key={item.id} className="rounded-xl border p-3 space-y-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-sm font-bold break-words">{item.title}</p>
+                        <span className="text-[11px] text-muted-foreground shrink-0">
+                          {item.createdAt?new Date(item.createdAt).toLocaleDateString('fr-FR'):'Date inconnue'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{item.city?`${item.city} · `:''}{item.collection} · {item.docId}</p>
+                      <p className="text-xs break-all">Ancienne URL : {item.oldPath||'Non renseignée'}</p>
+                      <p className="text-xs">Motif : {item.reason==='owner_request'?'Demande du professionnel':'Autre motif'}</p>
+                      <p className="text-xs font-semibold">
+                        {item.status==='sources_removed_to_verify'
+                          ? 'Fiche et index retirés — URLs, médias et Google à vérifier'
+                          : 'Opération en attente ou incomplète — examen requis'}
+                      </p>
+                      <div className="mt-2 space-y-2">
+                        <Button type="button" variant="outline" size="sm"
+                          disabled={!withdrawalHistoryConsent || !!withdrawalDiagnosisBusy}
+                          onClick={()=>inspectWithdrawal(item)}>
+                          {withdrawalDiagnosisBusy===item.id?'Diagnostic en cours…':'Diagnostiquer ce retrait (lectures ciblées)'}
+                        </Button>
+                        {withdrawalDiagnosisErrors[item.id] && <p role="alert" className="text-xs text-red-700">{withdrawalDiagnosisErrors[item.id]}</p>}
+                        {withdrawalDiagnoses[item.id] && <div className="rounded-lg border p-2 text-xs space-y-1" role="status">
+                          <p className="font-semibold">{withdrawalDiagnoses[item.id].state==='sources_removed_to_verify'
+                            ? 'Sources principales déclarées retirées — contrôle externe restant'
+                            : withdrawalDiagnoses[item.id].state==='manual_review'
+                              ? 'Opération incomplète ou incohérente — intervention manuelle obligatoire'
+                              : 'Aucune trace trouvée — ne pas conclure à une suppression réussie'}</p>
+                          <p>Historique : {withdrawalDiagnoses[item.id].history.status||'absent'}</p>
+                          <p>Sauvegarde : {withdrawalDiagnoses[item.id].backup.status||'absente'}</p>
+                          <p>Verrou d’index partagé : {withdrawalDiagnoses[item.id].sharedIndexLock.status||'absent'} (peut concerner un autre professionnel)</p>
+                          <p>Diagnostic partiel. Aucun contrôle Google/CDN ni scan des médias. Aucune reprise automatique.</p>
+                        </div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </section>
+      )}
 
       {searchTerm.trim().length >= 2 && results.length === 0 && (
         <div className="text-center py-12 text-muted-foreground"><p className="font-bold uppercase text-xs">Aucune fiche trouvée</p></div>
@@ -717,7 +1041,7 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
             </div>
             <div className="flex gap-1 shrink-0">
               <button onClick={() => handleEdit(l)} className="p-2 rounded-lg hover:bg-muted text-muted-foreground transition-colors"><Edit className="h-4 w-4" /></button>
-              <button onClick={() => setConfirmDelete(l)} className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"><Trash2 className="h-4 w-4" /></button>
+              <button type="button" aria-label={`Revoir la suppression de ${l.title}`} onClick={() => openDeletionReview(l)} className="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"><Trash2 className="h-4 w-4" /></button>
             </div>
           </div>
         ))}
@@ -813,17 +1137,25 @@ export default function ListingsManager({ initialEditTarget = null, onInitialEdi
       )}
 
       {confirmDelete && (
-        <div className="fixed inset-0 bg-black/50 z-[2000] flex items-center justify-center p-4" onClick={() => setConfirmDelete(null)}>
-          <div className="bg-white rounded-3xl max-w-sm w-full p-6 text-center" onClick={e => e.stopPropagation()}>
-            <Trash2 className="h-10 w-10 text-red-500 mx-auto mb-3" />
-            <h3 className="font-black uppercase text-sm tracking-widest mb-2">Supprimer cette fiche ?</h3>
-            <p className="text-sm text-muted-foreground mb-5 font-bold">{confirmDelete.title}</p>
-            <div className="flex gap-2">
-              <Button onClick={() => setConfirmDelete(null)} variant="outline" className="flex-1 rounded-xl font-black uppercase text-xs tracking-widest h-11">Annuler</Button>
-              <Button onClick={handleDelete} className="flex-1 rounded-xl font-black uppercase text-xs tracking-widest h-11 bg-red-500 hover:bg-red-600">Supprimer</Button>
-            </div>
-          </div>
-        </div>
+        <ProDeletionReviewV20
+          key={`${confirmDelete.collection}/${confirmDelete.id}`}
+          title={confirmDelete.title}
+          collection={confirmDelete.collection}
+          id={confirmDelete.id}
+          report={deleteReport}
+          loading={deleteImpactLoading}
+          error={deleteReportError}
+          onPreview={handlePreviewProDeletion}
+          publicPreview={publicRemovalPreview}
+          publicPreviewLoading={publicRemovalPreviewLoading}
+          publicPreviewError={publicRemovalPreviewError}
+          publicApplying={publicRemovalApplying}
+          publicApplyError={publicRemovalApplyError}
+          publicResult={publicRemovalResult}
+          onPublicPreview={handlePreviewPublicRemoval}
+          onPublicApply={handleApplyPublicRemoval}
+          onClose={closeDeletionReview}
+        />
       )}
     </div>
   );
