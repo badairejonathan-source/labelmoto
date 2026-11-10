@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import LabelMotoLogo from '@/components/app/logo';
 import UserMenu from '@/components/app/user-menu';
 import { cn } from '@/lib/utils';
+import { LabelMotoRoadHeaderEntry } from '@/components/app/labelmoto-road-finishes'; // LABELMOTO_HEADER_PARALLELE_PARTAGE_20261110
 
 const NAV_ITEMS = [
   {
@@ -34,6 +35,8 @@ export default function UnifiedSiteHeader() {
     <header
       className="relative z-[1600] w-full border-b border-black/[0.06] bg-white/95 backdrop-blur-xl"
     >
+      {/* Courbe partagee sur les fiches autonomes desktop ; masque en mobile. */}
+      <LabelMotoRoadHeaderEntry />
       <div className="hidden h-[80px] items-center px-8 lg:flex">
         <div className="flex w-[410px] shrink-0 items-center">
           <Link href="/" aria-label="Accueil LabelMoto" className="inline-flex">

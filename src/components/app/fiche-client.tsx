@@ -41,6 +41,7 @@ import {
 
 import LabelMotoLogo from '@/components/app/logo';
 import UnifiedSiteHeader from '@/components/app/unified-site-header';
+import EntretienRoadBackdrop from '@/components/app/entretien-road-backdrop';
 import {
   Table,
   TableBody,
@@ -435,7 +436,13 @@ export default function FicheClient({
   );
 
   return (
-    <div className={embedded ? "bg-transparent" : "min-h-screen bg-background"}>
+    <div className={embedded ? "bg-transparent" : "relative isolate min-h-screen overflow-x-clip bg-background"}>
+      {/* LABELMOTO_BREADCRUMB_MOBILE_FICHE_ROAD_20261106 : tracé existant, uniquement fiches autonomes en mobile. */}
+      {!embedded && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 lg:hidden">
+          <EntretienRoadBackdrop variant="entretien" />
+        </div>
+      )}
       {!embedded && <UnifiedSiteHeader />}
       {!embedded && breadcrumbLd && <Script id="breadcrumb-fiche-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }} />}
       
@@ -448,6 +455,7 @@ export default function FicheClient({
       >
         <div className="max-w-5xl mx-auto">
           <nav
+            data-labelmoto-breadcrumb-halo="true"
             className={`flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase mb-6 ${
               embedded ? 'hidden' : ''
             }`}

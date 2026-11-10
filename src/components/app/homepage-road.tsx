@@ -479,7 +479,8 @@ const DESKTOP_ROAD_SEGMENTS: Record<'hero' | 'discovery' | 'universe' | 'mainten
  * L'offset est calcule dans le repere physique CSS, pas dans le viewBox etire.
  * La petite adaptation initiale conserve l'ancrage cyan exact du header.
  */
-function parallelHomeRoad(d: string, gapPx: number, width: number, height: number, fromHeader: boolean): string {
+// LABELMOTO_JOIN_NORMAL_7PX_20261110: départ cyan = normale du même Bézier orange, sans fondu horizontal artificiel.
+function parallelHomeRoad(d: string, gapPx: number, width: number, height: number, _fromHeader: boolean): string {
   const sections=d.trim().split(' C ');
   if(sections.length < 2 || !sections[0].startsWith('M ')) throw Error('Chemin cubic inattendu');
   const coords=(part: string, size: number): number[] => {
@@ -506,14 +507,7 @@ function parallelHomeRoad(d: string, gapPx: number, width: number, height: numbe
       const vx=(3*u*u*(p1[0]-p0[0])+6*u*t*(p2[0]-p1[0])+3*t*t*(p3[0]-p2[0]))*scaleX;
       const vy=(3*u*u*(p1[1]-p0[1])+6*u*t*(p2[1]-p1[1])+3*t*t*(p3[1]-p2[1]))*scaleY;
       const magnitude=Math.hypot(vx,vy)||1;
-      let nx=-vy/magnitude, ny=vx/magnitude;
-      if(fromHeader && i===1) {
-        // Au point A, le cyan du header finit 7px a gauche, au meme Y.
-        const mix=Math.min(1,(j/steps)*5);
-        const blendX=-(1-mix)+nx*mix, blendY=ny*mix;
-        const z=Math.hypot(blendX,blendY)||1;
-        nx=blendX/z;ny=blendY/z;
-      }
+      const nx=-vy/magnitude, ny=vx/magnitude;
       const ox=px+gapPx*nx/scaleX,oy=py+gapPx*ny/scaleY;
       out.push((out.length?'L ':'M ')+fmt(ox)+' '+fmt(oy));
     }
@@ -5432,7 +5426,7 @@ export default function HomepageRoad() {
             <header
               className="
                 flex
-                h-[76px]
+                h-[80px]
                 items-center
                 justify-between
                 border-b
@@ -5505,7 +5499,7 @@ export default function HomepageRoad() {
             <div
               className="
                 grid
-                min-h-[calc(100svh-76px)]
+                min-h-[calc(100svh-80px)]
                 grid-cols-[minmax(0,0.92fr)_minmax(480px,1.08fr)]
                 items-center
                 gap-10
@@ -6021,100 +6015,9 @@ export default function HomepageRoad() {
 
         </div>
 
-        {/* ==================================================
-            BANDE DE REASSURANCE
-        =================================================== */}
-
-        <section
-          className="
-            hidden
-            lg:block
-            relative
-            z-10
-            border-t
-            border-border/60
-            bg-white/95
-            px-4
-            pt-5
-            pb-0
-            md:py-7
-          "
-        >
+        {/* LABELMOTO_REMOVE_REASSURANCE_20261109 : raccord graphique conserve sans les quatre cases. */}
+        <section aria-hidden="true" className="relative hidden h-12 lg:block">
           <HomeFooterBridge />
-          <div
-            className="
-              grid
-              grid-cols-4
-              gap-2
-            "
-          >
-            {[
-              {
-                icon: ShieldCheck,
-                title: 'Réseau de confiance',
-                text: 'Des pros vérifiés',
-              },
-              {
-                icon: MapPin,
-                title: 'Partout en France',
-                text: 'Recherche locale',
-              },
-              {
-                icon: Clock3,
-                title: 'Gain de temps',
-                text: 'Trouvez vite',
-              },
-              {
-                icon: Heart,
-                title: 'Passion moto',
-                text: 'Par les motards',
-              },
-            ].map(item => {
-              const Icon =
-                item.icon;
-
-              return (
-                <div
-                  key={item.title}
-                  className="
-                    text-center
-                  "
-                >
-                  <Icon
-                    className="
-                      mx-auto
-                      h-5
-                      w-5
-                      text-brand
-                    "
-                  />
-
-                  <strong
-                    className="
-                      mt-2
-                      block
-                      text-[6.5px]
-                      leading-tight
-                    "
-                  >
-                    {item.title}
-                  </strong>
-
-                  <span
-                    className="
-                      mt-1
-                      block
-                      text-[6px]
-                      leading-tight
-                      text-muted-foreground
-                    "
-                  >
-                    {item.text}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
         </section>
       </div>
       </main>
