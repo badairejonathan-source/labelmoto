@@ -13,6 +13,9 @@ const UserMenu = dynamic(() => import('@/components/app/user-menu'), {
   loading: () => <div className="h-[73px] w-[73px] md:h-[83px] md:w-[83px] rounded-full bg-white/50 border-2 border-white shadow-xl" />
 });
 import LabelMotoLogo from '@/components/app/logo';
+import MapSidebarRoads from '@/components/app/map-sidebar-roads';
+import { LabelMotoRoadHeaderEntry } from '@/components/app/labelmoto-road-finishes';
+import MapDesktopSerpentine from '@/components/app/map-desktop-serpentine';
 import { Compass, Search, Crosshair, Loader2, MapPin, Bike, Wrench, Users, Utensils, ArrowLeft, Phone, Globe, ChevronRight, Clock, ChevronUp, ChevronDown, MessageSquare, Map as MapIcon, Camera, Menu, Instagram, Mail } from 'lucide-react';
 import useWindowSize from '@/hooks/use-window-size';
 import { cn, normalizeText, getItemDepartment } from "@/lib/utils";
@@ -5554,8 +5557,12 @@ function MapPageComponent() {
 
   return (
     <div className="relative w-full h-screen [height:100dvh] overflow-hidden bg-[#f7f7f5]">
+      {/* LABELMOTO_MAP_SKETCH_SERPENTINE_20261110 : tracé continu derrière la liste desktop. */}
+      {isViewportReady && !isMobile && <MapDesktopSerpentine />}
       {isViewportReady && !isMobile && (
         <header className="absolute inset-x-0 top-0 z-[1600] h-[80px] border-b border-black/[0.06] bg-white/95 backdrop-blur-xl">
+          {/* Même tracé et même point de sortie que les autres headers desktop. */}
+          <LabelMotoRoadHeaderEntry />
           <div className="flex h-full items-center px-8">
             <div className="flex w-[410px] shrink-0 items-center">
               <LabelMotoLogo
@@ -6143,11 +6150,13 @@ function MapPageComponent() {
 
       {isViewportReady && !isMobile && (
         <aside className="absolute left-6 top-[228px] bottom-6 z-[1000] flex w-[560px] flex-col overflow-hidden bg-transparent">
+          {/* LABELMOTO_MAP_ROAD_PAIR_20261110 : tracé discret derrière la liste desktop */}
+          {/* Courbe desktop précédente remplacée par le tracé complet aligné sur le header. */}
           <div className="hidden">
             <div className="shrink-0"><LabelMotoLogo noBubble className="w-32 md:w-40 px-0 shadow-none border-none bg-transparent" /></div>
             <div className="shrink-0"><UserMenu /></div>
           </div>
-          <div ref={listScrollRef} className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto pr-1 custom-scrollbar">
+          <div ref={listScrollRef} className="relative z-[1] flex-1 min-w-0 overflow-x-hidden overflow-y-auto pr-1 custom-scrollbar">
             {isDetailView && selectedId ? (
               <SidebarDetailView dealershipId={selectedId} point={points.find(p => p.id === selectedId)} onBack={() => setIsDetailView(false)} />
             ) : (
@@ -6314,67 +6323,8 @@ function MapPageComponent() {
               false;
           }}
         >
-          {/* LABELMOTO DRAWER ROUTE BACKDROP */}
-          <svg
-            aria-hidden="true"
-            viewBox="0 0 430 733"
-            preserveAspectRatio="none"
-            className="
-              pointer-events-none
-              absolute
-              inset-y-0
-              left-[8%]
-              z-0
-              h-full
-              w-[104%]
-            "
-          >
-            {/* halo blanc comme sur la homepage */}
-            <path
-              d="
-                M354 8
-                C365 102 290 111 313 195
-                C343 294 415 338 389 446
-                C369 528 285 549 210 566
-                C125 584 68 637 75 733
-              "
-              fill="none"
-              stroke="white"
-              strokeWidth="7"
-              strokeLinecap="round"
-              strokeOpacity="0.72"
-            />
-
-            {/* route orange LabelMoto */}
-            <path
-              d="
-                M354 8
-                C365 102 290 111 313 195
-                C343 294 415 338 389 446
-                C369 528 285 549 210 566
-                C125 584 68 637 75 733
-              "
-              fill="none"
-              stroke="#e75b00"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeOpacity="0.21"
-            />
-
-            {/* petite ligne secondaire légère */}
-            <path
-              d="
-                M430 132
-                C355 118 306 142 260 177
-                C218 209 175 219 126 207
-              "
-              fill="none"
-              stroke="#edf1f3"
-              strokeWidth="1"
-              strokeLinecap="round"
-              strokeOpacity="0.55"
-            />
-          </svg>
+          {/* LABELMOTO_MAP_ROAD_PAIR_20261110 : orange d'origine et cyan parallèle */}
+          <MapSidebarRoads mobile />
 
           <div className="relative z-[1] h-full flex flex-col">
             <div className="shrink-0 flex justify-center pt-2.5 pb-1">

@@ -56,7 +56,7 @@ const Footer = () => {
   const proRegisterLink = "/pro/register";
 
   return (
-    <footer data-labelmoto-mobile-road-footer={pathname === '/' || pathname === '/entretien' || pathname === '/info' ? 'true' : undefined} className="relative isolate overflow-hidden border-t border-border/50 bg-muted/30">
+    <footer data-labelmoto-mobile-road-footer={pathname === '/' || pathname === '/entretien' || pathname === '/info' || pathname.startsWith('/entretien/') || pathname.startsWith('/info/') || pathname.startsWith('/fiches/') ? 'true' : undefined} className="relative isolate overflow-hidden border-t border-border/50 bg-muted/30">
       <LabelMotoRoadFooterFinish pathname={pathname ?? ''} />
       <div
         className="

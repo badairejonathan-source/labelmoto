@@ -67,7 +67,7 @@ const getArticleCategories = (article: any) => {
     return cats;
 };
 
-const ArticleCard = ({ article, priority = false, eager = false }: { article: any, priority?: boolean, eager?: boolean }) => {
+const ArticleCard = ({ article, priority = false, eager = false, compact = false }: { article: any, priority?: boolean, eager?: boolean, compact?: boolean }) => {
     const imageUrl = React.useMemo(() => {
     const labelMotoListingArticleId = String(
       article?.id ||
@@ -128,6 +128,32 @@ const ArticleCard = ({ article, priority = false, eager = false }: { article: an
 
     const title = article.display_title || article.title || "Sans titre";
 
+    // LABELMOTO_CONSEILS_CARTES_COMPACTES_20261110: version uniquement destinee aux quatre rubriques de l'accueil Conseils.
+    if (compact) {
+        const excerpt = article.description || article.intro_conclusion || article.intro?.[0] || '';
+        return (
+            <article className="min-w-0 h-full">
+                <Link href={`/info/${article.id}`} className="group flex h-full min-w-0 flex-col overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-black/[0.06] transition-shadow hover:shadow-md">
+                    <div className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-muted">
+                        <Image
+                            src={imageUrl.replace(/^https?:\/\/(?:www\.)?labelmoto\.fr(?=\/)/, '')}
+                            alt={title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 767px) 85vw, (max-width: 1199px) 45vw, 24vw"
+                            loading={eager ? 'eager' : 'lazy'}
+                        />
+                    </div>
+                    <div className="flex min-w-0 flex-1 flex-col gap-2 p-3 sm:p-4">
+                        <h3 className="line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-brand sm:text-base">{title}</h3>
+                        {excerpt && <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">{excerpt}</p>}
+                        <span className="mt-auto pt-1 text-xs font-semibold text-brand">Lire l'article →</span>
+                    </div>
+                </Link>
+            </article>
+        );
+    }
+
     return (
         <article>
           <Link href={`/info/${article.id}`} className="group block py-8 border-b last:border-b-0">
@@ -183,6 +209,80 @@ function InfoPageComponent() {
                 return getTime(b) - getTime(a);
             });
     }, [allArticles, activeCategory]);
+
+    // LABELMOTO_QUATRE_ENCARTS_CONSEILS_20261110: uniquement des articles réellement présents, sans placeholders fictifs.
+    // L'ordre chronologique reprend la logique déjà utilisée dans filteredArticles.
+    const landingGuides = useMemo(() => {
+        const excluded = new Set([
+            'entretien-moto-intervalles-prix-conseils-par-modele',
+            'meilleurs-casques-moto-entree-de-gamme-2026',
+            'meilleurs-casques-moto-milieu-de-gamme-2026',
+            'meilleurs-casques-moto-haut-de-gamme-2026',
+        ]);
+        const timestamp = (doc: any): number => {
+            const value = doc.publishedAt || doc.date || doc.submittedAt || doc.updatedAt;
+            if (!value) return 0;
+            if (typeof value.toMillis === 'function') return value.toMillis();
+            if (typeof value === 'object' && value.seconds !== undefined) return value.seconds * 1000;
+            const time = new Date(value).getTime();
+            return Number.isFinite(time) ? time : 0;
+        };
+        const list = [...(allArticles ?? [])]
+            .filter(article => article && typeof article.id === 'string' && !excluded.has(article.id))
+            .sort((a, b) => timestamp(b) - timestamp(a));
+        const searchable = (article: any): string => String([
+            article.id, article.display_title, article.title,
+        ].filter(Boolean).join(' ')).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        // LABELMOTO_SELECTION_A2_BUDGET_CIBLEE_20261110 : choix editorial prioritaire, sans faux articles ni doublons.
+        const matches = (article: any, pattern: RegExp): boolean => pattern.test(searchable(article));
+        const firstMatch = (pattern: RegExp, alreadyPicked: Set<string>): any | undefined =>
+            list.find(article => !alreadyPicked.has(article.id) && matches(article, pattern));
+        const pickBySubjects = (subjects: RegExp[]): any[] => {
+            const picked: any[] = [];
+            const seen = new Set<string>();
+            for (const subject of subjects) {
+                const article = firstMatch(subject, seen);
+                if (article) { picked.push(article); seen.add(article.id); }
+            }
+            return picked;
+        };
+        // Les trois sujets demandes : occasion, achat moto A2, guide des tailles.
+        // Si un sujet ne correspond a aucun article publie, ne pas le remplacer par un hors-sujet.
+        const a2 = pickBySubjects([
+            /achat-moto-occasion-guide-complet-pour-eviter-les-pieges|achat.{0,35}moto.{0,25}occasion|moto.{0,25}occasion.{0,25}guide/,
+            /(?:achat|acheter|choisir|choix|quelle).{0,55}moto.{0,35}a2|moto.{0,35}a2.{0,35}(?:achat|acheter|choisir|choix)|(?:achat|acheter).{0,35}a2/,
+            /guide.{0,30}taill|taill.{0,35}guide|comment.{0,30}choisir.{0,20}taille/,
+        ]);
+        // Exclusion volontaire des guides casques : le mot "budget" seul ne qualifie pas
+        // un article pour la rubrique couts/assurance. Les vrais comparatifs restent ailleurs.
+        const budgetEligible = list.filter(article =>
+            !/(casque|comparatif|scooter|meilleur.{0,25}moto|guide.{0,20}taille)/.test(searchable(article))
+        );
+        const budgetSubjects = [
+            /assurance|assurer|assureur|garantie.{0,10}vol/,
+            /combien.{0,20}coute.{0,25}moto|moto.{0,25}par.{0,10}mois|budget.{0,20}moto|cout.{0,15}moto/,
+            /entretien.{0,25}(?:prix|cout|budget)|(?:prix|cout|budget).{0,25}entretien|depense|financ|economis/,
+        ];
+        const budget: any[] = [];
+        const budgetIds = new Set<string>();
+        for (const subject of budgetSubjects) {
+            const match = budgetEligible.find(article => !budgetIds.has(article.id) && matches(article, subject));
+            if (match) { budget.push(match); budgetIds.add(match.id); }
+        }
+        // Compléter jusqu'a trois articles uniquement avec d'autres sujets financiers pertinents.
+        for (const article of budgetEligible) {
+            if (budget.length >= 3) break;
+            if (!budgetIds.has(article.id) && /assurance|assureur|garantie.{0,10}vol|combien.{0,20}coute|budget.{0,20}moto|cout.{0,15}moto|prix.{0,15}entretien|depense|financ|economis/.test(searchable(article))) {
+                budget.push(article); budgetIds.add(article.id);
+            }
+        }
+        return {
+            latest: list.slice(0, 3),
+            a2,
+            budget,
+            comparisons: list.filter(article => /comparatif|comparaison|meilleur|choisir|casque|scooter|125cc|125[- ]/.test(searchable(article))).slice(0, 3),
+        };
+    }, [allArticles]);
 
     return (
         <div data-labelmoto-mobile-road="info" className="relative isolate min-h-screen overflow-hidden bg-[#fbfcfc]">
@@ -518,83 +618,35 @@ function InfoPageComponent() {
                             </span>
                         </nav>
 
-                        <div
-                            className="
-                                flex
-                                min-h-[560px]
-                                items-center
-                                justify-center
-                            "
-                        >
-                            <div
-                                className="
-                                    relative
-                                    z-10
-                                    mx-auto
-                                    max-w-xl
-                                    text-center
-                                    before:pointer-events-none
-                                    before:absolute
-                                    before:-inset-x-6
-                                    before:-inset-y-6
-                                    before:-z-10
-                                    before:bg-[#fbfcfc]
-                                "
-                            >
-                                <div
-                                    className="
-                                        mx-auto
-                                        flex
-                                        h-16
-                                        w-16
-                                        items-center
-                                        justify-center
-                                        rounded-[22px]
-                                        bg-brand/10
-                                        text-brand
-                                    "
-                                >
-                                    <FileText className="h-7 w-7" />
-                                </div>
-
-                                <h1
-                                    className="
-                                        mt-6
-                                        text-4xl
-                                        font-black
-                                        tracking-[-0.04em]
-                                        text-foreground
-                                    "
-                                >
-                                    Guides &amp; conseils
-                                </h1>
-
-                                <p
-                                    className="
-                                        mx-auto
-                                        mt-4
-                                        max-w-lg
-                                        text-[15px]
-                                        leading-7
-                                        text-muted-foreground
-                                    "
-                                >
-                                    Sélectionnez un article dans la colonne de gauche
-                                    pour afficher le guide complet ici.
-                                </p>
-
-                                <p
-                                    className="
-                                        mt-5
-                                        text-[10px]
-                                        font-black
-                                        uppercase
-                                        tracking-[0.14em]
-                                        text-brand
-                                    "
-                                >
-                                    Recherche, permis A2, événements et conseils moto
-                                </p>
+                                                {/* LABELMOTO_QUATRE_ENCARTS_CONSEILS_20261110: accueil editorial en 4 rubriques. */}
+                        <div className="relative w-full px-0 pt-3 pb-12">
+                            <div className="relative z-10 space-y-5">{/* LABELMOTO_CONSEILS_ENCARTS_SOUS_ARIANE_20261110 */}
+                                {([
+                                    {id: 'latest', title: 'Les 3 derniers articles', description: 'Les nouvelles publications de Label Moto.', articles: landingGuides.latest},
+                                    {id: 'a2', title: 'Permis A2', description: 'Première moto, permis et conseils pour bien débuter.', articles: landingGuides.a2},
+                                    {id: 'budget', title: 'Maîtriser son budget', description: 'Assurance, dépenses et coût réel de la moto.', articles: landingGuides.budget},
+                                    {id: 'comparisons', title: 'Comparatifs', description: 'Casques, motos, scooters et choix d’équipement.', articles: landingGuides.comparisons},
+                                ] as const).map((section) => (
+                                    <section key={section.id} aria-label={section.title} className="relative rounded-2xl bg-[#fbfcfc] p-4 shadow-sm ring-1 ring-black/[0.05] sm:p-5">
+                                        <div className="border-b border-black/[0.07] pb-4">
+                                            <h2 className="text-xl font-bold tracking-tight text-foreground">{section.title}</h2>
+                                            <p className="mt-1 text-sm text-muted-foreground">{section.description}</p>
+                                        </div>
+                                        {isLoading ? (
+                                            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+                                                {Array.from({length: 3}, (_, index) => <Skeleton key={index} className="h-28 w-full rounded-xl" />)}
+                                            </div>
+                                        ) : section.articles.length ? (
+                                            <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
+                                                {section.articles.map((article, index) => (
+                                                    <ArticleCard key={article.id} article={article} compact eager={section.id === 'latest' && index === 0} />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="mt-5 text-sm text-muted-foreground">Aucun article de cette rubrique n'est encore disponible.</p>
+                                        )}
+                                    </section>
+                                ))}
                             </div>
                         </div>
                     </section>

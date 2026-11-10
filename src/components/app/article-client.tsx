@@ -611,7 +611,7 @@ export default function ArticleClient({
     const headers = tableData.headers || [];
     const rows = tableData.rows || [];
     return (
-      <div key={key} className="my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted shadow-sm">
+      <div key={key} data-labelmoto-table-surface="true" className="relative isolate z-10 my-6 md:my-8 overflow-hidden rounded-xl border-2 border-muted bg-[#fbfcfc] shadow-sm">
         <div className="overflow-x-auto">
           <Table className="w-full">
             <TableHeader className="bg-muted/50">
@@ -1491,8 +1491,9 @@ export default function ArticleClient({
   return (
     <div className={showHeader ? "relative isolate min-h-screen overflow-x-clip bg-background" : "min-h-screen relative bg-transparent"}>
       {showHeader && (
-        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-[0.66]">
-          <EntretienRoadBackdrop />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-100 lg:opacity-[0.66]">
+          {/* LABELMOTO_GUIDES_MOBILE_HEADER_ENTRY_20261109: amorce mobile existante, aucun nouveau trace. */}
+          <EntretienRoadBackdrop variant="entretien" />
         </div>
       )}
       {showHeader && (
@@ -1592,7 +1593,7 @@ export default function ArticleClient({
       <main
         className={cn(
           "container mx-auto px-4 sm:px-6 lg:px-8 py-4 relative z-10",
-          showHeader && "max-lg:bg-[#fbfcfc]/[0.97]",
+          showHeader && "max-lg:bg-transparent",
           showHeader &&
             "lg:max-w-none lg:mx-0 lg:px-0 lg:py-0"
         )}
@@ -1621,8 +1622,8 @@ export default function ArticleClient({
             )}
           >
           {/* LABELMOTO V3.19.22b : fond commun Guides, sans second SVG dans la gouttiere. */}
-          <div className={showHeader ? "guides-desktop-article relative z-10 lg:bg-background" : undefined}>
-          <nav className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-6 md:pt-8">
+          <div className={showHeader ? "guides-desktop-article relative z-10" : undefined}>
+          <nav data-labelmoto-breadcrumb-halo="true" className="flex items-center gap-2 text-muted-foreground text-[10px] font-black uppercase tracking-widest mb-8 pt-6 md:pt-8">
             <Link href="/" className="hover:text-brand flex items-center gap-1 shrink-0"><Home className="h-3 w-3" /> Accueil</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><Link href="/info" className="hover:text-brand shrink-0">Conseils</Link>
             <ChevronRight className="h-3 w-3 shrink-0" /><span className="text-foreground truncate max-w-[150px] sm:max-w-xs">{article.display_title || article.title}</span>
@@ -1863,7 +1864,7 @@ export default function ArticleClient({
 
               {article.conclusion && (
                 <>
-                  <div className="mt-4 rounded-[1.7rem] border border-brand/20 bg-brand/5 p-5 md:hidden">
+                  <div data-labelmoto-conclusion-surface="true" className="relative isolate mt-4 rounded-[1.7rem] border border-brand/20 bg-[#f8f3ef] p-5 md:hidden">
                     <h3 className="m-0 text-base font-black text-foreground">
                       Conclusion
                     </h3>

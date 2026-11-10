@@ -62,20 +62,25 @@ export const LABELMOTO_ROAD_GAP = -7;
  * La future courbe du main doit reprendre ce point et sa tangente.
  * On ne modifie PAS le main et le footer dans ce correctif.
  */
+// LABELMOTO_HEADER_CANONIQUE_NORMAL_20261110: un contrat d'ancrage, basé sur la normale de la trajectoire orange.
 export function labelMotoHeaderExit(width: number, height: number, offset = 0) {
+  const tangentX = 24, tangentY = 10;
+  const normalLength = Math.hypot(tangentX, tangentY);
+  const gap = offset === LABELMOTO_ROAD_GAP ? Math.abs(LABELMOTO_ROAD_GAP) : 0;
   return {
-    x: round(width * 0.30 + offset),
-    y: round(height),
-    tangentX: 24,
-    tangentY: 10,
+    x: round(width * 0.30 - gap * tangentY / normalLength),
+    y: round(height + gap * tangentX / normalLength),
+    tangentX,
+    tangentY,
   } as const;
 }
 
 // Le cyan suit le meme dessin, a 7 px sous l'orange dans le header.
 // L'ecart revient progressivement vers les sorties existantes au bord bas.
-export function labelMotoHeaderRoad(width: number, height: number, offset = 0): string {
+function labelMotoHeaderOrangeRoad(width: number, height: number): string {
+  const offset = 0;
   const exit = labelMotoHeaderExit(width, height, offset);
-  const separation = offset === LABELMOTO_ROAD_GAP ? 7 : 0;
+  const separation = 0;
   const x = (fraction: number) => round(width * fraction + offset);
   const y = (fraction: number) => round(height * fraction);
   return [
@@ -84,6 +89,50 @@ export function labelMotoHeaderRoad(width: number, height: number, offset = 0): 
     `C ${x(0.208)} ${round(y(0.70) + separation)} ${round(2 * x(0.260) - (exit.x - 32))} ${round(2 * round(y(0.77) + separation * 0.5) - round(exit.y - 16 + separation * 0.2))} ${x(0.260)} ${round(y(0.77) + separation * 0.5)}`,
     `C ${round(exit.x - 32)} ${round(exit.y - 16 + separation * 0.2)} ${round(exit.x - exit.tangentX)} ${round(exit.y - exit.tangentY)} ${exit.x} ${exit.y}`,
   ].join(' ');
+}
+
+// LABELMOTO_HEADER_PARALLELE_PARTAGE_20261110
+// Le BLEU est construit par une normale locale au meme centre de courbe ORANGE.
+// Sur les 28 derniers points, on rejoint progressivement le point de sortie
+// contractuel du contenu principal (x-7,y=height), afin de ne creer aucune
+// rupture au passage header / main. Le debut et la fin orange sont INCHANGES.
+/** Bleu : vraie courbe parallèle, calculée depuis le Bézier orange de l'accueil.
+ * Pas de translation horizontale ni de déformation pour raccorder en fin de header.
+ */
+function offsetHeaderPath(orangePath: string): string {
+  const pieces=orangePath.trim().split(/\s+C\s+/);
+  if(pieces.length!==4 || !pieces[0].startsWith('M '))throw Error('Header : Bézier non reconnu');
+  const start=pieces[0].slice(2).trim().split(/\s+/).map(Number);
+  if(start.length!==2 || start.some(x=>!Number.isFinite(x)))throw Error('Header : départ invalide');
+  type P={x:number;y:number}; type C=[P,P,P,P];
+  let prev:P={x:start[0],y:start[1]};
+  const curves:C[]=[];
+  for(const piece of pieces.slice(1)) {
+    const n=piece.trim().split(/\s+/).map(Number);
+    if(n.length!==6 || n.some(x=>!Number.isFinite(x)))throw Error('Header : contrôle invalide');
+    const c:C=[prev,{x:n[0],y:n[1]},{x:n[2],y:n[3]},{x:n[4],y:n[5]}];
+    curves.push(c);prev=c[3];
+  }
+  const gap=Math.abs(LABELMOTO_ROAD_GAP);
+  const round2=(n:number)=>String(Math.round(n*100)/100);
+  const result:string[]=[];
+  for(let k=0;k<curves.length;k++){
+    const [a,b,c,d]=curves[k];
+    for(let j=k===0?0:1;j<=120;j++){
+      const t=j/120,u=1-t;
+      const x=u*u*u*a.x+3*u*u*t*b.x+3*u*t*t*c.x+t*t*t*d.x;
+      const y=u*u*u*a.y+3*u*u*t*b.y+3*u*t*t*c.y+t*t*t*d.y;
+      const dx=3*u*u*(b.x-a.x)+6*u*t*(c.x-b.x)+3*t*t*(d.x-c.x);
+      const dy=3*u*u*(b.y-a.y)+6*u*t*(c.y-b.y)+3*t*t*(d.y-c.y);
+      const mag=Math.hypot(dx,dy)||1;
+      result.push((result.length?'L ':'M ')+round2(x-gap*dy/mag)+' '+round2(y+gap*dx/mag));
+    }
+  }
+  return result.join(' ');
+}
+export function labelMotoHeaderRoad(width: number, height: number, offset = 0): string {
+  const orange=labelMotoHeaderOrangeRoad(width,height);
+  return offset===LABELMOTO_ROAD_GAP ? offsetHeaderPath(orange) : orange;
 }
 
 /**
@@ -186,15 +235,16 @@ export function LabelMotoRoadHeaderEntry() {
       data-labelmoto-road="header"
       data-labelmoto-exit-orange={orangeExit ? `${orangeExit.x},${orangeExit.y}` : undefined}
       data-labelmoto-exit-cyan={cyanExit ? `${cyanExit.x},${cyanExit.y}` : undefined}
+      data-labelmoto-tangent="24,10"
       viewBox={size ? `0 0 ${size.width} ${size.height}` : '0 0 1 1'}
       preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full lg:block"
+      className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full overflow-visible lg:block"
     >
       {size && (
         <RoadPair
           cyan={labelMotoHeaderRoad(size.width, size.height, LABELMOTO_ROAD_GAP)}
           orange={labelMotoHeaderRoad(size.width, size.height)}
-          opacity={pathname === '/entretien' ? 1 : 0.66}
+          opacity={1}
           strokeWidth={1.35}
         />
       )}
@@ -205,7 +255,8 @@ export function LabelMotoRoadHeaderEntry() {
 export function LabelMotoRoadFooterFinish({ pathname }: { pathname: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const size = useLabelMotoRoadSize(svgRef);
-  if (pathname !== '/entretien' && pathname !== '/info' && pathname !== '/') return null;
+  const showRoad = pathname === '/' || pathname === '/entretien' || pathname === '/info' || pathname.startsWith('/entretien/') || pathname.startsWith('/info/') || pathname.startsWith('/fiches/');
+  if (!showRoad) return null;
 
   return (
     <svg
@@ -218,8 +269,8 @@ export function LabelMotoRoadFooterFinish({ pathname }: { pathname: string }) {
     >
       {size && (
         <RoadPair
-          cyan={pathname === '/' ? labelMotoHomepageFooterRoad(size.width, size.height, LABELMOTO_ROAD_GAP) : labelMotoFooterRoad(size.width, size.height, LABELMOTO_ROAD_GAP)}
-          orange={pathname === '/' ? labelMotoHomepageFooterRoad(size.width, size.height) : labelMotoFooterRoad(size.width, size.height)}
+          cyan={labelMotoHomepageFooterRoad(size.width, size.height, LABELMOTO_ROAD_GAP)}
+          orange={labelMotoHomepageFooterRoad(size.width, size.height)}
           opacity={pathname === '/entretien' || pathname === '/' ? 1 : 0.66}
         />
       )}
