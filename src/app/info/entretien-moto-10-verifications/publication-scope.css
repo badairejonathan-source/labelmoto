@@ -1,0 +1,6 @@
+/* Style de la sidebar limite a cet article : aucune page voisine affectee. */
+@media (min-width: 1024px) {
+  .lm-entretien-article-release aside.sticky {
+    background-color: #fbfcfc;
+  }
+}

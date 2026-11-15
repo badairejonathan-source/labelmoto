@@ -103,6 +103,10 @@ const ArticleCard = ({ article, priority = false, eager = false, compact = false
         const id = (article.id || '').toLowerCase();
         const title = (article.title || '').toLowerCase();
 
+        if (id === 'entretien-moto-10-verifications') {
+            return '/images/entretien-moto-guide/controle-1082d06954213ab5.webp';
+        }
+
         if (id.includes('125') || title.includes('125')) return "/images/article-moto-125cc.webp";
         if (id.includes('association') || title.includes('association')) return "/images/article-motars-association.webp";
         if (id.includes('motogp') || id.includes('gp-france') || title.includes('motogp')) return "/images/article-lemans-motogp.webp";

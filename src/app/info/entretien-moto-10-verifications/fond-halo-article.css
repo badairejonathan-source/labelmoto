@@ -1,0 +1,257 @@
+/* LABELMOTO_FOND_HALO_20261114
+ * Uniquement l'aperçu local /dev/entretien-moto-natif.
+ * Fond de page transparent : la courbe Bezier existante reste visible.
+ * Halo blanc discret pour les zones de lecture ; encarts conservés.
+ */
+
+/* Le conteneur Next/Tailwind de l'aperçu ne doit plus masquer le décor. */
+main.container:has(.guides-desktop-article .lm-real-site-article),
+.guides-desktop-article:has(.lm-real-site-article) {
+  background-color: transparent !important;
+}
+
+.guides-desktop-article:has(.lm-real-site-article) {
+  background-image: radial-gradient(
+    ellipse 750px 360px at 42% 160px,
+    rgba(255,255,255,.92) 0%,
+    rgba(255,255,255,.62) 44%,
+    rgba(255,255,255,0) 100%
+  ) !important;
+}
+
+.lm-real-site-article,
+.lm-real-site-article .lm-native-article,
+.lm-real-site-article .lm-native-article > main,
+.lm-real-site-article .lm-native-article .lm-desktop-content,
+.lm-real-site-article .lm-native-article .lm-desktop-reference,
+.lm-real-site-article .lm-native-article .lm-mobile-reference {
+  background-color: transparent !important;
+}
+
+/* La zone d'introduction devient un halo, sans grand aplat rectangulaire. */
+.lm-real-site-article .lm-native-article .intro {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255,255,255,.96) 0%,
+    rgba(255,255,255,.75) 61%,
+    rgba(255,255,255,0) 100%
+  ) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Les accordéons et les tableaux gardent une surface lisible, peu opaque. */
+.lm-real-site-article .lm-native-article .lm-mobile-reference .section,
+.lm-real-site-article .lm-native-article .lm-desktop-reference .section {
+  background-color: rgba(255,255,255,.93) !important;
+}
+
+/* Maillage éditorial discret dans la conclusion, sans bouton supplémentaire. */
+.lm-real-site-article .lm-native-article .lm-ending-final a.lm-occasion-guide-link {
+  color: #b94d07 !important;
+  font-weight: 750 !important;
+  text-decoration: underline !important;
+  text-underline-offset: 3px !important;
+}
+.lm-real-site-article .lm-native-article .lm-ending-final a.lm-occasion-guide-link:focus-visible {
+  outline: 3px solid #187fe2 !important;
+  outline-offset: 3px !important;
+}
+
+@media (max-width:1023px) {
+  .guides-desktop-article:has(.lm-real-site-article) {
+    background-image: radial-gradient(
+      ellipse 120% 340px at 50% 140px,
+      rgba(255,255,255,.94) 0%,
+      rgba(255,255,255,.63) 56%,
+      rgba(255,255,255,0) 100%
+    ) !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-mobile-reference {
+    background: transparent !important;
+  }
+}
+
+/* LABELMOTO_HALO_TEXTES_20261114
+ * Halo de lecture sur TOUTES les zones de conseils : la courbe décorative
+ * reste visible dans les espaces libres, mais s'efface derrière les mots.
+ * En particulier, les conseils 03/04 continués sous les photographies n'ont
+ * pas de fond propre dans les styles historiques.
+ */
+@media (min-width:1251px) {
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+  #controle-03 .lm-desktop-advice-flow .lm-continuation-column > .technical-card,
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+  #controle-04 .lm-desktop-advice-flow .lm-continuation-column > .technical-card {
+    position: relative !important;
+    z-index: 2 !important;
+    background: radial-gradient(
+      ellipse 83% 105% at 50% 50%,
+      rgba(255,255,255,.99) 0%,
+      rgba(255,255,255,.98) 43%,
+      rgba(255,255,255,.90) 66%,
+      rgba(255,255,255,.56) 84%,
+      rgba(255,255,255,0) 100%
+    ) !important;
+  }
+
+  /* Halo diffus derrière les autres blocs rédactionnels du bureau. */
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+  .lm-editorial-advice .technical-card {
+    position: relative !important;
+    z-index: 2 !important;
+    background-image: radial-gradient(
+      ellipse 95% 120% at 50% 50%,
+      rgba(255,255,255,.96) 0%,
+      rgba(255,255,255,.87) 61%,
+      rgba(255,255,255,0) 100%
+    ) !important;
+  }
+}
+
+/* Un halo aussi derrière les textes d'introduction, de conclusion et de FAQ,
+ * sans transformer ces zones en rectangles opaques. */
+.lm-real-site-article .lm-native-article .lm-faq-heading,
+.lm-real-site-article .lm-native-article .lm-desktop-reference .lm-desktop-illustrated > h3 {
+  position: relative !important;
+  z-index: 2 !important;
+  background-image: radial-gradient(
+    ellipse 78% 100% at 50% 50%,
+    rgba(255,255,255,.96),
+    rgba(255,255,255,.83) 63%,
+    rgba(255,255,255,0) 100%
+  ) !important;
+}
+
+/* Le lien d'achat d'occasion devient un CTA autonome, visible avant les
+ * deux boutons existants. Aucun changement dans la carte ni dans la FAQ. */
+.lm-real-site-article .lm-native-article .lm-ending-final a.lm-occasion-cta {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  width: 100% !important;
+  max-width: 810px !important;
+  margin: 18px 0 20px !important;
+  padding: 17px 20px !important;
+  border: 1px solid #f7b68a !important;
+  border-left: 5px solid #ec650d !important;
+  border-radius: 14px !important;
+  background: linear-gradient(105deg,#fff0e6 0%,#fff9f5 100%) !important;
+  box-shadow: 0 5px 15px rgba(189,85,17,.09) !important;
+  color: #993d05 !important;
+  text-decoration: none !important;
+  transition: background-color .15s ease,transform .15s ease,box-shadow .15s ease !important;
+}
+.lm-real-site-article .lm-native-article .lm-ending-final a.lm-occasion-cta:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 20px rgba(189,85,17,.14) !important;
+}
+.lm-real-site-article .lm-native-article .lm-occasion-cta-text {
+  display: grid !important;
+  gap: 3px !important;
+  min-width: 0 !important;
+}
+.lm-real-site-article .lm-native-article .lm-occasion-cta-kicker {
+  color: #bb4d06 !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: .10em !important;
+  text-transform: uppercase !important;
+}
+.lm-real-site-article .lm-native-article .lm-occasion-cta-title {
+  color: #262018 !important;
+  font-size: clamp(15px,1.6vw,18px) !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+}
+.lm-real-site-article .lm-native-article .lm-occasion-cta-arrow {
+  display: grid !important;
+  place-items: center !important;
+  width: 42px !important;
+  height: 42px !important;
+  flex: 0 0 42px !important;
+  border-radius: 50% !important;
+  background: #e96209 !important;
+  color: white !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+.lm-real-site-article .lm-native-article .lm-ending-final a.lm-occasion-cta:focus-visible {
+  outline: 3px solid #187fe2 !important;
+  outline-offset: 3px !important;
+}
+@media (max-width:700px) {
+  .lm-real-site-article .lm-native-article .lm-ending-final a.lm-occasion-cta {
+    gap: 10px !important;
+    margin: 15px 0 19px !important;
+    padding: 14px 13px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-occasion-cta-title {
+    font-size: 15px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-occasion-cta-arrow {
+    width: 36px !important;
+    height: 36px !important;
+    flex-basis: 36px !important;
+    font-size: 21px !important;
+  }
+}
+
+/* LABELMOTO_HALO_TYPOGRAPHIQUE_NATIVE_20261114
+ * Correction du rendu : le site utilise un halo TYPOGRAPHIQUE (globals.css,
+ * V3.19.7), non un dégradé sur les rectangles des cartes. Cette prévisualisation
+ * porte le conteneur .lm-real-site-article et ne bénéficie pas du sélecteur
+ * historique .entretien-desktop-article.
+ *
+ * La lueur blanche entoure les lettres, pas la carte. Ainsi les courbes restent
+ * visibles entre les blocs mais ne traversent plus les caractères.
+ */
+@media (min-width:1024px) {
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+    :is(h1,h2,h3,h4,h5,h6,p,li,dt,dd,blockquote) {
+    text-shadow:
+      -4px 0 0 #fbfcfc,
+       4px 0 0 #fbfcfc,
+       0 -4px 0 #fbfcfc,
+       0 4px 0 #fbfcfc,
+      -2.8px -2.8px 0 #fbfcfc,
+       2.8px -2.8px 0 #fbfcfc,
+      -2.8px 2.8px 0 #fbfcfc,
+       2.8px 2.8px 0 #fbfcfc,
+       0 0 6px rgba(251,252,252,.99),
+       0 0 12px rgba(251,252,252,.98) !important;
+  }
+
+  /* Supprimer les halos « en blocs » des deux tentatives précédentes.
+   * Conserver les séparateurs, espacements, textes et cartes existants. */
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+  .lm-editorial-advice .technical-card,
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+  #controle-03 .lm-desktop-advice-flow .lm-continuation-column > .technical-card,
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+  #controle-04 .lm-desktop-advice-flow .lm-continuation-column > .technical-card {
+    background-image: none !important;
+    background-color: transparent !important;
+  }
+
+  /* Les encarts colorés possèdent déjà leur surface de lecture. */
+  .lm-real-site-article .lm-native-article .lm-desktop-reference
+  :is(.popup,.lm-ending-final,.lm-faq-item,.additional-info) :is(h1,h2,h3,h4,p,li) {
+    text-shadow: none !important;
+  }
+}
+
+/* La même protection discrète sur les textes mobiles situés hors des encarts. */
+@media (max-width:1023px) {
+  .lm-real-site-article .lm-native-article .lm-mobile-reference
+  :is(.intro,.lm-sommaire,.section > summary,.lm-faq-heading) :is(h1,h2,h3,h4,p,li) {
+    text-shadow:
+      -3px 0 0 #fbfcfc,3px 0 0 #fbfcfc,
+      0 -3px 0 #fbfcfc,0 3px 0 #fbfcfc,
+      -2px -2px 0 #fbfcfc,2px -2px 0 #fbfcfc,
+      -2px 2px 0 #fbfcfc,2px 2px 0 #fbfcfc,
+      0 0 7px rgba(251,252,252,.92) !important;
+  }
+}

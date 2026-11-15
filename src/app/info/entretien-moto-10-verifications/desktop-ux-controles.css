@@ -1,0 +1,625 @@
+/* LABELMOTO_DESKTOP_UX_CONTROLES_20261112
+   Desktop uniquement. Aucune regle mobile n'est modifiee.
+   Les visuels et les textes proviennent du markup existant. */
+@media (min-width: 1024px) {
+  .lm-real-site-article .lm-native-article details.section > .layout {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    align-items: start !important;
+    gap: 24px 30px !important;
+    min-width: 0 !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column {
+    grid-column: 1 !important; grid-row: 1 !important;
+    min-width: 0 !important; width: 100% !important;
+    height: auto !important; overflow: visible !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-editorial-advice {
+    grid-column: 2 !important; grid-row: 1 !important;
+    display: flex !important; flex-direction: column !important;
+    gap: 20px !important; min-width: 0 !important;
+    width: 100% !important; height: auto !important;
+    min-height: 0 !important; max-height: none !important;
+    overflow: visible !important; align-self: start !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column .visual {
+    position: relative !important; width: 100% !important;
+    max-width: none !important; overflow: hidden !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column .visual > img {
+    display: block !important; width: 100% !important;
+    height: auto !important; max-height: 640px !important;
+    object-fit: contain !important;
+  }
+  /* Les CTA restent dans le DOM pour la version mobile. */
+  .lm-real-site-article .lm-native-article details.section .visual > .hotspot,
+  .lm-real-site-article .lm-native-article details.section .visual > .popup {
+    display: none !important;
+  }
+  /* Conseils lisibles en colonne, sans defilement vertical interne. */
+  .lm-real-site-article .lm-native-article .lm-editorial-advice > .technical-detail {
+    display: block !important; position: static !important;
+    width: 100% !important; height: auto !important;
+    min-height: 0 !important; max-height: none !important;
+    overflow: visible !important; flex: none !important;
+    border: 0 !important; background: transparent !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice > .technical-detail > summary {
+    pointer-events: none !important; cursor: default !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice .technical-nav { display: none !important; }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice .technical-grid {
+    display: flex !important; flex-direction: column !important;
+    gap: 0 !important; padding: 0 !important;
+    height: auto !important; min-height: 0 !important;
+    max-height: none !important; overflow: visible !important;
+    scroll-snap-type: none !important; flex: none !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice .technical-card {
+    flex: none !important; width: 100% !important;
+    min-width: 0 !important; max-width: none !important;
+    padding: 12px 0 !important; border: 0 !important;
+    border-bottom: 1px solid #e8e8e8 !important;
+    background: transparent !important; box-shadow: none !important;
+  }
+  /* La galerie deja presente devient la bande horizontale sous les colonnes. */
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-desktop-illustrated {
+    display: block !important; grid-column: 1 / -1 !important;
+    grid-row: 2 !important; min-width: 0 !important;
+    width: 100% !important; margin: 4px 0 0 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-track {
+    display: flex !important; flex-wrap: nowrap !important;
+    gap: 16px !important; min-width: 0 !important;
+    width: 100% !important; overflow-x: auto !important;
+    overflow-y: hidden !important; scroll-snap-type: x mandatory !important;
+    overscroll-behavior-x: contain; scrollbar-width: thin;
+    scrollbar-color: #e66a18 transparent; padding: 4px 2px 14px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card {
+    flex: 0 0 calc((100% - 32px) / 3) !important;
+    width: calc((100% - 32px) / 3) !important;
+    min-width: 230px !important; max-width: none !important;
+    height: auto !important; scroll-snap-align: start !important;
+    display: flex !important; flex-direction: column !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > img,
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > img.lm-square-artwork {
+    width: 100% !important; height: auto !important;
+    aspect-ratio: 4 / 3 !important; object-fit: contain !important;
+    background: #f7f7f7 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > .content {
+    flex: 1 !important; min-width: 0 !important;
+  }
+  /* Le materiel reste un carrousel distinct en bas. */
+  .lm-real-site-article .lm-native-article details.section > .layout > .accessory-details {
+    display: block !important; grid-column: 1 / -1 !important;
+    grid-row: 3 !important; min-width: 0 !important;
+    width: 100% !important; overflow: hidden !important;
+  }
+  .lm-real-site-article .lm-native-article .visual-column > .additional-info {
+    display: block !important; width: 100% !important;
+    height: auto !important; max-height: none !important;
+    overflow: visible !important; margin: 12px 0 0 !important;
+  }
+  /* Ne pas masquer les informations avec une hauteur arbitraire. */
+  .lm-real-site-article .lm-native-article .visual-column > .additional-info[data-always-open] {
+    max-height: none !important; overflow: visible !important;
+  }
+  .lm-real-site-article .lm-native-article .visual-column > .additional-info[data-always-open] > summary {
+    position: static !important;
+  }
+}
+/* Les deux colonnes s'empilent si la largeur disponible est trop petite. */
+@media (min-width: 1024px) and (max-width: 1250px) {
+  .lm-real-site-article .lm-native-article details.section > .layout {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column,
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-editorial-advice,
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-desktop-illustrated,
+  .lm-real-site-article .lm-native-article details.section > .layout > .accessory-details {
+    grid-column: 1 !important; grid-row: auto !important;
+  }
+}
+
+/* LABELMOTO_DESKTOP_FINALISATION_20261112 : exclusivement desktop. */
+@media (min-width: 1251px) {
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-editorial-advice {
+    max-height: 610px !important; overflow: hidden !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice > .technical-detail {
+    min-height: 0 !important; max-height: 485px !important; overflow: hidden !important;
+    display: flex !important; flex-direction: column !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice .technical-grid {
+    min-height: 0 !important; max-height: 440px !important; overflow-y: auto !important;
+    overflow-x: hidden !important; overscroll-behavior-y: contain !important;
+    scrollbar-width: thin; scrollbar-color: #df6b20 #f4f4f4;
+  }
+}
+@media (min-width: 1024px) {
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > img {
+    display: block !important; width: 100% !important; height: 235px !important;
+    max-height: 235px !important; object-fit: contain !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-track:has(> :only-child) > .lm-desktop-illustrated-card {
+    flex: 0 0 min(360px, 100%) !important; width: min(360px, 100%) !important;
+    min-width: 0 !important;
+  }
+  .lm-real-site-article .lm-native-article #controle-05 > .layout > .visual-column .visual > img {
+    object-fit: contain !important; max-height: 500px !important;
+  }
+}
+
+/* LABELMOTO_DESKTOP_CARRE_ET_CARTES_20261112 — Desktop only. */
+@media (min-width: 1251px) {
+  .lm-real-site-article .lm-native-article details.section > .layout {
+    align-items: stretch !important;
+    grid-template-rows: auto auto auto !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column {
+    align-self: start !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column .visual {
+    aspect-ratio: 1 / 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #f6f6f6 !important;
+    border-radius: 18px !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column .visual > img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: contain !important;
+  }
+  /* The left column determines the row height: square plus additional information. */
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-editorial-advice {
+    position: relative !important;
+    align-self: stretch !important;
+    height: 0 !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice > .desktop-explain {
+    flex: 0 0 auto !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice > .technical-detail {
+    display: flex !important;
+    flex: 1 1 auto !important;
+    flex-direction: column !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: hidden !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-editorial-advice .technical-grid {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+}
+@media (min-width: 1024px) {
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > .content {
+    display: block !important;
+    padding: 16px 18px 20px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > .content h3 {
+    margin: 0 0 8px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .dot-values {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+    margin: 10px 0 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .dot-values > div {
+    background: #fff3e9 !important;
+    border-radius: 10px !important;
+    padding: 8px !important;
+    text-align: center !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .dot-values strong {
+    display: block !important;
+    color: #c9510a !important;
+    font-size: 23px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .dot-values span {
+    display: block !important;
+    font-size: 12px !important;
+  }
+  /* DOT is already fully explained in the illustrated card on desktop. */
+  .lm-real-site-article .lm-native-article #controle-02 .lm-editorial-advice .technical-card:last-child:has(h4) {
+    display: none !important;
+  }
+}
+
+/* DESKTOP_SQUARE_ASSETS_20261112: actual 1:1 webp assets, no white letterboxing. */
+@media (min-width: 1024px) {
+  .lm-real-site-article .lm-native-article details.section > .layout > .visual-column .visual > img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    background: transparent !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > img,
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > img.lm-square-artwork {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important;
+    max-height: none !important;
+    object-fit: cover !important;
+    background: transparent !important;
+    margin: 0 !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > .content {
+    display: block !important;
+    flex: 1 1 auto !important;
+    padding: 16px 18px 20px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > .content h3 {
+    font-size: clamp(16px, 1.45vw, 20px) !important;
+    line-height: 1.3 !important;
+    overflow-wrap: anywhere !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card > .content p {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+}
+@media (min-width: 1024px) { .lm-real-site-article .lm-native-article #controle-04 > .layout > .visual-column .visual > img, .lm-real-site-article .lm-native-article #controle-07 > .layout > .visual-column .visual > img { object-fit: contain !important; object-position: center !important; } }
+
+/* LABELMOTO_CORRECTIF_DESKTOP_20261114 — a ajouter en fin de desktop-ux-controles.css.
+   Les changements sont reserves au bureau. Mobile et carrousels restent intacts. */
+@media (min-width: 1024px) {
+  /* Les vieux max-height / overflow-y:auto capturaient la roulette au-dessus
+     des conseils. Les textes reprennent leur hauteur naturelle. */
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-editorial-advice {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    align-self: start !important;
+    overflow: visible !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-editorial-advice > .technical-detail {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    flex: none !important;
+    overflow: visible !important;
+  }
+  .lm-real-site-article .lm-native-article details.section > .layout > .lm-editorial-advice .technical-grid {
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    flex: none !important;
+    overflow: visible !important;
+    overscroll-behavior: auto !important;
+    scroll-snap-type: none !important;
+  }
+
+  /* Les trois cartes par vue sont conservees : pas de zoom global. */
+  /* Trois photographies de pneus intactes ; l'annotation est du vrai texte
+     web. Elle reste nette, avec la police de Label Moto heritee du site. */
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .lm-sharp-visual {
+    position: relative !important;
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    overflow: hidden !important;
+    isolation: isolate;
+    border-radius: 12px 12px 0 0 !important;
+    background: #08090b !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .lm-sharp-visual > img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: cover !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-sharp-visual .lm-photo-labels {
+    position: absolute !important;
+    z-index: 3 !important;
+    inset: auto 0 0 !important;
+    display: grid !important;
+    pointer-events: none !important;
+    color: white !important;
+    font-family: inherit !important;
+    letter-spacing: -.015em !important;
+    text-align: center !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-labels .lm-photo-caption {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 4px !important;
+    min-width: 0 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-caption strong {
+    display: block !important;
+    font-weight: 750 !important;
+    line-height: 1.12 !important;
+    font-size: clamp(15px, 1.1vw, 20px) !important;
+    color: white !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-caption small {
+    display: block !important;
+    font-size: clamp(11px, .85vw, 14px) !important;
+    line-height: 1.16 !important;
+    color: #f3f3f3 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-damage {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    height: 29% !important;
+    padding: 18px 6px 13px !important;
+    background: linear-gradient(to bottom, transparent 0%, rgba(8,9,10,.96) 40%, #08090b 70%) !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-wear {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    height: 33% !important;
+    padding: 25px 5px 13px !important;
+    background: linear-gradient(to bottom, transparent 0%, rgba(8,9,10,.97) 32%, #08090b 65%) !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-dimensions {
+    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    height: 38% !important;
+    padding: 54px 3px 15px !important;
+    background: linear-gradient(to bottom, transparent 0%, #08090b 19%, #08090b 100%) !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-dimensions .lm-photo-caption {
+    position: relative !important;
+    justify-content: center !important;
+    gap: 5px !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-dimensions .lm-photo-caption::before {
+    content: '';
+    position: absolute;
+    left: calc(50% - 1px);
+    top: -35px;
+    height: 32px;
+    border-left: 2px solid #e96616;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-dimensions .lm-photo-caption::after {
+    content: '';
+    position: absolute;
+    left: calc(50% - 4px);
+    top: -7px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e96616;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-dimensions .lm-photo-caption strong {
+    font-size: clamp(18px, 1.5vw, 24px) !important;
+    font-weight: 800 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-photo-dimensions .lm-photo-caption small {
+    font-size: clamp(10px, .81vw, 13px) !important;
+    font-weight: 650 !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-twi-inset {
+    position: absolute !important;
+    z-index: 4 !important;
+    top: 4% !important;
+    left: 4% !important;
+    width: 34% !important;
+    height: 24% !important;
+    overflow: hidden !important;
+    border: 2px solid white !important;
+    border-radius: 10px !important;
+    box-shadow: 0 3px 12px #000a !important;
+    pointer-events: none !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-twi-inset > img {
+    position: absolute !important;
+    display: block !important;
+    left: -22% !important;
+    top: -144% !important;
+    width: 500% !important;
+    height: auto !important;
+    max-height: none !important;
+    object-fit: initial !important;
+  }
+  .lm-real-site-article .lm-native-article .lm-twi-inset > span {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    padding: 3px 6px;
+    border-radius: 5px;
+    background: #141414ed;
+    color: white;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 750;
+    line-height: 1.1;
+  }
+
+  /* Le roadster approuve est une photo 4:3. Conserver sa geometrie pour que
+     les points soient bien poses sur la machine et non dans les marges. */
+  .lm-real-site-article .lm-native-article #controle-04 > .layout > .visual-column .visual,
+  .lm-real-site-article .lm-native-article #controle-07 > .layout > .visual-column .visual {
+    aspect-ratio: 4 / 3 !important;
+    height: auto !important;
+  }
+  .lm-real-site-article .lm-native-article #controle-04 > .layout > .visual-column .visual > img,
+  .lm-real-site-article .lm-native-article #controle-07 > .layout > .visual-column .visual > img {
+    aspect-ratio: 4 / 3 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    object-position: center !important;
+  }
+
+  /* Cinq reperes orange purement visuels. L'article conserve ses anciens
+     boutons invisibles sur bureau : aucun clic, aucune capture de souris. */
+  .lm-real-site-article .lm-native-article #controle-04 > .layout > .visual-column .visual::after,
+  .lm-real-site-article .lm-native-article #controle-07 > .layout > .visual-column .visual::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(circle 7px at 30% 50%, #f47726 97%, transparent 100%),
+      radial-gradient(circle 7px at 57% 19%, #f47726 97%, transparent 100%),
+      radial-gradient(circle 7px at 67% 19%, #f47726 97%, transparent 100%),
+      radial-gradient(circle 7px at 63% 71%, #f47726 97%, transparent 100%),
+      radial-gradient(circle 7px at 70% 68%, #f47726 97%, transparent 100%);
+  }
+}
+
+
+/* LABELMOTO_PNEUS_BITMAP_20261114
+   Les annotations lisibles sont maintenant integrees aux fichiers images.
+   Les anciens calques HTML ne doivent pas etre affiches en doublon.
+   L'affichage trois cartes / le defilement / les autres correctifs ne changent pas. */
+@media (min-width: 1024px) {
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .lm-sharp-visual > .lm-photo-labels,
+  .lm-real-site-article .lm-native-article .lm-desktop-illustrated-card .lm-sharp-visual > .lm-twi-inset {
+    display: none !important;
+  }
+}
+
+
+/* LABELMOTO_CONSEILS_HARMONISES_20261114
+   Sections 03 et 04 sur grand ecran uniquement.
+   Pas de titre, de bordure ni de separation avant les conseils inferieurs.
+   Les autres sections, les carrousels et la version mobile restent intacts. */
+@media (min-width: 1251px) {
+  .lm-real-site-article .lm-native-article #controle-03 > .layout > .lm-editorial-advice .technical-grid > .technical-card:nth-child(n + 6),
+  .lm-real-site-article .lm-native-article #controle-04 > .layout > .lm-editorial-advice .technical-grid > .technical-card:nth-child(n + 5) {
+    display: none !important;
+  }
+
+  .lm-real-site-article .lm-native-article #controle-03 > .layout > .lm-desktop-advice-flow,
+  .lm-real-site-article .lm-native-article #controle-04 > .layout > .lm-desktop-advice-flow {
+    display: block !important;
+    grid-column: 1 / -1 !important;
+    grid-row: 2 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: -8px 0 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+  }
+
+  .lm-real-site-article .lm-native-article #controle-03 .lm-continuation-grid,
+  .lm-real-site-article .lm-native-article #controle-04 .lm-continuation-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 30px !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .lm-real-site-article .lm-native-article #controle-03 .lm-continuation-column,
+  .lm-real-site-article .lm-native-article #controle-04 .lm-continuation-column {
+    min-width: 0 !important;
+  }
+
+  .lm-real-site-article .lm-native-article #controle-03 .lm-continuation-column > .technical-card,
+  .lm-real-site-article .lm-native-article #controle-04 .lm-continuation-column > .technical-card {
+    display: block !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid #e8e8e8 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .lm-real-site-article .lm-native-article #controle-03 > .layout > .lm-desktop-illustrated,
+  .lm-real-site-article .lm-native-article #controle-04 > .layout > .lm-desktop-illustrated {
+    grid-row: 3 !important;
+  }
+  .lm-real-site-article .lm-native-article #controle-03 > .layout > .accessory-details,
+  .lm-real-site-article .lm-native-article #controle-04 > .layout > .accessory-details {
+    grid-row: 4 !important;
+  }
+}
+
+/* Aux dimensions mobiles et sur petits bureaux, les 10 conseils originaux
+   continuent a s'afficher normalement dans leur bloc existant. */
+@media (max-width: 1250px) {
+  .lm-real-site-article .lm-native-article #controle-03 .lm-desktop-advice-flow,
+  .lm-real-site-article .lm-native-article #controle-04 .lm-desktop-advice-flow {
+    display: none !important;
+  }
+}
+
+
+/* LABELMOTO_TITRES_ACCENTS_ORANGE_20261114
+   Reprise de la hierarchie editoriale des articles precedents :
+   titres principaux noirs, sous-titres orange et accents legers sur les titres
+   de conseils et de galeries. Uniquement dans la preview desktop. */
+@media (min-width: 1024px) {
+  .lm-real-site-article .lm-native-article .lm-desktop-content details.section > summary h2 {
+    color: #18191b !important;
+  }
+
+  /* Le sous-titre joue le role de la reference orange des anciens articles. */
+  .lm-real-site-article .lm-native-article .lm-desktop-content details.section > summary .sub {
+    color: #c7520b !important;
+    font-weight: 750 !important;
+    letter-spacing: .02em !important;
+  }
+
+  .lm-real-site-article .lm-native-article .lm-desktop-content .desktop-explain > .lm-visual-label {
+    color: #c7520b !important;
+    font-weight: 800 !important;
+  }
+
+  /* Les titres des conseils restent noirs, avec une signature orange discrete. */
+  .lm-real-site-article .lm-native-article .lm-desktop-content .technical-card > h4::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 4px !important;
+    height: 13px !important;
+    margin-right: 10px !important;
+    border-radius: 4px !important;
+    background: #e56718 !important;
+  }
+
+  /* Reperes orange sur les titres de rubriques, sans nouvel intertitre. */
+  .lm-real-site-article .lm-native-article .lm-desktop-content .lm-desktop-illustrated > h3::before,
+  .lm-real-site-article .lm-native-article .lm-desktop-content details.accessory-details > summary::before {
+    content: '' !important;
+    display: inline-block !important;
+    width: 4px !important;
+    height: 20px !important;
+    flex: 0 0 4px !important;
+    margin-right: 10px !important;
+    border-radius: 4px !important;
+    vertical-align: -2px !important;
+    background: #e56718 !important;
+  }
+}
+
