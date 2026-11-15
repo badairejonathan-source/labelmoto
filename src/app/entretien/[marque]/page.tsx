@@ -380,6 +380,12 @@ export default async function EntretienMarquePage({ params }: PageProps) {
   if (!meta) notFound();
 
   const fiches = await getFiches(meta.firestoreValue);
+  const hondaSections = marque === 'honda'
+    ? [
+        { title: 'Motos', models: fiches.filter(fiche => !/scooter/i.test(fiche.category)) },
+        { title: 'Scooters', models: fiches.filter(fiche => /scooter/i.test(fiche.category)) },
+      ].filter(section => section.models.length > 0)
+    : [{ title: '', models: fiches }];
 
   return (
     <div className="min-h-screen bg-background">
@@ -426,8 +432,13 @@ export default async function EntretienMarquePage({ params }: PageProps) {
           <h2 className="text-xl font-black uppercase tracking-tight mb-6">
             Fiches entretien {meta.name} disponibles
           </h2>
+          {hondaSections.map(section => (
+            <div key={section.title || 'models'} className="mb-7">
+              {section.title && (
+                <h3 className="mb-3 border-b pb-2 text-sm font-black uppercase tracking-widest text-brand">{section.title}</h3>
+              )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {fiches.map(fiche => (
+            {section.models.map(fiche => (
               <Link
                 key={fiche.id}
                 href={`/fiches/${fiche.id}`}
@@ -449,6 +460,8 @@ export default async function EntretienMarquePage({ params }: PageProps) {
               </Link>
             ))}
           </div>
+            </div>
+          ))}
         </div>
 
         {/* CTA vers concessionnaires */}

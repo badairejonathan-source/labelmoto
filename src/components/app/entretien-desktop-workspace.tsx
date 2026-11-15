@@ -27,6 +27,7 @@ import FicheClient from '@/components/app/fiche-client';
 type SheetModel = {
   id: string;
   label: string;
+  category?: string;
 };
 
 type BrandGroup = {
@@ -1150,18 +1151,24 @@ const closeSheet =
                           py-2
                         "
                       >
-                        {group.models.map(
-                          model => {
+                        {(group.name.trim().toLowerCase() === 'honda'
+                          ? [...group.models].sort((a, b) => Number(/scooter/i.test(a.category || '')) - Number(/scooter/i.test(b.category || '')))
+                          : group.models).map(
+                          (model, index, orderedModels) => {
                             const active =
                               selectedSheet
                                 ?.id ===
                               model.id;
 
                             return (
+                              <React.Fragment key={model.id}>
+                              {group.name.trim().toLowerCase() === 'honda' &&
+                                (index === 0 || /scooter/i.test(orderedModels[index - 1].category || '') !== /scooter/i.test(model.category || '')) && (
+                                <div className="px-3 pb-1 pt-3 text-[10px] font-black uppercase tracking-widest text-brand">
+                                  {/scooter/i.test(model.category || '') ? 'Scooters' : 'Motos'}
+                                </div>
+                              )}
                               <button
-                                key={
-                                  model.id
-                                }
                                 type="button"
                                 onClick={() =>
                                   openSheet(
@@ -1214,6 +1221,7 @@ const closeSheet =
                                   "
                                 />
                               </button>
+                              </React.Fragment>
                             );
                           }
                         )}

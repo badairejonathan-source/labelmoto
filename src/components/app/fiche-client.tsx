@@ -209,7 +209,12 @@ export default function FicheClient({
       year: fiche.year_range || "2020+",
       category: fiche.category || "Moto",
       introduction: sg.intro || fiche.intro || "",
-      imageUrl: productImageUrl || fiche.imageUrl || "/images/motard-entretien-page.webp",
+      imageUrl:
+        modelId === 'honda-pcx-125-2026'
+          ? '/images/scooter-fiches/honda-pcx-125-2026-detoure.webp'
+          : modelId === 'honda-forza-125-2026'
+            ? '/images/scooter-fiches/honda-forza-125-2026-detoure.webp'
+            : productImageUrl || fiche.imageUrl || "/images/motard-entretien-page.webp",
       hasVariants: variants.length > 1,
       variants: variants,
       engine: {

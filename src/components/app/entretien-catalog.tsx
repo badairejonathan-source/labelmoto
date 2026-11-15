@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 interface Model {
   id: string;
   label: string;
+  category?: string;
 }
 
 interface BrandData {
@@ -119,6 +120,12 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
     <div className="space-y-4">
       {brandsData.map((brand) => {
         const isExpanded = expandedBrands.includes(brand.name);
+        const isHonda = brand.name.trim().toLowerCase() === 'honda';
+        const orderedModels = isHonda
+          ? [...brand.models].sort((a, b) =>
+              Number(/scooter/i.test(a.category || '')) - Number(/scooter/i.test(b.category || ''))
+            )
+          : brand.models;
         return (
           <section
             key={brand.name}
@@ -167,9 +174,15 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
             {isExpanded && (
               <div className="p-6 pt-0 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                  {brand.models.map((model) => (
+                  {orderedModels.map((model, index) => (
+                    <div key={model.id} className="contents">
+                    {isHonda && (index === 0 ||
+                      /scooter/i.test(orderedModels[index - 1].category || '') !== /scooter/i.test(model.category || '')) && (
+                      <h3 className="col-span-full mt-3 border-b pb-2 text-xs font-black uppercase tracking-widest text-brand">
+                        {/scooter/i.test(model.category || '') ? 'Scooters' : 'Motos'}
+                      </h3>
+                    )}
                     <Link
-                      key={model.id}
                       href={`/fiches/${model.id}`}
                       onClick={() => {
                         const returnState = {
@@ -209,6 +222,7 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
                       </span>
                       <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-brand" />
                     </Link>
+                    </div>
                   ))}
                 </div>
               </div>

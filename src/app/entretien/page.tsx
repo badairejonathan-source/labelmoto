@@ -10,6 +10,7 @@ interface SheetModel {
   id: string;
   label: string;
   displacementCc: number | null;
+  category?: string;
 }
 
 interface BrandGroup {
@@ -47,6 +48,7 @@ async function getCatalog(): Promise<BrandGroup[]> {
 
       brands[brandName].push({
         id: doc.id,
+        category: d.category || '',
         label:
           d.display_title ||
           d.model ||
