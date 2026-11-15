@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { articleMarkup } from './article-markup';
+import { initializeArticleInteractions } from './article-interactions';
 import ArticleFavoriteButton from './article-favorite';
 
 // On conserve tout le HTML de l'article approuvé. Un emplacement React est
@@ -22,16 +23,9 @@ export default function ArticleInteractif() {
   const [favoriteSlot, setFavoriteSlot] = useState<HTMLElement | null>(null);
   useEffect(() => {
     setFavoriteSlot(root.current?.querySelector<HTMLElement>('[data-lm-favorite-slot]') ?? null);
-    // The legacy interactive controls need their original browser event handlers.
-    // Load only our bundled local script, once the article markup is mounted.
-    const script = document.createElement('script');
-    script.src = '/articles/entretien-moto/interactions.js';
-    script.async = false;
-    document.body.appendChild(script);
-    return () => {
-      script.remove();
-      document.querySelectorAll('.lm-native-article .popup.open').forEach(el => el.classList.remove('open'));
-    };
+    // Les interactions sont intégrées au bundle Next.js. Le fichier public JS
+    // était inaccessible sur Firebase App Hosting (404 en production).
+    return root.current ? initializeArticleInteractions(root.current) : undefined;
   }, []);
   return (
     <>
