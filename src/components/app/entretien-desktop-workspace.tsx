@@ -35,6 +35,12 @@ type BrandGroup = {
   models: SheetModel[];
 };
 
+type VehicleType = 'moto' | 'scooter';
+
+function modelVehicleType(model: SheetModel): VehicleType {
+  return /scooter/i.test(model.category || '') ? 'scooter' : 'moto';
+}
+
 type Props = {
   catalog: BrandGroup[];
   article: ReactNode;
@@ -64,6 +70,8 @@ export default function EntretienDesktopWorkspace({
     setQuery,
   ] =
     useState('');
+
+  const [vehicleFilters, setVehicleFilters] = useState<Record<string, VehicleType>>({});
 
   const [
     openedBrand,
@@ -208,6 +216,8 @@ export default function EntretienDesktopWorkspace({
       setFrameHeight(
         1200
       );
+
+      setVehicleFilters(current => ({ ...current, [brand]: modelVehicleType(model) }));
 
       setSelectedSheet({
         id: model.id,
@@ -1055,6 +1065,15 @@ const closeSheet =
                 const isOpen =
                   openedBrand ===
                   group.name;
+                const hasMotos = group.models.some(model => modelVehicleType(model) === 'moto');
+                const hasScooters = group.models.some(model => modelVehicleType(model) === 'scooter');
+                const isMixed = hasMotos && hasScooters;
+                const selectedModel = group.models.find(model => model.id === selectedSheet?.id);
+                const activeType = vehicleFilters[group.name] ?? (selectedModel ? modelVehicleType(selectedModel) : 'moto');
+                // Une recherche ne doit jamais masquer un mod├¿le ├á cause du s├⌐lecteur.
+                const visibleModels = isMixed && !query.trim()
+                  ? group.models.filter(model => modelVehicleType(model) === activeType)
+                  : group.models;
 
                 return (
                   <div
@@ -1151,23 +1170,26 @@ const closeSheet =
                           py-2
                         "
                       >
-                        {(group.name.trim().toLowerCase() === 'honda'
-                          ? [...group.models].sort((a, b) => Number(/scooter/i.test(a.category || '')) - Number(/scooter/i.test(b.category || '')))
-                          : group.models).map(
-                          (model, index, orderedModels) => {
-                            const active =
-                              selectedSheet
-                                ?.id ===
-                              model.id;
-
+                        {isMixed && !query.trim() && (
+                          <div className="mx-2 mb-3 mt-1 grid grid-cols-2 gap-1 rounded-xl bg-[#ededed] p-1" role="group" aria-label={`Type de v├⌐hicule ${group.name}`}>
+                            {(['moto', 'scooter'] as const).map(type => (
+                              <button
+                                key={type}
+                                type="button"
+                                aria-pressed={activeType === type}
+                                onClick={() => setVehicleFilters(current => ({ ...current, [group.name]: type }))}
+                                className={`min-h-10 rounded-[9px] px-2 text-xs font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand ${activeType === type ? 'bg-brand text-white shadow-sm' : 'text-[#4b4b4b] hover:bg-white/80'}`}
+                              >
+                                {type === 'moto' ? 'Motos' : 'Scooters'}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {visibleModels.map(
+                          model => {
+                            const active = selectedSheet?.id === model.id;
                             return (
                               <React.Fragment key={model.id}>
-                              {group.name.trim().toLowerCase() === 'honda' &&
-                                (index === 0 || /scooter/i.test(orderedModels[index - 1].category || '') !== /scooter/i.test(model.category || '')) && (
-                                <div className="px-3 pb-1 pt-3 text-[10px] font-black uppercase tracking-widest text-brand">
-                                  {/scooter/i.test(model.category || '') ? 'Scooters' : 'Motos'}
-                                </div>
-                              )}
                               <button
                                 type="button"
                                 onClick={() =>

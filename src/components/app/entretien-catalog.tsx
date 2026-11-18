@@ -16,12 +16,19 @@ interface BrandData {
   models: Model[];
 }
 
+type VehicleType = 'moto' | 'scooter';
+
+function modelVehicleType(model: Model): VehicleType {
+  return /scooter/i.test(model.category || '') ? 'scooter' : 'moto';
+}
+
 interface EntretienCatalogProps {
   brandsData: BrandData[];
 }
 
 export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) {
   const [expandedBrands, setExpandedBrands] = useState<string[]>([]);
+  const [vehicleFilters, setVehicleFilters] = useState<Record<string, VehicleType>>({});
 
   const returnStateStorageKey =
     'labelmoto:entretien:return-state:v1';
@@ -50,6 +57,7 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
         JSON.parse(rawState) as {
           expandedBrands?: unknown;
           scrollY?: unknown;
+          vehicleFilters?: unknown;
         };
 
       if (
@@ -70,6 +78,17 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
         setExpandedBrands(
           validBrands
         );
+      }
+
+      if (parsed.vehicleFilters && typeof parsed.vehicleFilters === 'object' && !Array.isArray(parsed.vehicleFilters)) {
+        const validFilters: Record<string, VehicleType> = {};
+        for (const brand of brandsData) {
+          const type = (parsed.vehicleFilters as Record<string, unknown>)[brand.name];
+          if (type === 'moto' || type === 'scooter') {
+            validFilters[brand.name] = type;
+          }
+        }
+        setVehicleFilters(validFilters);
       }
 
       const savedScrollY =
@@ -120,11 +139,12 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
     <div className="space-y-4">
       {brandsData.map((brand) => {
         const isExpanded = expandedBrands.includes(brand.name);
-        const isHonda = brand.name.trim().toLowerCase() === 'honda';
-        const orderedModels = isHonda
-          ? [...brand.models].sort((a, b) =>
-              Number(/scooter/i.test(a.category || '')) - Number(/scooter/i.test(b.category || ''))
-            )
+        const hasMotos = brand.models.some(model => modelVehicleType(model) === 'moto');
+        const hasScooters = brand.models.some(model => modelVehicleType(model) === 'scooter');
+        const isMixed = hasMotos && hasScooters;
+        const activeType = vehicleFilters[brand.name] ?? 'moto';
+        const visibleModels = isMixed
+          ? brand.models.filter(model => modelVehicleType(model) === activeType)
           : brand.models;
         return (
           <section
@@ -173,20 +193,30 @@ export default function EntretienCatalog({ brandsData }: EntretienCatalogProps) 
 
             {isExpanded && (
               <div className="p-6 pt-0 animate-in fade-in slide-in-from-top-2 duration-300">
+                {isMixed && (
+                  <div className="mx-auto mb-4 mt-4 grid w-full max-w-[320px] grid-cols-2 gap-1 rounded-xl bg-[#ededed] p-1" role="group" aria-label={`Type de v├⌐hicule ${brand.name}`}>
+                    {(['moto', 'scooter'] as const).map(type => (
+                      <button
+                        type="button"
+                        key={type}
+                        aria-pressed={activeType === type}
+                        onClick={() => setVehicleFilters(current => ({ ...current, [brand.name]: type }))}
+                        className={cn('min-h-11 rounded-[9px] px-3 text-sm font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand', activeType === type ? 'bg-brand text-white shadow-sm' : 'text-[#4b4b4b] hover:bg-white/80')}
+                      >
+                        {type === 'moto' ? 'Motos' : 'Scooters'}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                  {orderedModels.map((model, index) => (
+                  {visibleModels.map(model => (
                     <div key={model.id} className="contents">
-                    {isHonda && (index === 0 ||
-                      /scooter/i.test(orderedModels[index - 1].category || '') !== /scooter/i.test(model.category || '')) && (
-                      <h3 className="col-span-full mt-3 border-b pb-2 text-xs font-black uppercase tracking-widest text-brand">
-                        {/scooter/i.test(model.category || '') ? 'Scooters' : 'Motos'}
-                      </h3>
-                    )}
                     <Link
                       href={`/fiches/${model.id}`}
                       onClick={() => {
                         const returnState = {
                           expandedBrands,
+                          vehicleFilters: { ...vehicleFilters, [brand.name]: modelVehicleType(model) },
                           scrollY: window.scrollY,
                         };
 
