@@ -1,6 +1,9 @@
 import type { MotorcycleSheetV2 } from '@/lib/motorcycle-sheet-v2';
 import { pcx125V2 } from '@/lib/motorcycle-sheets-v2/honda-pcx-125-2026-preview';
 import { forza125V2 } from '@/lib/motorcycle-sheets-v2/honda-forza-125-2026-preview';
+import { nmax125V2 } from '@/lib/motorcycle-sheets-v2/yamaha-nmax-125-2026-preview';
+import { xmax125V2 } from '@/lib/motorcycle-sheets-v2/yamaha-xmax-125-2026-preview';
+import { medley125V2 } from '@/lib/motorcycle-sheets-v2/piaggio-medley-125-2026-preview';
 import { hondaCb500fDraftV2 } from '@/lib/motorcycle-sheets-v2/honda-cb500f-draft';
 import { hondaCbr500rDraftV2 } from '@/lib/motorcycle-sheets-v2/honda-cbr500r-draft';
 import { hondaNx500DraftV2 } from '@/lib/motorcycle-sheets-v2/honda-nx500-draft';
@@ -42,6 +45,9 @@ import { zontes703tV2 } from '@/lib/motorcycle-sheets-v2/zontes-703-t';
 const motorcycleSheetV2Registry: Record<string, MotorcycleSheetV2> = {
   'honda-pcx-125-2026': pcx125V2,
   'honda-forza-125-2026': forza125V2,
+  'yamaha-nmax-125-2026': nmax125V2,
+  'yamaha-xmax-125-2026': xmax125V2,
+  'piaggio-medley-125-2026': medley125V2,
   'honda-cb500f-2022-plus': hondaCb500fDraftV2,
   'honda-cbr500r-2022-plus': hondaCbr500rDraftV2,
   'honda-nx500-2024-plus': hondaNx500DraftV2,
