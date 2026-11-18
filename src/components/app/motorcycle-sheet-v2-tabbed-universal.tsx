@@ -203,43 +203,80 @@ export default function MotorcycleSheetV2TabbedUniversal({
     return value;
   };
 
-  const quickFacts = [
-    {
-      label: 'CYLINDR\u00c9E',
-      value: getQuickFactValue(['Cylindr\u00e9e', 'Cylindree']),
-    },
-    {
-      label: 'PUISSANCE',
-      value: getQuickFactValue(['Puissance']),
-    },
-    {
-      label: 'POIDS TOUS PLEINS FAITS',
-      value: getQuickFactValue([
-        'Poids tous pleins faits',
-        'Poids',
-        'Poids en ordre de marche',
-      ]),
-    },
-    {
-      label: 'HAUTEUR DE SELLE',
-      value: getQuickFactValue([
-        'Hauteur de selle',
-        'Selle',
-      ]),
-    },
-    {
-      label: 'R\u00c9SERVOIR',
-      value: getQuickFactValue([
-        'R\u00e9servoir',
-        'Capacit\u00e9 du r\u00e9servoir',
-        'Capacit\u00e9 r\u00e9servoir',
-      ]),
-    },
-    {
-      label: 'PERMIS',
-      value: normalizedPermit,
-    },
-  ];
+  // Ces trois fiches possèdent un jeu de chiffres clés "scooter" déjà
+  // validé dans leurs quick_facts. Ne pas le remplacer par la grille moto.
+  // Identification explicite pour ne modifier aucune fiche moto / Honda.
+  const usesScooterQuickFacts = [
+    'yamaha-nmax-125-2026',
+    'yamaha-xmax-125-2026',
+    'piaggio-medley-125-2026',
+  ].includes(modelId);
+
+  const quickFacts = usesScooterQuickFacts
+    ? [
+        {
+          label: 'CYLINDRÉE',
+          value: getQuickFactValue(['Cylindrée', 'Cylindree']),
+        },
+        {
+          label: 'CONSOMMATION',
+          value: getQuickFactValue(['Consommation']),
+        },
+        {
+          label: 'POIDS TOUS PLEINS FAITS',
+          value: getQuickFactValue([
+            'Poids tous pleins faits',
+            'Poids',
+            'Poids en ordre de marche',
+          ]),
+        },
+        {
+          label: 'HAUTEUR DE SELLE',
+          value: getQuickFactValue(['Hauteur de selle', 'Selle']),
+        },
+        {
+          label: 'VOLUME DU COFFRE',
+          value: getQuickFactValue(['Volume du coffre', 'Coffre']),
+        },
+        {
+          label: 'AUTONOMIE',
+          value: getQuickFactValue(['Autonomie']),
+        },
+      ]
+    : [
+        {
+          label: 'CYLINDRÉE',
+          value: getQuickFactValue(['Cylindrée', 'Cylindree']),
+        },
+        {
+          label: 'PUISSANCE',
+          value: getQuickFactValue(['Puissance']),
+        },
+        {
+          label: 'POIDS TOUS PLEINS FAITS',
+          value: getQuickFactValue([
+            'Poids tous pleins faits',
+            'Poids',
+            'Poids en ordre de marche',
+          ]),
+        },
+        {
+          label: 'HAUTEUR DE SELLE',
+          value: getQuickFactValue(['Hauteur de selle', 'Selle']),
+        },
+        {
+          label: 'RÉSERVOIR',
+          value: getQuickFactValue([
+            'Réservoir',
+            'Capacité du réservoir',
+            'Capacité réservoir',
+          ]),
+        },
+        {
+          label: 'PERMIS',
+          value: normalizedPermit,
+        },
+      ];
 
 
   const activeVariant =
@@ -475,9 +512,9 @@ export default function MotorcycleSheetV2TabbedUniversal({
         <div className="overflow-hidden px-3 pt-3 md:px-0 md:pt-0">
           <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 pr-10 [scrollbar-width:thin] [scrollbar-color:#f97316_#f4f4f5] [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-zinc-100 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-orange-500 md:grid md:grid-cols-6 md:gap-0 md:overflow-visible md:px-0 md:pr-0">
             {quickFacts.map((item, index) => (
-              <div key={`${item.label}-${index}`} className="min-w-[128px] snap-start rounded-2xl border border-zinc-100 bg-zinc-50 px-4 py-4 md:min-w-0 md:rounded-none md:border-0 md:border-r md:border-zinc-100 md:bg-white md:px-4 md:py-4 md:last:border-r-0">
-                <div className="whitespace-nowrap text-[8px] font-black uppercase tracking-[0.14em] text-zinc-400">{item.label}</div>
-                <div className="mt-1 whitespace-nowrap text-base font-black leading-tight text-zinc-950 md:text-lg">{item.value}</div>
+              <div key={`${item.label}-${index}`} className="min-w-[168px] snap-start rounded-2xl border border-zinc-100 bg-zinc-50 px-4 py-4 md:min-w-0 md:rounded-none md:border-0 md:border-r md:border-zinc-100 md:bg-white md:px-3 md:py-4 md:last:border-r-0">
+                <div className="min-w-0 break-words text-[9px] font-black uppercase leading-snug tracking-[0.06em] text-zinc-400">{item.label}</div>
+                <div className="mt-1 min-w-0 break-words text-sm font-black leading-snug text-zinc-950 lg:text-base">{item.value}</div>
               </div>
             ))}
           </div>
