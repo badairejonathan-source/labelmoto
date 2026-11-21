@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Link from 'next/link';
 import { loadSeoPros } from '@/lib/seo-pros';
 import { getDepartmentBySlug, getAllDepartmentSlugs, DEPARTMENTS } from '@/app/lib/departments';
@@ -170,6 +170,7 @@ function ProCard({ pro }: { pro: Pro }) {
 
 export default async function GaragesMotoDepartement({ params }: PageProps) {
   const { dept } = await params;
+  if (dept === 'paris') permanentRedirect('/garages-moto/paris');
   const department = getDepartmentBySlug(dept);
   if (!department) notFound();
 
