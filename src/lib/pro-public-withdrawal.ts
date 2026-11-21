@@ -194,6 +194,8 @@ export async function withdrawPublic(
         metadata:{cacheControl:'no-store, max-age=0'},
         preconditionOpts:{ifGenerationMatch:f.generation},
       });
+      await guard.assertHeld();
+      await f.file.makePublic();
     }
     // Vérification de la fiche et des deux objets, y compris celui inchangé.
     if((await ref.get()).exists) throw new Error('PUBLIC_REMOVAL_MAIN_STILL_PUBLIC');

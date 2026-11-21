@@ -10,7 +10,7 @@ import type { Firestore, DocumentReference } from 'firebase-admin/firestore';
 
 const COLLECTION = 'index_write_locks_v23';
 const DOCUMENT = 'public-indexes';
-const OPS = new Set(['rebuild', 'prune', 'delete']);
+const OPS = new Set(['rebuild', 'prune', 'delete', 'upsert']);
 
 export type IndexWriteCoordinator = {
   assertHeld: () => Promise<void>;
@@ -86,7 +86,7 @@ async function finalize(db: Firestore, state: ActiveState, failed: boolean) {
  */
 export async function withSharedIndexLock<T>(
   db: Firestore,
-  operation: 'rebuild' | 'prune' | 'delete',
+  operation: 'rebuild' | 'prune' | 'delete' | 'upsert',
   work: (guard: IndexWriteCoordinator) => Promise<T>,
 ): Promise<T> {
   ensureAllowed(operation);

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminAuth, getAdminFirestore } from '@/lib/firebase-admin';
+import { isServerAdmin } from '@/lib/server-admin-permissions';
 import { WITHDRAWAL_HISTORY_COLLECTION, toWithdrawalHistoryView } from '@/lib/pro-public-withdrawal-history';
 
 export const runtime='nodejs';
@@ -11,13 +12,12 @@ const error=(message:string,status:number)=>NextResponse.json({ok:false,error:me
 export async function GET(req:NextRequest){
  const token=req.headers.get('authorization')||'';
  if(!token.startsWith('Bearer ')) return error('Authentification requise',401);
- let uid:string;
- try{uid=(await getAdminAuth().verifyIdToken(token.slice(7).trim(),true)).uid;}
+ let caller;
+ try{caller=await getAdminAuth().verifyIdToken(token.slice(7).trim(),true);}
  catch{return error('Session invalide',401);}
  try{
   const db=getAdminFirestore();
-  const user=await db.collection('users').doc(uid).get();
-  if(!user.exists||user.get('role')!=='admin') return error('Droits administrateur requis',403);
+  if(!(await isServerAdmin(db,caller))) return error('Droits administrateur requis',403);
   const snap=await db.collection(WITHDRAWAL_HISTORY_COLLECTION)
    .orderBy('createdAt','desc').limit(20).get();
   const entries=snap.docs.map(d=>toWithdrawalHistoryView(d.id,d.data())).filter((e):e is NonNullable<typeof e>=>e!==null);
