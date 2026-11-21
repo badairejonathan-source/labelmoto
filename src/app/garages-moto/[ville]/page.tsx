@@ -342,6 +342,16 @@ export default async function GaragesMotoParsVille({ params }: PageProps) {
   const city = getCityBySlug(ville);
   if (!city) notFound();
   const pros = await getProsForCityNearby(city);
+  // Paris uniquement : garder un acces direct aux professionnels du 75 hors selection garages.
+  const parisIncludedIds = new Set(pros.map(pro => `${pro.collection}/${pro.id}`));
+  const parisOtherPros = city.slug === 'paris'
+    ? (await loadSeoPros()).filter(pro =>
+        pro.departement === '75' &&
+        ['concessions', 'associations', 'relais'].includes(pro.collection) &&
+        !parisIncludedIds.has(`${pro.collection}/${pro.id}`)
+      )
+    : [];
+
   const otherCities = CITIES.filter(c => c.slug !== ville).slice(0, 9);
   const cityBrands = Array.from(
     new Set(
@@ -413,6 +423,32 @@ export default async function GaragesMotoParsVille({ params }: PageProps) {
               </div>
             )}
           </section>
+
+          {city.slug === 'paris' && (
+            <section aria-labelledby="paris-autres-metiers" className="mb-10 rounded-2xl border border-border/60 p-5 md:p-7">
+              <h2 id="paris-autres-metiers" className="text-xl md:text-2xl font-bold mb-3">Autres professionnels moto à Paris</h2>
+              <p className="text-sm text-muted-foreground mb-4">Pour les équipements, la location, les formations moto (permis ou pilotage sportif) et les associations, consultez les rubriques dédiées. Ces fiches ne sont pas comptées parmi les garages ci-dessus.</p>
+              <nav aria-label="Autres métiers moto à Paris" className="flex flex-wrap gap-2 mb-4">
+                <Link href="/metiers/equipement-accessoires" className="rounded-full border border-border px-4 py-2 text-sm hover:border-brand">Équipement et accessoires</Link>
+                <Link href="/metiers/formation-moto-ecoles" className="rounded-full border border-border px-4 py-2 text-sm hover:border-brand">Formation moto et pilotage</Link>
+                <Link href="/metiers" className="rounded-full border border-border px-4 py-2 text-sm hover:border-brand">Location et autres métiers</Link>
+                <Link href="/associations" className="rounded-full border border-border px-4 py-2 text-sm hover:border-brand">Associations</Link>
+              </nav>
+              {parisOtherPros.length > 0 && (
+                <details className="rounded-xl border border-border/60 p-4">
+                  <summary className="cursor-pointer text-sm font-semibold">Voir les {parisOtherPros.length} autres fiches parisiennes</summary>
+                  <ul className="mt-4 grid gap-3 sm:grid-cols-2">
+                    {parisOtherPros.map(pro => (
+                      <li key={`${pro.collection}/${pro.id}`} className="rounded-lg border border-border/50 p-3">
+                        <Link href={`/concessions/${pro.slug || pro.id}`} className="text-sm font-semibold hover:text-brand">{pro.title}</Link>
+                        <p className="text-xs text-muted-foreground">{pro.category}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              )}
+            </section>
+          )}
 
           {pros.length > 6 && (
             <div className="rounded-[2rem] bg-muted/50 border border-border/50 p-6 md:p-8 text-center mb-10 shadow-sm">
