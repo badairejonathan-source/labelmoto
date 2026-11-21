@@ -7,6 +7,9 @@ import { getAllDepartmentSlugs } from '@/app/lib/departments';
 import { getAllBrandSlugs } from '@/app/lib/brands';
 import { loadSeoPros } from '@/lib/seo-pros';
 
+// Sitemap dynamique : index distant frais, sans fallback obsolete.
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://labelmoto.fr';
 
@@ -115,7 +118,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
 
   const deptUrls: MetadataRoute.Sitemap =
-    getAllDepartmentSlugs().map(slug => ({
+    getAllDepartmentSlugs().filter(slug => slug !== 'paris').map(slug => ({
       url:
         `${baseUrl}/garages-moto/departement/${slug}`,
       lastModified: new Date(),

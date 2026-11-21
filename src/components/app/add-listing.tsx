@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, MapPin, RefreshCw, Plus, CheckCircle } from 'lucide-react';
 import { encodeGeohash } from '@/lib/geohash';
+import { syncPublicIndexAfterPublish } from '@/lib/pro-admin-index-sync-client';
 import {
   PROFESSIONAL_CATEGORIES,
   getPrimaryProfessionalCategory,
@@ -263,12 +264,15 @@ export default function AddListing() {
         }
       );
 
-      batch.set(doc(collection(firestore, 'listing_history')), {
+      const historyRef = doc(collection(firestore, 'listing_history'));
+      batch.set(historyRef, {
         listingKey: `${form.collectionName}/${slug}`,
         targetCollection: form.collectionName,
         targetId: slug,
         targetTitle: fiche.title,
         eventType: 'listing_created_admin',
+        indexSyncStatus: 'pending',
+        indexSyncRequestedAt: serverTimestamp(),
         summary: 'Fiche créée directement par Label Moto',
         actorType: 'admin',
         actorUid: user?.uid || '',
@@ -276,6 +280,12 @@ export default function AddListing() {
       });
 
       await batch.commit();
+
+      const indexSyncResult = await syncPublicIndexAfterPublish(user, historyRef.id);
+      if (!indexSyncResult.synced) {
+        toast({ title: 'Fiche créée — index public en attente', variant: 'destructive',
+          description: 'La fiche est enregistrée ; sa synchronisation publique reste à vérifier dans l’historique.' });
+      }
 
       setCreatedSlug(slug);
       toast({ title: 'Fiche créée !', description: `${form.collectionName}/${slug}` });

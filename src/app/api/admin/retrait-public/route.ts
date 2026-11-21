@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import * as admin from 'firebase-admin';
 import { revalidatePath } from 'next/cache';
 import { getAdminAuth, getAdminFirestore } from '@/lib/firebase-admin';
+import { isServerAdmin } from '@/lib/server-admin-permissions';
 import { previewPublicRemoval, withdrawPublic, validateTarget } from '@/lib/pro-public-withdrawal';
 
 export const runtime='nodejs';
@@ -26,8 +27,7 @@ export async function POST(req:NextRequest){
   try {caller=await getAdminAuth().verifyIdToken(auth.slice(7).trim(),true)}
   catch{return err('Session invalide ou révoquée',401)}
   const db=getAdminFirestore();
-  const user=await db.collection('users').doc(caller.uid).get();
-  if(!user.exists || user.get('role')!=='admin') return err('Droits administrateur requis',403);
+  if(!(await isServerAdmin(db,caller))) return err('Droits administrateur requis',403);
   if(input.action==='apply' && input.confirm!==`RETIRER_PUBLIC:${target.collection}/${target.id}`)
     return err('Confirmation exacte manquante',400);
   // Motif explicite pour le journal privé, sans commentaire libre ni PII.

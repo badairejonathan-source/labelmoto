@@ -40,7 +40,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { setDocumentNonBlocking, deleteDocumentNonBlocking, updateDocumentNonBlocking, addDocumentNonBlocking } from '@/firebase/client';
-import { addDoc, updateDoc, getDoc, getCountFromServer, getAggregateFromServer, sum, writeBatch } from 'firebase/firestore';
+import { addDoc, updateDoc, getDoc, getCountFromServer, getAggregateFromServer, sum, writeBatch, runTransaction, deleteField } from 'firebase/firestore';
 import { cn, generateDealershipSlug } from '@/lib/utils';
 import { extractValidCoordinates, encodeGeohash } from '@/lib/geohash';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -52,6 +52,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { errorEmitter } from '@/firebase/client';
 import { FirestorePermissionError } from '@/firebase/client';
 import { loadPublicSeoPros } from '@/lib/public-seo-pros';
+import { syncPublicIndexAfterPublish } from '@/lib/pro-admin-index-sync-client';
 
 function AdminModuleLoader() {
   return (
@@ -99,6 +100,10 @@ const AddListing = dynamic(
 const AdminListingArchive = dynamic(
   () => import('@/components/app/admin-listing-archive'),
   { ssr: false, loading: AdminModuleLoader }
+);
+const AdminMergeHistory = dynamic(
+  () => import('@/components/app/admin-merge-history'),
+  {ssr:false,loading:AdminModuleLoader}
 );
 const ModificationRequests = dynamic(
   () => import('@/components/app/modification-requests'),
@@ -203,6 +208,37 @@ interface MigrationStats {
   toMigrate: any[];
 }
 
+type MergeField = 'title' | 'description' | 'website' | 'email' | 'phoneNumber' | 'instagramUrl' | 'facebookUrl' | 'googleMapsUrl';
+type MergeChoice = 'existing' | 'submission' | 'both';
+const MERGE_FIELDS: {key: MergeField; label: string}[] = [
+  {key:'title',label:'Nom public'},
+  {key:'description',label:'Présentation'},
+  {key:'website',label:'Site web'},
+  {key:'email',label:'E-mail'},
+  {key:'phoneNumber',label:'Téléphone'},
+  {key:'instagramUrl',label:'Instagram'},
+  {key:'facebookUrl',label:'Facebook'},
+  {key:'googleMapsUrl',label:'Google Maps'},
+];
+
+function mergeValue(record: Record<string, any>, field: MergeField, isSubmission: boolean): string {
+  const names: Record<MergeField, string[]> = {
+    title: isSubmission ? ['title','displayName','businessName'] : ['title','displayName','businessName'],
+    description: ['info','description'],
+    website: ['website'],
+    email: ['email'],
+    phoneNumber: isSubmission ? ['phoneNumber','phone'] : ['phoneNumber','phone'],
+    instagramUrl: ['instagramUrl','instagram'],
+    facebookUrl: ['facebookUrl','facebook'],
+    googleMapsUrl: ['googleMapsUrl','placeUrl'],
+  };
+  for (const name of names[field]) {
+    const value = record[name];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+  }
+  return '';
+}
+
 function buildAdminDraftSnapshot(submission: Submission) {
   // Keep audit snapshots flat: the original submittedData stays immutable on the
   // submission document, while adminDraft contains only the working version.
@@ -214,7 +250,36 @@ function buildAdminDraftSnapshot(submission: Submission) {
     ...draft
   } = submission;
 
-  return draft;
+  // Firestore refuse les valeurs undefined dans un objet imbriqué passé à
+  // update(). Les champs facultatifs retirés lors d'une fusion doivent être
+  // omis du snapshot plutôt que sauvegardés avec undefined.
+  return Object.fromEntries(
+    Object.entries(draft).filter(([, value]) => value !== undefined)
+  );
+}
+
+function openSubmissionDraft(submission: Submission): Submission {
+  const submitted = submission.submittedData && typeof submission.submittedData === 'object'
+    ? submission.submittedData as Record<string, any> : {};
+  const saved = submission.adminDraft && typeof submission.adminDraft === 'object'
+    ? submission.adminDraft as Record<string, any> : {};
+  const draft = { ...submission, ...saved };
+  // Les anciennes demandes peuvent conserver la présentation dans submittedData,
+  // alors que les champs du formulaire admin sont à plat.
+  const description = String(
+    saved.info || saved.description || draft.info || draft.description ||
+    submitted.info || submitted.description || ''
+  );
+  return {
+    ...draft,
+    id: submission.id,
+    status: submission.status,
+    info: description,
+    description,
+    googleMapsUrl: String(
+      saved.googleMapsUrl || draft.googleMapsUrl || submitted.googleMapsUrl || ''
+    ),
+  };
 }
 
 const ADMIN_REALTIME_LIMIT = 100;
@@ -239,6 +304,23 @@ function normalizeDuplicatePhone(value: unknown): string {
   const digits = String(value || '').replace(/\D+/g, '');
   if (digits.startsWith('33') && digits.length === 11) return `0${digits.slice(2)}`;
   return digits;
+}
+
+function normalizeProfessionalWebsite(value: unknown): string {
+  const raw = String(value || '').trim();
+  if (!raw) return '';
+  try {
+    const url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+    const host = url.hostname.toLowerCase().replace(/^www\./, '').replace(/\.$/, '');
+    // Un profil sur une plateforme partagée n'identifie pas un établissement.
+    if (!host.includes('.') || [
+      'instagram.com', 'facebook.com', 'linktr.ee', 'google.com',
+      'maps.google.com', 'youtube.com', 'tiktok.com',
+    ].includes(host)) return '';
+    return host;
+  } catch {
+    return '';
+  }
 }
 
 function duplicateTokens(value: unknown): string[] {
@@ -363,6 +445,14 @@ function scoreDuplicateCandidate(submission: Submission, candidate: any) {
     reasons.push('Même téléphone');
   }
 
+  const submissionWebsite = normalizeProfessionalWebsite(submission.website);
+  const candidateWebsite = normalizeProfessionalWebsite(candidate.website || candidate.websiteUrl);
+  const sameWebsite = !!submissionWebsite && !!candidateWebsite && submissionWebsite === candidateWebsite;
+  if (sameWebsite) {
+    score += 95;
+    reasons.push('Même site web');
+  }
+
   const submissionEmail = String(submission.email || '').trim().toLowerCase();
   const candidateEmail = String(candidate.email || '').trim().toLowerCase();
   const sameEmail = !!submissionEmail && !!candidateEmail && submissionEmail === candidateEmail;
@@ -408,6 +498,16 @@ function scoreDuplicateCandidate(submission: Submission, candidate: any) {
 
   const submissionName = normalizeDuplicateText(submission.businessName || submission.displayName);
   const candidateName = normalizeDuplicateText(candidate.title || candidate.businessName || candidate.displayName);
+  // L'index de secours de la carte ne contient pas toujours website.
+  // Un domaine professionnel évoquant exactement le nom commercial existant
+  // reste un indice à soumettre à un humain, jamais une preuve automatique.
+  const websiteBrand = normalizeDuplicateText(submissionWebsite.split('.')[0] || '');
+  const brandFromWebsite = !sameWebsite && websiteBrand.length >= 8 &&
+    candidateName.length >= 8 && websiteBrand === candidateName;
+  if (brandFromWebsite) {
+    score += 55;
+    reasons.push('Nom de fiche correspondant au domaine web — à vérifier');
+  }
   const nameSimilarity = fuzzyTokenSimilarity(submissionName, candidateName);
   const sameName = !!submissionName && !!candidateName && submissionName === candidateName;
   const closeName = !sameName && nameSimilarity >= 0.74;
@@ -422,14 +522,16 @@ function scoreDuplicateCandidate(submission: Submission, candidate: any) {
 
   // E-mail et compte propriétaire sont utiles pour enrichir le diagnostic,
   // mais ne suffisent jamais seuls à qualifier deux établissements de doublons.
-  const strongDuplicateSignal = samePhone || stronglyMatchingAddress;
+  const strongDuplicateSignal = samePhone || sameWebsite || stronglyMatchingAddress;
   const localNameSignal = (sameName || closeName) && (samePostal || closeAddress || addressSimilarity >= 0.58);
   const multiBusinessSignal = closeAddress && (sameName || closeName || samePhone);
-  const eligible = strongDuplicateSignal || localNameSignal || multiBusinessSignal;
+  // Un nom strictement identique doit toujours être signalé pour vérification
+  // humaine, même si l'adresse a changé ou manque dans l'index.
+  const eligible = strongDuplicateSignal || localNameSignal || multiBusinessSignal || sameName || brandFromWebsite;
 
   const confidence = strongDuplicateSignal || (sameName && stronglyMatchingAddress)
     ? 'very_likely'
-    : 'likely';
+    : (sameName && !localNameSignal && !multiBusinessSignal) || brandFromWebsite ? 'possible' : 'likely';
 
   return {
     score,
@@ -449,6 +551,14 @@ export default function AdminPage() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [duplicates, setDuplicates] = useState<any[]>([]);
+  const [mergePreview, setMergePreview] = useState<{candidate:any; existing:Record<string,any>} | null>(null);
+  const [mergeDestination, setMergeDestination] = useState<'existing'|'new'>('existing');
+  const [removeOldAfterMerge, setRemoveOldAfterMerge] = useState(false);
+  const [mergeChoices, setMergeChoices] = useState<Record<MergeField, MergeChoice>>({
+    title:'existing',description:'existing',website:'existing',email:'existing',
+    phoneNumber:'existing',instagramUrl:'existing',facebookUrl:'existing',googleMapsUrl:'existing',
+  });
+  const [mergeBusy, setMergeBusy] = useState(false);
 
   const [isAuditing, setIsAuditing] = useState(false);
   const [migrationStats, setMigrationStats] = useState<MigrationStats | null>(null);
@@ -916,7 +1026,9 @@ export default function AdminPage() {
         matchConfidence:
           previous?.matchConfidence === 'very_likely' || scored.confidence === 'very_likely'
             ? 'very_likely'
-            : 'likely',
+            : previous?.matchConfidence === 'likely' || scored.confidence === 'likely'
+              ? 'likely'
+              : 'possible',
         matchReasons: Array.from(new Set([...(previous?.matchReasons || []), ...reasons])),
       });
     };
@@ -1013,10 +1125,11 @@ export default function AdminPage() {
   };
 
   const handleOpenDetail = (sub: Submission) => {
+    const draft = openSubmissionDraft(sub);
     setSelectedId(sub.id);
-    setEditDraft({ ...sub });
+    setEditDraft(draft);
     setIsDetailOpen(true);
-    findDuplicates(sub);
+    findDuplicates(draft);
   };
 
   const handleUpdateStatus = (newStatus: Submission['status']) => {
@@ -1037,6 +1150,8 @@ export default function AdminPage() {
     const adminDraft = buildAdminDraftSnapshot(editDraft);
     updateDocumentNonBlocking(doc(firestore, 'listing_submissions', editDraft.id), {
         ...adminDraft,
+        publishTargetId: editDraft.publishTargetId || deleteField(),
+        publishTargetCollection: editDraft.publishTargetCollection || deleteField(),
         adminDraft,
         updatedAt: new Date()
     });
@@ -1050,6 +1165,16 @@ export default function AdminPage() {
 
     try {
       const data = editDraft;
+
+      if (data.publishTargetId) {
+        throw new Error('Mise à jour d’une fiche existante : utilise la fenêtre de comparaison et sélectionne les champs à transférer.');
+      }
+      if (data.mergeRemoveSource === true) {
+        if (!data.mergeSourceCollection || !data.mergeSourceId)
+          throw new Error('Ancienne fiche non identifiée. Reprends la comparaison.');
+        if (!window.confirm(`Après publication, supprimer définitivement « ${data.mergeSourceTitle || data.mergeSourceId} » (${data.mergeSourceCollection}/${data.mergeSourceId}) ?\n\nLa suppression sera tracée dans les archives. Elle ne pourra pas être annulée.`))
+          return;
+      }
 
       // Pour une fiche sans accueil du public, publier la ville uniquement.
       const cityOnly = data.type !== 'creator' && data.locationMode === 'city';
@@ -1220,6 +1345,10 @@ export default function AdminPage() {
             ? 'relais'
             : 'concessions');
 
+      if (data.publishTargetId && data.type === 'creator' && targetCol !== 'creators') {
+        throw new Error('Fusion entre collections : utilise la comparaison des fiches. Publication directe refusée.');
+      }
+
       let publishedDocId =
         targetDocId;
 
@@ -1389,6 +1518,9 @@ export default function AdminPage() {
             data.facebookUrl ||
             data.facebook ||
             '',
+
+          googleMapsUrl:
+            data.hasPublicLocation ? (data.googleMapsUrl || '') : '',
 
           phoneNumber:
             data.phoneNumber ||
@@ -1567,6 +1699,7 @@ export default function AdminPage() {
             {},
 
           info:
+            data.info ||
             data.description ||
             '',
 
@@ -1800,6 +1933,9 @@ export default function AdminPage() {
           publishedData:
             publishedData,
 
+          publishTargetId: deleteField(),
+          publishTargetCollection: deleteField(),
+
           adminDraft:
             buildAdminDraftSnapshot(data),
 
@@ -1819,7 +1955,9 @@ export default function AdminPage() {
         targetCollection: targetCol,
         targetId: publishedDocId,
         targetTitle: publishedData.title || data.businessName || data.displayName || publishedDocId,
-        eventType: isUpdate ? 'submission_update_published' : 'listing_created',
+        eventType: data.mergeSourceId ? 'merge_new_published' : isUpdate ? 'submission_update_published' : 'listing_created',
+        indexSyncStatus: 'pending',
+        indexSyncRequestedAt: new Date(),
         summary: isUpdate
           ? 'Soumission corrigée puis publiée par Label Moto'
           : 'Fiche créée et publiée par Label Moto',
@@ -1827,17 +1965,46 @@ export default function AdminPage() {
         requestedByUid: data.requestedByUid || '',
         actorType: 'admin',
         actorUid: user?.uid || '',
+        ...(data.mergeSourceId ? { sourceCollection:data.mergeSourceCollection,sourceId:data.mergeSourceId,
+          sourceTitle:data.mergeSourceTitle || data.mergeSourceId,
+          oldRemovalRequested:data.mergeRemoveSource===true,
+          oldRemovalStatus:data.mergeRemoveSource===true?'pending':'not_requested',
+          mergeChoices:data.mergeChoicesSnapshot || {} } : {}),
         createdAt: new Date(),
       };
 
-      // Publication is the critical transaction. Audit logging must never make
-      // the publication fail if listing_history is temporarily unavailable.
+      // L'historique appartient au même commit que la publication : aucune
+      // publication avec demande de suppression ne peut perdre son journal.
+      const publicationHistoryRef=doc(collection(firestore,'listing_history'));
+      batch.set(publicationHistoryRef,historyEntry);
       await batch.commit();
 
-      try {
-        await addDoc(collection(firestore, 'listing_history'), historyEntry);
-      } catch (historyError) {
-        console.warn('[LabelMoto] Fiche publiée, historique non enregistré :', historyError);
+      if (data.mergeRemoveSource === true && data.mergeSourceId && data.mergeSourceCollection) {
+        try {
+          const token = await user?.getIdToken();
+          if (!token) throw new Error('Session administrateur expirée');
+          const response = await fetch('/api/admin/fusion-retire',{
+            method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},
+            body:JSON.stringify({submissionId:data.id,historyId:publicationHistoryRef.id}),
+          });
+          const result=await response.json();
+          if (!response.ok || !result.ok) throw new Error(result.error || 'Retrait non confirmé');
+        } catch (removalError) {
+          toast({variant:'destructive',title:'Nouvelle fiche publiée, suppression en attente',
+            description:'L’ancienne fiche n’a pas été certifiée supprimée. Consulte l’historique avant toute nouvelle tentative.'});
+          console.error('[LabelMoto] Retrait ancien doublon en attente',removalError);
+          setIsDetailOpen(false);
+          return;
+        }
+      }
+
+      // La publication Firestore est terminée. Une erreur Storage ne peut pas
+      // annuler le commit ; l'historique garde indexSyncStatus='pending'.
+      const indexSyncResult = await syncPublicIndexAfterPublish(user, publicationHistoryRef.id);
+      if (!indexSyncResult.synced) {
+        toast({ title: 'Fiche publiée — index public en attente',
+          description: 'Synchronisation ciblée non confirmée. Historique conservé ; ne lance pas une reconstruction générale.',
+          variant: 'destructive' });
       }
 
       toast({
@@ -1874,33 +2041,108 @@ export default function AdminPage() {
     }
   };
 
-  const handleLinkToDuplicate = (dup: any) => {
-    if (!editDraft) return;
-
-    const alreadyLinked =
-      editDraft.publishTargetId === dup.id &&
-      (!editDraft.publishTargetCollection || editDraft.publishTargetCollection === dup.col);
-
-    if (alreadyLinked) {
-      setEditDraft({
-        ...editDraft,
-        publishTargetId: undefined,
-        publishTargetCollection: undefined,
-      });
-      toast({ title: 'Lien retiré', description: 'La demande créera de nouveau une fiche distincte.' });
-      return;
+  const handleLinkToDuplicate = async (dup: any) => {
+    if (!firestore || !editDraft || mergeBusy) return;
+    if (!ADMIN_PRO_COLLECTIONS.includes(dup.col)) {
+      toast({title:'Collection inconnue',variant:'destructive'}); return;
     }
+    setMergeBusy(true);
+    try {
+      // Une lecture ciblée uniquement : l'index ne contient pas tous les champs.
+      const snap = await getDoc(doc(firestore, dup.col, dup.id));
+      if (!snap.exists()) throw new Error('La fiche existante a été retirée.');
+      setMergePreview({candidate:dup, existing:snap.data()});
+      setMergeDestination('existing');
+      setRemoveOldAfterMerge(false);
+      setMergeChoices({title:'existing',description:'existing',website:'existing',email:'existing',
+        phoneNumber:'existing',instagramUrl:'existing',facebookUrl:'existing',googleMapsUrl:'existing'});
+    } catch (error) {
+      toast({title:'Comparaison impossible',description:error instanceof Error?error.message:'Erreur de lecture',variant:'destructive'});
+    } finally {setMergeBusy(false);}
+  };
 
-    setEditDraft({
-      ...editDraft,
-      publishTargetId: dup.id,
-      publishTargetCollection: dup.col,
-    });
-
-    toast({
-      title: 'Fiche existante sélectionnée',
-      description: `La validation mettra à jour ${dup.title || dup.id} au lieu de créer un doublon.`,
-    });
+  const handleApplyMerge = async () => {
+    if (!mergePreview || !editDraft || !firestore || !user || mergeBusy) return;
+    setMergeBusy(true);
+    try {
+      const {candidate, existing} = mergePreview;
+      const values: Partial<Record<MergeField,string>> = {};
+      for (const {key} of MERGE_FIELDS) {
+        const oldValue=mergeValue(existing,key,false);
+        const newValue=mergeValue(editDraft,key,true);
+        const choice=mergeChoices[key];
+        values[key]=choice==='existing' ? (oldValue || newValue) : choice==='submission' ? (newValue || oldValue) :
+          (oldValue && newValue && oldValue!==newValue ? `${oldValue}\n\n${newValue}` : oldValue || newValue);
+      }
+      if (mergeDestination==='new') {
+        // Préremplir la soumission sans publier ni effacer l'ancienne fiche.
+        setEditDraft(old=>old?{
+          ...old,publishTargetId:undefined,publishTargetCollection:undefined,
+          title:values.title || '',displayName:values.title || '',businessName:values.title || '',
+          info:values.description,description:values.description,
+          website:values.website || '',email:values.email || '',phone:values.phoneNumber || '',phoneNumber:values.phoneNumber || '',
+          instagram:values.instagramUrl,instagramUrl:values.instagramUrl,
+          facebook:values.facebookUrl,facebookUrl:values.facebookUrl,
+          googleMapsUrl:values.googleMapsUrl,
+          mergeSourceCollection:candidate.col,
+          mergeSourceId:candidate.id,
+          mergeSourceTitle:String(candidate.title || candidate.id),
+          mergeRemoveSource:removeOldAfterMerge,
+          mergeChoicesSnapshot:{...mergeChoices},
+        }:old);
+        setMergePreview(null);
+        toast({title:'Nouvelle fiche préparée',description:'Vérifie les champs puis publie. La fiche existante est conservée.'});
+        return;
+      }
+      const chosenFields=MERGE_FIELDS.filter(({key})=>mergeChoices[key]!=='existing').map(({label})=>label);
+      if (!window.confirm(`Transférer ${chosenFields.join(', ')} vers « ${candidate.title || candidate.id} » ?\n\nLa fiche existante ne sera pas supprimée et son identité sera conservée.`)) return;
+      const targetRef=doc(firestore,candidate.col,candidate.id);
+      const submissionRef=doc(firestore,'listing_submissions',editDraft.id);
+      const cacheRef=doc(firestore,'cache',`map-live-${candidate.col}-${candidate.id}`);
+      const updates:Record<string,string>={};
+      for (const {key} of MERGE_FIELDS) {
+        if (mergeChoices[key]==='existing') continue;
+        if (key==='description') {
+          updates.info=values[key] || ''; updates.description=values[key] || '';
+        } else {
+          updates[key]=values[key] || '';
+        }
+      }
+      if (Object.keys(updates).length===0) throw new Error('Choisis au moins une information à transférer.');
+      await runTransaction(firestore,async tx=>{
+        const [fresh,submission,cache]=await Promise.all([tx.get(targetRef),tx.get(submissionRef),tx.get(cacheRef)]);
+        if (!fresh.exists() || !submission.exists() || !['pending','in_review'].includes(String(submission.data().status)))
+          throw new Error('Une fiche a changé de statut : recharge la comparaison.');
+        // Refuser les anciennes sélections si une valeur comparée a changé.
+        for (const {key} of MERGE_FIELDS) {
+          if (mergeChoices[key]!=='existing' && mergeValue(fresh.data(),key,false)!==mergeValue(existing,key,false))
+            throw new Error('La fiche existante a été modifiée : recharge la comparaison.');
+        }
+        tx.update(targetRef,updates);
+        if (cache.exists()) {
+          if (updates.title!==undefined) tx.update(cacheRef,{t:updates.title,updatedAt:new Date()});
+          else tx.update(cacheRef,{updatedAt:new Date()});
+        }
+        tx.update(submissionRef,{
+          status:'published',publishedAt:new Date(),publishedCollection:candidate.col,
+          publishedDocId:candidate.id,reviewedBy:user.uid,reviewedAt:new Date(),
+          mergeAudit:{sourceSubmissionId:editDraft.id,targetCollection:candidate.col,targetId:candidate.id,
+            before:fresh.data(),applied:updates,choices:mergeChoices,actorUid:user.uid,createdAt:new Date()},
+          updatedAt:new Date(),
+        });
+        tx.set(doc(collection(firestore,'listing_history')),{listingKey:`${candidate.col}/${candidate.id}`,
+          targetCollection:candidate.col,targetId:candidate.id,
+          targetTitle:updates.title || String(fresh.data().title || candidate.id),
+          sourceSubmissionId:editDraft.id,sourceTitle:String(editDraft.businessName || editDraft.id),
+          eventType:'merge_existing_updated',summary:'Informations transférées vers une fiche existante',
+          modifiedFields:Object.keys(updates),actorType:'admin',actorUid:user.uid,createdAt:new Date()});
+      });
+      setMergePreview(null);
+      setIsDetailOpen(false);
+      toast({title:'Informations transférées',description:'La fiche existante est conservée. Sauvegarde avant fusion dans la soumission.'});
+    } catch(error) {
+      toast({title:'Fusion annulée',description:error instanceof Error?error.message:'Erreur',variant:'destructive'});
+    } finally {setMergeBusy(false);}
   };
 
   const handleDelete = () => {
@@ -2633,6 +2875,7 @@ export default function AdminPage() {
           </TabsContent>
 
                     <TabsContent value="history">
+            <div className="mb-6"><AdminMergeHistory /></div>
             <AdminListingArchive
               onModify={(collectionName, id) =>
                 setListingEditTarget({
@@ -3016,6 +3259,18 @@ export default function AdminPage() {
                                     {editDraft.needsGeocoding && <p className="text-[8px] text-orange-500 font-black uppercase tracking-widest ml-1 animate-pulse">⚠️ Géocodage requis ou à vérifier.</p>}
                                 </div>
                             )}
+
+                            {editDraft.type !== 'creator' && (
+                                <div className="space-y-2">
+                                    <Label className="text-[9px] uppercase font-black tracking-widest text-muted-foreground ml-1">Présentation rédigée par le professionnel</Label>
+                                    <Textarea
+                                        value={editDraft.info || editDraft.description || ''}
+                                        onChange={e => setEditDraft({ ...editDraft, info: e.target.value, description: e.target.value })}
+                                        className="font-bold rounded-xl min-h-[120px] border-2"
+                                        placeholder="Texte de présentation de la fiche"
+                                    />
+                                </div>
+                            )}
                         </section>
 
                         <section className="space-y-6">
@@ -3187,7 +3442,7 @@ export default function AdminPage() {
                                     duplicates.map(d => {
                                         const isLinked = editDraft.publishTargetId === d.id && (!editDraft.publishTargetCollection || editDraft.publishTargetCollection === d.col);
                                         const isVeryLikely = d.matchConfidence === 'very_likely';
-                                        const confidence = isVeryLikely ? 'Très probable' : 'Probable';
+                                        const confidence = isVeryLikely ? 'Très probable' : d.matchConfidence === 'possible' ? 'À vérifier' : 'Probable';
 
                                         return (
                                           <div key={`${d.col}/${d.id}`} className="bg-white p-3 rounded-xl border-2 flex flex-col gap-2 shadow-sm">
@@ -3216,8 +3471,9 @@ export default function AdminPage() {
                                                 size="sm"
                                                 className={cn("h-8 text-[8px] font-black uppercase rounded-lg border", isLinked ? "bg-brand text-white border-brand" : "bg-muted text-muted-foreground")}
                                                 onClick={() => handleLinkToDuplicate(d)}
+                                                disabled={mergeBusy}
                                               >
-                                                {isLinked ? "Fiche liée — retirer le lien" : "Utiliser cette fiche existante"}
+                                                {mergeBusy ? 'Chargement...' : isLinked ? 'Comparer avant transfert' : 'Comparer les deux fiches'}
                                               </Button>
                                           </div>
                                         );
@@ -3261,6 +3517,85 @@ export default function AdminPage() {
                 </div>
               </div>
             </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={Boolean(mergePreview)} onOpenChange={open => {if (!open && !mergeBusy) setMergePreview(null);}}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto z-[3200]">
+          <DialogHeader>
+            <DialogTitle>Comparer et réunir les informations</DialogTitle>
+            <DialogDescription>
+              Le transfert vers une fiche existante ne supprime rien. Le retrait de l'ancienne fiche est facultatif et réservé à la création d'une nouvelle fiche.
+            </DialogDescription>
+          </DialogHeader>
+          {mergePreview && editDraft && (
+            <div className="space-y-5">
+              <div className="rounded-xl border p-3 space-y-2">
+                <Label>Dans quelle fiche conserver les informations ?</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <Button type="button" variant={mergeDestination==='existing'?'default':'outline'} onClick={()=>{
+                    setMergeDestination('existing');
+                    setRemoveOldAfterMerge(false);
+                    setMergeChoices({title:'existing',description:'existing',website:'existing',email:'existing',
+                      phoneNumber:'existing',instagramUrl:'existing',facebookUrl:'existing',googleMapsUrl:'existing'});
+                  }}>
+                    Fiche existante : {mergePreview.candidate.title || mergePreview.candidate.id}
+                  </Button>
+                  <Button type="button" variant={mergeDestination==='new'?'default':'outline'} onClick={()=>{
+                    setMergeDestination('new');
+                    setMergeChoices({title:'submission',description:'submission',website:'submission',email:'submission',
+                      phoneNumber:'submission',instagramUrl:'submission',facebookUrl:'submission',googleMapsUrl:'submission'});
+                  }}>
+                    Nouvelle fiche : {editDraft.displayName || editDraft.businessName || editDraft.title}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {mergeDestination==='existing'
+                    ? 'Les champs sélectionnés enrichiront la fiche existante. La demande sera classée publiée.'
+                    : 'Les champs sélectionnés prérempliront la nouvelle demande. Tu pourras les vérifier avant de publier.'}
+                </p>
+              </div>
+              {mergeDestination==='new' && (
+                <label className="flex items-start gap-3 rounded-xl border border-orange-200 bg-orange-50 p-4 text-sm">
+                  <input type="checkbox" checked={removeOldAfterMerge} onChange={event=>setRemoveOldAfterMerge(event.target.checked)} className="mt-1" />
+                  <span><strong>Supprimer l'ancienne fiche après publication</strong><br />
+                    <span className="text-xs">La suppression sera demandée uniquement si la nouvelle fiche est publiée. En cas d'échec, l'ancienne fiche restera en attente de traitement dans l'historique.</span>
+                  </span>
+                </label>
+              )}
+              <div className="space-y-3">
+                {MERGE_FIELDS.map(({key,label})=>{
+                  const existingValue=mergeValue(mergePreview.existing,key,false);
+                  const newValue=mergeValue(editDraft,key,true);
+                  return (
+                    <div key={key} className="rounded-xl border p-3 space-y-2">
+                      <p className="text-xs font-black uppercase">{label}</p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div className="rounded-lg bg-muted/40 p-2 break-words"><strong>Existante :</strong> {existingValue || 'Non renseigné'}</div>
+                        <div className="rounded-lg bg-muted/40 p-2 break-words"><strong>Nouvelle :</strong> {newValue || 'Non renseigné'}</div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button type="button" size="sm" variant={mergeChoices[key]==='existing'?'default':'outline'} onClick={()=>setMergeChoices(old=>({...old,[key]:'existing'}))}>Garder l'existante</Button>
+                        <Button type="button" size="sm" variant={mergeChoices[key]==='submission'?'default':'outline'} onClick={()=>setMergeChoices(old=>({...old,[key]:'submission'}))}>Prendre la nouvelle</Button>
+                        {key==='description' && <Button type="button" size="sm" variant={mergeChoices[key]==='both'?'default':'outline'} onClick={()=>setMergeChoices(old=>({...old,[key]:'both'}))}>Cumuler les deux textes</Button>}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="rounded-xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-900">
+                Le retrait de l'ancienne fiche nécessite une confirmation et un nettoyage sécurisé.
+                {mergeDestination==='existing' && ' Une copie des valeurs avant transfert sera conservée dans la soumission.'}
+              </div>
+              <div className="flex flex-wrap gap-2 justify-end">
+                <Button variant="outline" disabled={mergeBusy} onClick={()=>setMergePreview(null)}>Annuler</Button>
+                <Button disabled={mergeBusy || (mergeDestination==='existing' && !MERGE_FIELDS.some(({key})=>mergeChoices[key]!=='existing'))}
+                  onClick={handleApplyMerge}>
+                  {mergeBusy ? 'Vérification...' : mergeDestination==='existing'?'Confirmer le transfert vers la fiche existante':'Préremplir la nouvelle fiche'}
+                </Button>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>

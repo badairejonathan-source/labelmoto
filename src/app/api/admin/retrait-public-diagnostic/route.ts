@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminAuth, getAdminFirestore } from '@/lib/firebase-admin';
+import { isServerAdmin } from '@/lib/server-admin-permissions';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -12,9 +13,9 @@ const validId = (value: string) => /^[a-zA-Z0-9_.-]{1,200}$/.test(value) && valu
 export async function GET(req: NextRequest) {
   const token = req.headers.get('authorization') || '';
   if (!token.startsWith('Bearer ')) return error('Authentification requise', 401);
-  let uid: string;
+  let caller;
   try {
-    uid = (await getAdminAuth().verifyIdToken(token.slice(7).trim(), true)).uid;
+    caller = await getAdminAuth().verifyIdToken(token.slice(7).trim(), true);
   } catch {
     return error('Session invalide', 401);
   }
@@ -23,8 +24,8 @@ export async function GET(req: NextRequest) {
   if (!collections.has(collection) || !validId(id)) return error('Cible invalide', 400);
   try {
     const db = getAdminFirestore();
-    const user = await db.collection('users').doc(uid).get();
-    if (!user.exists || user.get('role') !== 'admin') return error('Droits administrateur requis', 403);
+
+    if (!(await isServerAdmin(db, caller))) return error('Droits administrateur requis', 403);
     const key = `${collection}__${id}`;
     // Exactly three targeted document reads after the admin-role read.
     const [history, backup, sharedLock] = await Promise.all([
